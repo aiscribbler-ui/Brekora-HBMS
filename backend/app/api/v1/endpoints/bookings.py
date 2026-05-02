@@ -4,6 +4,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from redis.asyncio import Redis
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,6 +28,8 @@ from app.exceptions import BookingConflictError
 from app.schemas.conflict import BookingConflictResponse
 from app.services.booking_service import BookingInitService
 from app.services.booking_modification_service import BookingModificationService
+from app.models.inventory_hold import InventoryHold
+from app.services.inventory_service import InventoryService
 
 router = APIRouter()
 
@@ -287,7 +290,43 @@ async def update_booking(
         _validate_status_transition(booking.status, new_status)
         if new_status == BookingStatus.cancelled.value and not update_data.get("cancelled_at"):
             from datetime import datetime, timezone
-            update_data["cancelled_at"] = datetime.now(timezone.utc)
+            now = datetime.now(timezone.utc)
+            update_data["cancelled_at"] = now
+
+            # Release any active or committed inventory holds
+            hold_stmt = select(InventoryHold).where(
+                InventoryHold.booking_id == booking_id,
+                InventoryHold.status.in_(("active", "committed")),
+            )
+            hold_result = await db.execute(hold_stmt)
+            holds = hold_result.scalars().all()
+            if holds:
+                inventory_svc = InventoryService(db, None)
+                for hold in holds:
+                    try:
+                        await inventory_svc.release_inventory(hold.id)
+                    except Exception:
+                        pass  # idempotent
+
+            # Append cancellation entry to modification_log
+            modification_log: list[dict] = []
+            if booking.modification_log:
+                modification_log = list(booking.modification_log)
+            cancellation_reason = update_data.get("cancellation_reason", "Booking cancelled")
+            audit_entry = {
+                "timestamp": now.isoformat(),
+                "actor_user_id": None,
+                "changes": {
+                    "status": {"old": booking.status, "new": BookingStatus.cancelled.value},
+                    "cancelled_at": {
+                        "old": booking.cancelled_at.isoformat() if booking.cancelled_at else None,
+                        "new": now.isoformat(),
+                    },
+                },
+                "reason": f"Booking cancelled: {cancellation_reason}",
+            }
+            modification_log.append(audit_entry)
+            update_data["modification_log"] = modification_log
 
     try:
         updated = await repo.update(booking, update_data)
@@ -326,11 +365,47 @@ async def delete_booking(
             detail="Cannot cancel a booking that is already cancelled or completed",
         )
 
+    # Release any active or committed inventory holds
+    hold_stmt = select(InventoryHold).where(
+        InventoryHold.booking_id == booking_id,
+        InventoryHold.status.in_(("active", "committed")),
+    )
+    hold_result = await db.execute(hold_stmt)
+    holds = hold_result.scalars().all()
+    if holds:
+        inventory_svc = InventoryService(db, None)
+        for hold in holds:
+            try:
+                await inventory_svc.release_inventory(hold.id)
+            except Exception:
+                pass  # idempotent
+
     from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+
+    # Append cancellation entry to modification_log
+    modification_log: list[dict] = []
+    if booking.modification_log:
+        modification_log = list(booking.modification_log)
+    audit_entry = {
+        "timestamp": now.isoformat(),
+        "actor_user_id": None,
+        "changes": {
+            "status": {"old": booking.status, "new": BookingStatus.cancelled.value},
+            "cancelled_at": {
+                "old": booking.cancelled_at.isoformat() if booking.cancelled_at else None,
+                "new": now.isoformat(),
+            },
+        },
+        "reason": "Booking cancelled",
+    }
+    modification_log.append(audit_entry)
+
     await repo.update(
         booking,
         {
             "status": BookingStatus.cancelled.value,
-            "cancelled_at": datetime.now(timezone.utc),
+            "cancelled_at": now,
+            "modification_log": modification_log,
         },
     )

@@ -22,6 +22,7 @@ import SearchResults from '@/pages/public/SearchResults'
 import BookingFlow from '@/pages/public/BookingFlow'
 import BookingConfirmation from '@/pages/public/BookingConfirmation'
 import AdminPanel from '@/pages/admin/AdminPanel'
+import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
 export const routes: RouteObject[] = [
   {
@@ -112,6 +113,10 @@ export const routes: RouteObject[] = [
       {
         path: 'book/confirm',
         element: <BookingConfirmation />,
+      },
+      {
+        path: 'owner',
+        element: <OwnerDashboard />,
       },
       {
         path: 'admin',
