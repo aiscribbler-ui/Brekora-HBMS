@@ -1,0 +1,65 @@
+import type { SearchResultItem } from '@/services/publicApi'
+
+interface RoomCardProps {
+  item: SearchResultItem
+  onSelect: () => void
+}
+
+export default function RoomCard({ item, onSelect }: RoomCardProps) {
+  const photo = item.photos?.[0]?.url
+  const soldOut = !item.available
+
+  return (
+    <div
+      className={`relative bg-white rounded-xl border overflow-hidden transition-shadow ${
+        soldOut ? 'opacity-60 border-gray-200' : 'border-gray-200 hover:shadow-md'
+      }`}
+    >
+      <div className="aspect-[16/10] bg-gray-100 relative">
+        {photo ? (
+          <img
+            src={photo}
+            alt={item.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+            No photo
+          </div>
+        )}
+        {soldOut && (
+          <div className="absolute inset-0 bg-gray-900/40 flex items-center justify-center">
+            <span className="px-3 py-1 bg-gray-900 text-white text-xs font-semibold rounded">
+              Sold Out
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="p-4">
+        <h3 className="text-base font-semibold text-gray-900">{item.name}</h3>
+        {item.description && (
+          <p className="mt-1 text-sm text-gray-500 line-clamp-2">{item.description}</p>
+        )}
+        <div className="mt-3 flex items-end justify-between">
+          <div>
+            <span className="text-lg font-bold text-gray-900">
+              ₹{item.price_breakdown.total_amount.toFixed(2)}
+            </span>
+            <span className="text-xs text-gray-500 ml-1">
+              / {item.price_breakdown.breakdown_per_night.length} night
+              {item.price_breakdown.breakdown_per_night.length > 1 ? 's' : ''}
+            </span>
+          </div>
+          <button
+            onClick={onSelect}
+            disabled={soldOut}
+            className="py-2 px-4 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {soldOut ? 'Unavailable' : 'Select'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

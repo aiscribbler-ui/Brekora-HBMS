@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  api:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/scripts:/app/scripts:ro
+      - ./backend/logging_config.json:/app/logging_config.json:ro
+    environment:
+      - ENVIRONMENT=development
+    command: >
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      --log-config /app/logging_config.json
+
+  worker:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/scripts:/app/scripts:ro
+      - ./backend/logging_config.json:/app/logging_config.json:ro
+    environment:
+      - ENVIRONMENT=development
+    command: ["arq", "app.worker.WorkerSettings"]
+
+  frontend:
+    build:
+      target: dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

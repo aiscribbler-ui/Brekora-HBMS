@@ -1,0 +1,76 @@
+From: booking@airbnb.com
+To: brekora.host@gmail.com
+Subject: Reservation confirmed - Rahul Sharma is coming to Valley Retreat
+Date: Mon, 20 Apr 2025 14:22:00 +0000
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html>
+<head><title>Airbnb Reservation</title></head>
+<body>
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2>You have a new reservation!</h2>
+
+    <table width="100%" cellpadding="8" cellspacing="0" border="0">
+      <tr>
+        <td><strong>Confirmation code</strong></td>
+        <td>RAHUL2025</td>
+      </tr>
+      <tr>
+        <td><strong>Guest</strong></td>
+        <td>Rahul Sharma</td>
+      </tr>
+      <tr>
+        <td><strong>Guest email</strong></td>
+        <td>rahul.sharma@example.com</td>
+      </tr>
+      <tr>
+        <td><strong>Check-in</strong></td>
+        <td>Friday, May 2, 2025<br>2:00 PM</td>
+      </tr>
+      <tr>
+        <td><strong>Check-out</strong></td>
+        <td>Sunday, May 4, 2025<br>11:00 AM</td>
+      </tr>
+      <tr>
+        <td><strong>Guests</strong></td>
+        <td>4 guests</td>
+      </tr>
+      <tr>
+        <td><strong>Listing</strong></td>
+        <td>Valley Retreat in Kasol</td>
+      </tr>
+      <tr>
+        <td><strong>Listing ID</strong></td>
+        <td>99223344</td>
+      </tr>
+    </table>
+
+    <hr/>
+
+    <table width="100%" cellpadding="8" cellspacing="0" border="0">
+      <tr>
+        <td><strong>Total (INR)</strong></td>
+        <td>₹24,500.00</td>
+      </tr>
+      <tr>
+        <td><strong>Airbnb service fee</strong></td>
+        <td>-₹3,675.00</td>
+      </tr>
+      <tr>
+        <td><strong>You earn</strong></td>
+        <td>₹20,825.00</td>
+      </tr>
+    </table>
+
+    <p><strong>Booked on:</strong> April 20, 2025</p>
+
+    <p><strong>Special requests</strong><br/>
+    Celebrating anniversary. Please arrange a small cake and some flowers in the room.</p>
+
+    <p>Need help? <a href="https://www.airbnb.com/help">Visit the Help Centre</a>.</p>
+
+    <p>Thanks,<br/>The Airbnb Team</p>
+  </div>
+</body>
+</html>

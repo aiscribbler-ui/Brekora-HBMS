@@ -1,0 +1,36 @@
+Subject: Booking Voucher - The Grand Brekora
+From: noreply@makemytrip.com
+To: reservations@brekora.in
+Date: Mon, 10 May 2026 14:30:00 +0530
+
+Dear Guest,
+
+Thank you for choosing MakeMyTrip. Your booking is confirmed.
+
+--------------------------------------------------------
+BOOKING DETAILS
+--------------------------------------------------------
+Voucher Number      : MMT1234567890
+Booking Reference   : BRN9876543210
+Hotel Name          : The Grand Brekora
+Hotel Code          : HTL98765
+Room Type Name      : Deluxe King Room
+Room Code           : RM1234
+Number of Rooms     : 2
+Guests              : 3 Adults, 1 Child
+Check-in Date       : 15 May 2026
+Check-out Date      : 18 May 2026
+Guest Name          : Rajesh Kumar
+Guest Email         : rajesh.kumar@example.com
+Total Amount        : INR 12,500.00
+Commission          : INR 1,875.00
+Net Payable         : INR 10,625.00
+Special Requests    : Early check-in requested
+Booking Date        : 10 May 2026
+
+--------------------------------------------------------
+
+Please carry a valid photo ID at check-in.
+
+Warm regards,
+MakeMyTrip Team

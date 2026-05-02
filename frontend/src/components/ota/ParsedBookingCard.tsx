@@ -1,0 +1,210 @@
+import {
+  EnvelopeOpenIcon,
+  CheckCircleIcon,
+  PencilSquareIcon,
+  XCircleIcon,
+  ExclamationTriangleIcon,
+  UserIcon,
+  CalendarIcon,
+  PhoneIcon,
+  UsersIcon,
+  HomeIcon,
+  HashtagIcon,
+} from '@heroicons/react/24/outline'
+import type { ParsedBooking } from '@/services/otaApi'
+
+interface ParsedBookingCardProps {
+  booking: ParsedBooking
+  onConfirm: () => void
+  onEdit: () => void
+  onReject: () => void
+  rawEmailUrl?: string | null
+}
+
+function confidenceColor(score: number): string {
+  if (score >= 0.95) return 'text-green-700 bg-green-50 border-green-200'
+  if (score >= 0.8) return 'text-amber-700 bg-amber-50 border-amber-200'
+  return 'text-red-700 bg-red-50 border-red-200'
+}
+
+function confidenceLabel(score: number): string {
+  if (score >= 0.95) return 'High'
+  if (score >= 0.8) return 'Medium'
+  return 'Low'
+}
+
+function sourceBadge(source: string) {
+  const styles: Record<string, string> = {
+    airbnb: 'bg-rose-100 text-rose-800',
+    mmt: 'bg-blue-100 text-blue-800',
+    goibibo: 'bg-orange-100 text-orange-800',
+    other: 'bg-gray-100 text-gray-800',
+  }
+  const labels: Record<string, string> = {
+    airbnb: 'Airbnb',
+    mmt: 'MakeMyTrip',
+    goibibo: 'Goibibo',
+    other: 'Other',
+  }
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[source] || styles.other}`}>
+      {labels[source] || source}
+    </span>
+  )
+}
+
+function statusBadge(status: string) {
+  const styles: Record<string, string> = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    confirmed: 'bg-green-100 text-green-800',
+    rejected: 'bg-red-100 text-red-800',
+    edited: 'bg-blue-100 text-blue-800',
+  }
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
+      {status}
+    </span>
+  )
+}
+
+export default function ParsedBookingCard({
+  booking,
+  onConfirm,
+  onEdit,
+  onReject,
+  rawEmailUrl,
+}: ParsedBookingCardProps) {
+  const canAct = booking.status === 'pending' || booking.status === 'edited'
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="p-4 sm:p-6 space-y-4">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex items-center gap-2">
+            {sourceBadge(booking.source_type)}
+            {statusBadge(booking.status)}
+          </div>
+          <div
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-sm font-medium ${confidenceColor(booking.confidence_score)}`}
+            title={`Confidence: ${(booking.confidence_score * 100).toFixed(1)}%`}
+          >
+            {booking.confidence_score < 0.8 && (
+              <ExclamationTriangleIcon className="h-4 w-4" />
+            )}
+            <span>{(booking.confidence_score * 100).toFixed(0)}%</span>
+            <span className="text-xs opacity-75">({confidenceLabel(booking.confidence_score)})</span>
+          </div>
+        </div>
+
+        {/* Parsed fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex items-start gap-2">
+            <UserIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">Guest Name</p>
+              <p className="text-sm font-medium text-gray-900">{booking.guest_name || '—'}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <EnvelopeOpenIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">Email</p>
+              <p className="text-sm font-medium text-gray-900">{booking.guest_email || '—'}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <PhoneIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">Phone</p>
+              <p className="text-sm font-medium text-gray-900">{booking.guest_phone || '—'}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <UsersIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">Guests</p>
+              <p className="text-sm font-medium text-gray-900">{booking.num_guests ?? '—'}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <CalendarIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">Dates</p>
+              <p className="text-sm font-medium text-gray-900">
+                {booking.check_in && booking.check_out
+                  ? `${booking.check_in} → ${booking.check_out}`
+                  : '—'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <HomeIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">Room Type</p>
+              <p className="text-sm font-medium text-gray-900">{booking.room_type || '—'}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <HashtagIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs text-gray-500">OTA Reference</p>
+              <p className="text-sm font-medium text-gray-900">{booking.ota_reference || '—'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Original email link */}
+        {rawEmailUrl && (
+          <div className="pt-2 border-t border-gray-100">
+            <a
+              href={rawEmailUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 hover:underline"
+            >
+              <EnvelopeOpenIcon className="h-4 w-4" />
+              View original email
+            </a>
+          </div>
+        )}
+
+        {/* Actions */}
+        {canAct && (
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
+            <button
+              onClick={onConfirm}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              aria-label={`Confirm booking for ${booking.guest_name || 'unknown guest'}`}
+            >
+              <CheckCircleIcon className="h-4 w-4" />
+              Confirm
+            </button>
+            <button
+              onClick={onEdit}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              aria-label={`Edit booking for ${booking.guest_name || 'unknown guest'}`}
+            >
+              <PencilSquareIcon className="h-4 w-4" />
+              Edit
+            </button>
+            <button
+              onClick={onReject}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              aria-label={`Reject booking for ${booking.guest_name || 'unknown guest'}`}
+            >
+              <XCircleIcon className="h-4 w-4" />
+              Reject
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

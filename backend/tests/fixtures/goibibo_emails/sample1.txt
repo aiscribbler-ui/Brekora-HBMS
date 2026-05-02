@@ -1,0 +1,34 @@
+Subject: Booking Confirmation - Hotel Sunrise Villa
+From: bookings@goibibo.com
+To: reservations@brekora.in
+Date: Wed, 25 Apr 2026 10:15:00 +0530
+
+Dear Partner,
+
+A new booking has been confirmed via Goibibo.
+
+--------------------------------------------------------
+BOOKING DETAILS
+--------------------------------------------------------
+Booking Reference   : GIBO123456789
+Hotel Name          : Hotel Sunrise Villa
+Hotel ID            : GHTL98765
+Room Type           : Deluxe Double Room
+Room Type ID        : GRM1234
+Guests              : 2 Adults
+Check-in Date       : 05 May 2026
+Check-out Date      : 08 May 2026
+Guest Name          : Ananya Rao
+Guest Email         : ananya.rao@example.com
+Total Amount        : INR 9,500.00
+Commission          : INR 1,425.00
+Net Payable         : INR 8,075.00
+Special Requests    : Late check-in requested
+Booking Date        : 25 Apr 2026
+
+--------------------------------------------------------
+
+Please ensure the room is ready for the guest.
+
+Warm regards,
+Goibibo Partner Team

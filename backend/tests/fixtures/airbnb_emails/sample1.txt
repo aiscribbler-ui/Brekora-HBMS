@@ -1,0 +1,48 @@
+From: booking@airbnb.com
+To: brekora.host@gmail.com
+Subject: Reservation confirmed - Sarah Johnson is coming to Mountain View Cottage
+Date: Wed, 15 Apr 2025 08:30:00 +0000
+
+
+Hi Brekora,
+
+You have a new reservation!
+
+Confirmation code: HM8K3Z9A
+
+Guest
+Sarah Johnson
+
+Check-in
+Sunday, April 27, 2025
+3:00 PM
+
+Check-out
+Tuesday, April 29, 2025
+11:00 AM
+
+Guests
+2 guests
+
+Listing
+Mountain View Cottage in Manali
+Listing ID: 88445521
+
+Total (INR)
+₹12,000.00
+
+Airbnb service fee
+-₹1,800.00
+
+You earn
+₹10,200.00
+
+Booked on: April 15, 2025
+
+Special requests
+We would appreciate an extra blanket and a quiet room away from the road.
+
+Need help? Visit the Help Centre.
+
+Thanks,
+The Airbnb Team
