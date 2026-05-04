@@ -14,7 +14,7 @@ from app.repositories.room_type import RoomTypeRepository
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_property_repository_crud(db_session: AsyncSession):
     repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
 
@@ -43,7 +43,7 @@ async def test_property_repository_crud(db_session: AsyncSession):
     assert archived.is_active is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_room_type_repository_crud(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "Test Hotel"})
@@ -86,7 +86,7 @@ async def test_room_type_repository_crud(db_session: AsyncSession):
     assert after_delete is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_property_api_crud(client: AsyncClient):
     # Create
     response = await client.post(
@@ -129,7 +129,7 @@ async def test_property_api_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_room_type_api_nested_crud(client: AsyncClient):
     # Create property
     response = await client.post(
@@ -185,7 +185,7 @@ async def test_room_type_api_nested_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_property_photo_upload(client: AsyncClient):
     # Create property
     response = await client.post(
@@ -212,7 +212,7 @@ async def test_property_photo_upload(client: AsyncClient):
     assert "/uploads/" in data["photos"][0]["path"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_property_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
     response = await client.get(f"/api/v1/properties/{fake_id}")

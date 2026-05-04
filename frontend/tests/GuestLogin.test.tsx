@@ -60,13 +60,13 @@ describe('GuestLogin page', () => {
     renderRoute()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^Sign In$/i })).toBeInTheDocument()
   })
 
   it('shows validation errors for empty fields', async () => {
     renderRoute()
     const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
     await waitFor(() => {
       expect(screen.getByText(/email is required/i)).toBeInTheDocument()
       expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument()
@@ -78,7 +78,7 @@ describe('GuestLogin page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'not-an-email')
     await user.type(screen.getByLabelText(/password/i), 'password123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
     await waitFor(() => {
       expect(screen.getByText(/invalid email address/i)).toBeInTheDocument()
     })
@@ -95,7 +95,7 @@ describe('GuestLogin page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'guest@brekora.test')
     await user.type(screen.getByLabelText(/password/i), 'Password123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
 
     await waitFor(() => {
       expect(mockPost).toHaveBeenCalledWith({
@@ -119,7 +119,7 @@ describe('GuestLogin page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'guest@brekora.test')
     await user.type(screen.getByLabelText(/password/i), 'WrongPass123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
 
     await waitFor(() => {
       expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument()
@@ -132,7 +132,7 @@ describe('GuestLogin page', () => {
     const signupLink = screen.getByText(/sign up/i)
     await user.click(signupLink)
     await waitFor(() => {
-      expect(screen.getByText(/create account/i)).toBeInTheDocument()
+      expect(screen.getAllByText(/create account/i)[0]).toBeInTheDocument()
     })
   })
 

@@ -1,7 +1,7 @@
 """Tests for Gmail OAuth service and endpoints."""
 import json
 from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from google.oauth2.credentials import Credentials
@@ -11,23 +11,32 @@ from app.core.config import get_settings
 from app.services.gmail_oauth_service import REDIS_KEY_GMAIL_TOKEN, GmailOAuthService
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_auth_url_endpoint(client: AsyncClient):
     """OAuth initiation returns a valid Google auth URL."""
-    with patch.object(
-        GmailOAuthService,
-        "create_auth_url",
-        return_value=("https://accounts.google.com/o/oauth2/auth?test=1", "state_abc"),
-    ):
-        response = await client.get("/api/v1/ota/gmail/auth")
-    assert response.status_code == 200
-    data = response.json()
-    assert "auth_url" in data
-    assert "state" in data
-    assert data["state"] == "state_abc"
+    settings = get_settings()
+    original_client_id = settings.GOOGLE_CLIENT_ID
+    original_client_secret = settings.GOOGLE_CLIENT_SECRET
+    settings.GOOGLE_CLIENT_ID = "test_client_id"
+    settings.GOOGLE_CLIENT_SECRET = "test_secret"
+    try:
+        with patch.object(
+            GmailOAuthService,
+            "create_auth_url",
+            return_value=("https://accounts.google.com/o/oauth2/auth?test=1", "state_abc"),
+        ):
+            response = await client.get("/api/v1/ota/gmail/auth")
+        assert response.status_code == 200
+        data = response.json()
+        assert "auth_url" in data
+        assert "state" in data
+        assert data["state"] == "state_abc"
+    finally:
+        settings.GOOGLE_CLIENT_ID = original_client_id
+        settings.GOOGLE_CLIENT_SECRET = original_client_secret
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_auth_endpoint_missing_config(client: AsyncClient):
     """Auth endpoint returns 503 when OAuth is not configured."""
     settings = get_settings()
@@ -41,7 +50,7 @@ async def test_gmail_auth_endpoint_missing_config(client: AsyncClient):
         settings.GOOGLE_CLIENT_ID = original_client_id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_callback_endpoint(client: AsyncClient):
     """Callback exchanges code for tokens and returns them."""
     mock_token = {
@@ -61,7 +70,7 @@ async def test_gmail_callback_endpoint(client: AsyncClient):
     assert data["access_token"] == "access_token_123"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_callback_bad_code(client: AsyncClient):
     """Callback with invalid code returns 400."""
     with patch.object(
@@ -72,7 +81,7 @@ async def test_gmail_callback_bad_code(client: AsyncClient):
     assert "OAuth token exchange failed" in response.json()["detail"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_status_not_authenticated(client: AsyncClient):
     """Status shows not_authenticated when no tokens exist."""
     with patch.object(
@@ -91,7 +100,7 @@ async def test_gmail_status_not_authenticated(client: AsyncClient):
     assert data["status"] == "not_authenticated"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_status_connected(client: AsyncClient):
     """Status shows connected when Gmail API is reachable."""
     with patch.object(
@@ -113,7 +122,7 @@ async def test_gmail_status_connected(client: AsyncClient):
     assert data["messages_total"] == 100
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_service_create_auth_url():
     """Service generates a valid OAuth authorization URL."""
     settings = get_settings()
@@ -133,7 +142,7 @@ async def test_gmail_service_create_auth_url():
     assert state == "state_xyz"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_service_loads_from_env_fallback():
     """When Redis has no token, service falls back to env vars."""
     settings = get_settings()
@@ -144,7 +153,7 @@ async def test_gmail_service_loads_from_env_fallback():
     service = GmailOAuthService(settings)
 
     fake_redis = MagicMock()
-    fake_redis.get = MagicMock(return_value=None)
+    fake_redis.get = AsyncMock(return_value=None)
 
     with patch("app.services.gmail_oauth_service.get_redis_client", return_value=fake_redis):
         creds = await service._load_credentials()
@@ -154,7 +163,7 @@ async def test_gmail_service_loads_from_env_fallback():
     assert creds.refresh_token == "env_refresh"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_service_loads_from_redis():
     """Service loads credentials from Redis when present."""
     settings = get_settings()
@@ -172,7 +181,7 @@ async def test_gmail_service_loads_from_redis():
         "expiry": datetime.now(timezone.utc).isoformat(),
     }
     fake_redis = MagicMock()
-    fake_redis.get = MagicMock(return_value=json.dumps(token_data))
+    fake_redis.get = AsyncMock(return_value=json.dumps(token_data))
 
     with patch("app.services.gmail_oauth_service.get_redis_client", return_value=fake_redis):
         creds = await service._load_credentials()
@@ -182,7 +191,7 @@ async def test_gmail_service_loads_from_redis():
     assert creds.refresh_token == "redis_refresh"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_service_token_refresh():
     """Expired credentials are automatically refreshed and saved back to Redis."""
     settings = get_settings()
@@ -200,8 +209,8 @@ async def test_gmail_service_token_refresh():
         "expiry": "2020-01-01T00:00:00+00:00",
     }
     fake_redis = MagicMock()
-    fake_redis.get = MagicMock(return_value=json.dumps(old_token))
-    fake_redis.setex = MagicMock(return_value=None)
+    fake_redis.get = AsyncMock(return_value=json.dumps(old_token))
+    fake_redis.setex = AsyncMock(return_value=None)
 
     mock_creds = MagicMock(spec=Credentials)
     mock_creds.expired = True
@@ -232,7 +241,7 @@ async def test_gmail_service_token_refresh():
     assert call_args[0] == REDIS_KEY_GMAIL_TOKEN
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_service_health_check_no_credentials():
     """Health check returns not_authenticated when credentials are missing."""
     settings = get_settings()
@@ -241,7 +250,7 @@ async def test_gmail_service_health_check_no_credentials():
     service = GmailOAuthService(settings)
 
     fake_redis = MagicMock()
-    fake_redis.get = MagicMock(return_value=None)
+    fake_redis.get = AsyncMock(return_value=None)
 
     with patch("app.services.gmail_oauth_service.get_redis_client", return_value=fake_redis):
         result = await service.health_check()

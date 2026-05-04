@@ -49,8 +49,8 @@ describe('OtaQueue', () => {
     expect(document.querySelector('.animate-pulse')).toBeTruthy()
 
     await waitFor(() => {
-      expect(screen.getByText('Alice Smith')).toBeInTheDocument()
-      expect(screen.getByText('Bob Jones')).toBeInTheDocument()
+      expect(screen.getAllByText('Alice Smith')[0]).toBeInTheDocument()
+      expect(screen.getAllByText('Bob Jones')[0]).toBeInTheDocument()
     })
   })
 
@@ -89,9 +89,9 @@ describe('OtaQueue', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() => expect(screen.getByText('Alice Smith')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getAllByText('Alice Smith')[0]).toBeInTheDocument())
 
-    await userEvent.click(screen.getByText('Alice Smith'))
+    await userEvent.click(screen.getAllByText('Alice Smith')[0])
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /confirm/i })).toBeInTheDocument()
@@ -114,7 +114,7 @@ describe('OtaQueue', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() => expect(screen.getByText('Alice Smith')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getAllByText('Alice Smith')[0]).toBeInTheDocument())
 
     await userEvent.click(screen.getByRole('button', { name: /filters/i }))
 
@@ -142,7 +142,7 @@ describe('OtaQueue', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() => expect(screen.getByText('Guest 0')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getAllByText('Guest 0')[0]).toBeInTheDocument())
 
     expect(screen.getByText('Page 1 of 3')).toBeInTheDocument()
 
@@ -172,7 +172,7 @@ describe('OtaQueue', () => {
       </MemoryRouter>,
     )
 
-    await waitFor(() => expect(screen.getByText('Alice Smith')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getAllByText('Alice Smith')[0]).toBeInTheDocument())
 
     const rows = screen.getAllByRole('row').slice(1) // skip header
     expect(rows.length).toBe(3)

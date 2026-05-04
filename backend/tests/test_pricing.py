@@ -86,7 +86,7 @@ async def _create_promo_code(db_session: AsyncSession, code: str, discount_type:
 # Room pricing tests
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_bar_rate_plan_no_discount(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -108,7 +108,7 @@ async def test_bar_rate_plan_no_discount(db_session: AsyncSession):
     assert result.channel_markup_amount == Decimal("0.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_non_refundable_rate_plan(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -129,7 +129,7 @@ async def test_non_refundable_rate_plan(db_session: AsyncSession):
     assert result.total_amount == Decimal("10080.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_long_stay_rate_plan_applies(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -150,7 +150,7 @@ async def test_long_stay_rate_plan_applies(db_session: AsyncSession):
     assert result.total_amount == Decimal("33320.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_long_stay_rate_plan_not_applicable(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -168,7 +168,7 @@ async def test_long_stay_rate_plan_not_applicable(db_session: AsyncSession):
     assert result.discount_amount == Decimal("0.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_peak_season_multiplier(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -187,7 +187,7 @@ async def test_peak_season_multiplier(db_session: AsyncSession):
     assert result.total_amount == Decimal("13440.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_off_season_no_multiplier(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -203,7 +203,7 @@ async def test_off_season_no_multiplier(db_session: AsyncSession):
     assert result.taxable_amount == Decimal("10000.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_overlapping_seasons_highest_wins(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -220,7 +220,7 @@ async def test_overlapping_seasons_highest_wins(db_session: AsyncSession):
     assert result.subtotal == Decimal("12000.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_promo_code_percentage_discount(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -241,7 +241,7 @@ async def test_promo_code_percentage_discount(db_session: AsyncSession):
     assert result.total_amount == Decimal("10080.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_promo_code_fixed_discount(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -261,7 +261,7 @@ async def test_promo_code_fixed_discount(db_session: AsyncSession):
     assert result.total_amount == Decimal("10640.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_invalid_expired_promo_code(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -283,7 +283,7 @@ async def test_invalid_expired_promo_code(db_session: AsyncSession):
     assert result.discount_amount == Decimal("0.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_channel_markup_ota(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -302,7 +302,7 @@ async def test_channel_markup_ota(db_session: AsyncSession):
     assert result.total_amount == Decimal("13216.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_channel_markup_direct_no_markup(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, Decimal("5000.00"))
@@ -322,7 +322,7 @@ async def test_channel_markup_direct_no_markup(db_session: AsyncSession):
 # Package pricing tests
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_occupancy_scaling(db_session: AsyncSession):
     prop = await _create_property(db_session)
     pkg = await _create_package(db_session, prop.id, Decimal("10000.00"), dynamic_pricing_rules={
@@ -343,7 +343,7 @@ async def test_package_occupancy_scaling(db_session: AsyncSession):
     assert result.subtotal == Decimal("12000.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_early_bird_discount(db_session: AsyncSession):
     prop = await _create_property(db_session)
     pkg = await _create_package(db_session, prop.id, Decimal("10000.00"), dynamic_pricing_rules={
@@ -372,7 +372,7 @@ async def test_package_early_bird_discount(db_session: AsyncSession):
 # API tests
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_api_calculate_room_price(client: AsyncClient):
     prop_resp = await client.post("/api/v1/properties/", json={"name": "API Pricing Hotel"})
     assert prop_resp.status_code == 201
@@ -399,9 +399,9 @@ async def test_api_calculate_room_price(client: AsyncClient):
     assert Decimal(data["total_amount"]) == Decimal("8960.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_api_rate_plan_crud(client: AsyncClient):
-    resp = await client.post("/api/v1/pricing/rate-plans/", json={
+    resp = await client.post("/api/v1/pricing/rate-plans", json={
         "name": "Test BAR",
         "code": "TESTBAR",
         "discount_type": "percentage",
@@ -430,11 +430,11 @@ async def test_api_rate_plan_crud(client: AsyncClient):
     assert resp.json()["is_active"] is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_api_seasonal_calendar_crud(client: AsyncClient):
     start = date.today() + timedelta(days=5)
     end = start + timedelta(days=5)
-    resp = await client.post("/api/v1/pricing/seasonal-calendars/", json={
+    resp = await client.post("/api/v1/pricing/seasonal-calendars", json={
         "name": "Summer",
         "start_date": str(start),
         "end_date": str(end),
@@ -458,11 +458,11 @@ async def test_api_seasonal_calendar_crud(client: AsyncClient):
     assert resp.status_code == 204
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_api_promo_code_crud(client: AsyncClient):
     valid_from = date.today()
     valid_to = valid_from + timedelta(days=30)
-    resp = await client.post("/api/v1/pricing/promo-codes/", json={
+    resp = await client.post("/api/v1/pricing/promo-codes", json={
         "code": "WELCOME20",
         "discount_type": "percentage",
         "discount_value": "20.00",

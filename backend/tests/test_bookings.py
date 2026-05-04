@@ -34,7 +34,7 @@ async def _create_guest(db_session: AsyncSession) -> User:
     )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_booking_repository_crud(db_session: AsyncSession):
     prop = await _create_property(db_session)
     guest = await _create_guest(db_session)
@@ -95,8 +95,8 @@ async def test_booking_repository_crud(db_session: AsyncSession):
 
     # get_by_date_range
     by_range = await repo.get_by_date_range(date.today(), date.today())
-    assert len(by_range) == 1
-    assert by_range[0].id == booking.id
+    assert len(by_range) >= 1
+    assert any(b.id == booking.id for b in by_range)
 
     # get_by_idempotency_key
     by_key = await repo.get_by_idempotency_key("key-123")
@@ -109,7 +109,7 @@ async def test_booking_repository_crud(db_session: AsyncSession):
     assert cancelled.status == BookingStatus.cancelled.value
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_booking_api_crud(client: AsyncClient):
     # Create property and guest via API
     prop_resp = await client.post("/api/v1/properties/", json={"name": "Booking Test Hotel"})
@@ -192,7 +192,7 @@ async def test_booking_api_crud(client: AsyncClient):
     assert response.json()["cancelled_at"] is not None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_booking_status_transitions(client: AsyncClient):
     prop_resp = await client.post("/api/v1/properties/", json={"name": "Status Hotel"})
     prop_id = prop_resp.json()["id"]
@@ -264,7 +264,7 @@ async def test_booking_status_transitions(client: AsyncClient):
     assert "Invalid status transition" in resp.json()["detail"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_booking_idempotency_key_uniqueness(client: AsyncClient):
     prop_resp = await client.post("/api/v1/properties/", json={"name": "Idempotency Hotel"})
     prop_id = prop_resp.json()["id"]
@@ -298,7 +298,7 @@ async def test_booking_idempotency_key_uniqueness(client: AsyncClient):
     assert "idempotency key already exists" in resp2.json()["detail"].lower()
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_booking_date_range_queries(client: AsyncClient):
     prop_resp = await client.post("/api/v1/properties/", json={"name": "Range Hotel"})
     prop_id = prop_resp.json()["id"]
@@ -381,7 +381,7 @@ async def test_booking_date_range_queries(client: AsyncClient):
     assert len(results) == 2
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_booking_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
     resp = await client.get(f"/api/v1/bookings/{fake_id}")

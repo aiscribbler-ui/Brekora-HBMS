@@ -16,6 +16,15 @@ from app.models import Base
 from app.main import app
 
 
+def pytest_collection_modifyitems(items):
+    # Strip any duplicate asyncio markers and enforce function-scoped loops
+    # to avoid MultipleEventLoopsRequestedError in pytest-asyncio 0.24.
+    for item in items:
+        if pytest_asyncio.is_async_test(item):
+            item.own_markers = [m for m in item.own_markers if m.name != "asyncio"]
+            item.add_marker(pytest.mark.asyncio(loop_scope="function"))
+
+
 class FakeRedisPipeline:
     def __init__(self, redis):
         self.redis = redis
@@ -260,23 +269,28 @@ def setup_database(postgres_url: str):
     engine.dispose()
 
 
-@pytest_asyncio.fixture(scope="session", loop_scope="session")
+@pytest_asyncio.fixture(scope="function", loop_scope="function")
 async def async_engine(postgres_url: str) -> AsyncGenerator[AsyncEngine, None]:
     async_url = postgres_url.replace("postgresql+psycopg://", "postgresql+asyncpg://")
     engine = create_async_engine(async_url, poolclass=NullPool, future=True)
-    yield engine
-    await engine.dispose()
+    try:
+        yield engine
+    finally:
+        await engine.dispose()
 
 
-@pytest_asyncio.fixture(loop_scope="session")
+@pytest_asyncio.fixture(scope="function", loop_scope="function")
 async def db_session(async_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
     async_session = async_sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
-    async with async_session() as session:
+    session = async_session()
+    try:
         yield session
+    finally:
         await session.rollback()
+        await session.close()
 
 
-@pytest_asyncio.fixture(loop_scope="session")
+@pytest_asyncio.fixture(scope="function", loop_scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
@@ -299,8 +313,9 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     }
 
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        yield ac
+    ac = AsyncClient(transport=transport, base_url="http://test")
+    yield ac
+    await ac.aclose()
     del app.dependency_overrides[get_db]
     del app.dependency_overrides[get_redis_client]
     if hasattr(app.state, "rate_limit_config"):

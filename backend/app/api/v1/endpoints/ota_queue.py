@@ -29,6 +29,23 @@ def get_org_id(
     return DEFAULT_ORG_ID
 
 
+def _serialize_raw_email(raw_email) -> dict | None:
+    if raw_email is None:
+        return None
+    return {
+        "id": str(raw_email.id),
+        "gmail_message_id": raw_email.gmail_message_id,
+        "ota_source": raw_email.ota_source,
+        "subject": raw_email.subject,
+        "body_text": raw_email.body_text,
+        "body_html": raw_email.body_html,
+        "sender": raw_email.sender,
+        "recipient": raw_email.recipient,
+        "received_at": raw_email.received_at.isoformat() if raw_email.received_at else None,
+        "status": raw_email.status,
+    }
+
+
 @router.get("/", response_model=List[ParsedBookingQueueRead])
 async def list_ota_queue(
     source_type: str | None = Query(default=None),
@@ -67,7 +84,7 @@ async def get_ota_queue_item(
 
     return {
         "parsed_booking": ParsedBookingQueueRead.model_validate(details["parsed_booking"]).model_dump(),
-        "raw_email": details["raw_email"],
+        "raw_email": _serialize_raw_email(details["raw_email"]),
         "email_link": email_link,
     }
 
@@ -81,7 +98,7 @@ async def confirm_ota_queue_item(
 ) -> Any:
     svc = OTAQueueService(db, org_id)
     # TODO: use real manager_id from auth when B-6 RBAC is wired
-    manager_id = org_id
+    manager_id = None
     try:
         booking = await svc.confirm(queue_id, data, manager_id)
     except ValueError as exc:
@@ -113,7 +130,7 @@ async def reject_ota_queue_item(
 ) -> Any:
     svc = OTAQueueService(db, org_id)
     # TODO: use real manager_id from auth when B-6 RBAC is wired
-    manager_id = org_id
+    manager_id = None
     try:
         updated = await svc.reject(queue_id, data, manager_id)
     except ValueError as exc:

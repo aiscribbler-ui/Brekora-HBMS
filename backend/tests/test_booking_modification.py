@@ -107,7 +107,7 @@ async def _create_confirmed_booking(
     return booking
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_modify_dates_success(db_session: AsyncSession):
     """Change check_out; verify repricing, inventory released and re-held."""
     prop = await _create_property(db_session)
@@ -159,7 +159,7 @@ async def test_modify_dates_success(db_session: AsyncSession):
     assert new_holds[0].id != original_hold_id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_modify_within_24h_blocked(db_session: AsyncSession):
     """Modifications within 24h of check-in are blocked."""
     prop = await _create_property(db_session)
@@ -180,7 +180,7 @@ async def test_modify_within_24h_blocked(db_session: AsyncSession):
         )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_modify_payment_difference_positive(db_session: AsyncSession):
     """Extending stay creates a positive difference and a Razorpay order."""
     prop = await _create_property(db_session)
@@ -208,7 +208,7 @@ async def test_modify_payment_difference_positive(db_session: AsyncSession):
     assert result["refund_amount"] is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_modify_payment_difference_negative(db_session: AsyncSession):
     """Shortening stay creates a negative difference and a refund amount."""
     prop = await _create_property(db_session)
@@ -236,7 +236,7 @@ async def test_modify_payment_difference_negative(db_session: AsyncSession):
     assert result["razorpay_order"] is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_modify_audit_log_created(db_session: AsyncSession):
     """Modification creates an audit entry in modification_log JSONB."""
     prop = await _create_property(db_session)
@@ -268,7 +268,7 @@ async def test_modify_audit_log_created(db_session: AsyncSession):
     assert "timestamp" in entry
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_modify_insufficient_inventory(db_session: AsyncSession):
     """Modification to unavailable dates raises BookingConflictError with alternatives."""
     prop = await _create_property(db_session)

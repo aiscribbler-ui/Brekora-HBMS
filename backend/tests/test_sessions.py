@@ -38,7 +38,7 @@ async def _login(client: AsyncClient, email: str, password: str) -> tuple[str, s
     return data["access_token"], data["session_id"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_returns_session_id(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "sess_login@example.com", "password")
     access_token, session_id = await _login(client, "sess_login@example.com", "password")
@@ -46,7 +46,7 @@ async def test_login_returns_session_id(client: AsyncClient, db_session: AsyncSe
     assert len(session_id) > 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_list_sessions(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "sess_list@example.com", "password")
     access_token, session_id = await _login(client, "sess_list@example.com", "password")
@@ -61,7 +61,7 @@ async def test_list_sessions(client: AsyncClient, db_session: AsyncSession):
     assert data[0]["session_id"] == session_id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_terminate_session(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "sess_term@example.com", "password")
     access_token, session_id = await _login(client, "sess_term@example.com", "password")
@@ -79,7 +79,7 @@ async def test_terminate_session(client: AsyncClient, db_session: AsyncSession):
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_terminate_all_sessions(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "sess_term_all@example.com", "password")
     access_token, session_id = await _login(
@@ -99,7 +99,7 @@ async def test_terminate_all_sessions(client: AsyncClient, db_session: AsyncSess
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_admin_force_terminate_user_sessions(
     client: AsyncClient, db_session: AsyncSession
 ):
@@ -149,7 +149,7 @@ async def test_admin_force_terminate_user_sessions(
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_concurrent_session_limit_for_admin(
     client: AsyncClient, db_session: AsyncSession
 ):

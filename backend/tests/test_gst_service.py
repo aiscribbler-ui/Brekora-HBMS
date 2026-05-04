@@ -51,7 +51,7 @@ async def _login(client: AsyncClient, email: str, password: str) -> str:
     return response.json()["access_token"]
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope="function")
 async def api_client(db_session: AsyncSession):
     async def override_get_db():
         yield db_session

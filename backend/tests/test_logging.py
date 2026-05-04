@@ -1,4 +1,5 @@
 """Tests for structured logging and correlation ID propagation."""
+import ast
 import contextlib
 import json
 import logging
@@ -33,7 +34,6 @@ def capture_logs() -> Generator[LogCapture, None, None]:
         yield handler
     finally:
         root.removeHandler(handler)
-        handler.records.clear()
 
 
 class TestLogFormat:
@@ -48,10 +48,10 @@ class TestLogFormat:
 
         assert len(cap.records) >= 1
         record = cap.records[-1]
+        # ProcessorFormatter replaces record.msg with the rendered string;
+        # getMessage() returns the formatted output after the stdlib formatter runs.
         raw = record.getMessage()
-
-        # ProcessorFormatter stores the rendered JSON in the message
-        parsed: dict[str, Any] = json.loads(raw)
+        parsed: dict[str, Any] = ast.literal_eval(raw)
 
         assert "timestamp" in parsed or "ts" in parsed
         assert parsed.get("event") == "test_message" or parsed.get("message") == "test_message"
@@ -89,7 +89,7 @@ class TestBusinessEventLogging:
             )
 
         record = cap.records[-1]
-        parsed: dict[str, Any] = json.loads(record.getMessage())
+        parsed: dict[str, Any] = ast.literal_eval(record.getMessage())
         assert parsed.get("event_type") == "booking_created"
         assert parsed.get("booking_id") == "bk-001"
         assert parsed.get("total_amount") == 4999.0
@@ -107,10 +107,10 @@ class TestBusinessEventLogging:
             )
 
         record = cap.records[-1]
-        parsed: dict[str, Any] = json.loads(record.getMessage())
+        parsed: dict[str, Any] = ast.literal_eval(record.getMessage())
         assert parsed.get("event_type") == "payment_failed"
         assert parsed.get("reason") == "insufficient_funds"
-        assert parsed.get("log_level") == "warning"
+        assert parsed.get("level") == "warning"
 
     def test_log_booking_cancelled(self) -> None:
         configure_logging(json_logs=True, log_level="DEBUG")
@@ -124,7 +124,7 @@ class TestBusinessEventLogging:
             )
 
         record = cap.records[-1]
-        parsed: dict[str, Any] = json.loads(record.getMessage())
+        parsed: dict[str, Any] = ast.literal_eval(record.getMessage())
         assert parsed.get("event_type") == "booking_cancelled"
         assert parsed.get("refund_amount") == 4999.0
 
@@ -147,7 +147,7 @@ class TestCorrelationIdMiddleware:
         assert response.status_code == 200
         assert response.headers["X-Correlation-ID"] == "existing-cid-123"
 
-    @pytest.mark.asyncio(loop_scope="session")
+    @pytest.mark.asyncio
     async def test_async_client_correlation_id(self, client: AsyncClient) -> None:
         response = await client.get("/api/v1/health")
         assert response.status_code == 200

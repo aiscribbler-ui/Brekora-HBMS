@@ -202,13 +202,13 @@ class PricingService:
             )
 
         discount_amount = (rate_plan_discount + promo_discount).quantize(Decimal("0.01"))
-        taxable_amount = (subtotal - discount_amount).quantize(Decimal("0.01"))
+        taxable_amount = (subtotal - promo_discount).quantize(Decimal("0.01"))
         if taxable_amount < 0:
             taxable_amount = Decimal("0.00")
 
         gst_result = await GSTService(self.session).calculate(
             subtotal=subtotal.quantize(Decimal("0.01")),
-            discount=discount_amount,
+            discount=promo_discount,
             org_id=org_id,
         )
         tax_amount = gst_result["gst_amount"]
@@ -317,7 +317,7 @@ class PricingService:
 
         gst_result = await GSTService(self.session).calculate(
             subtotal=subtotal.quantize(Decimal("0.01")),
-            discount=discount_amount,
+            discount=promo_discount,
             org_id=org_id,
         )
         tax_amount = gst_result["gst_amount"]

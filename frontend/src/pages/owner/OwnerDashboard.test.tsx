@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import OwnerDashboard from './OwnerDashboard'
 import * as propertyApi from '@/services/propertyApi'
 import * as ownerApi from '@/services/ownerApi'
@@ -12,6 +12,27 @@ vi.mock('@/services/ownerApi')
 describe('OwnerDashboard', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    vi.mocked(propertyApi.getProperties).mockResolvedValue([])
+    vi.mocked(ownerApi.getPnl).mockResolvedValue({
+      gross_revenue: 0,
+      ota_commission: 0,
+      partner_commission: 0,
+      gst: 0,
+      net_distributable: 0,
+    })
+    vi.mocked(ownerApi.getPayout).mockResolvedValue({
+      owner_percentage: 0,
+      brekora_percentage: 0,
+      net_distributable: 0,
+      owner_share: 0,
+      brekora_share: 0,
+      month: '',
+    })
+    vi.mocked(ownerApi.getStatement).mockResolvedValue({
+      property_id: '',
+      month: '',
+      bookings: [],
+    })
   })
 
   afterEach(() => {
@@ -33,12 +54,11 @@ describe('OwnerDashboard', () => {
       tokenType: 'bearer',
     })
 
-    const router = createMemoryRouter(
-      [{ path: '/owner', element: <OwnerDashboard /> }],
-      { initialEntries: ['/owner'] },
+    render(
+      <MemoryRouter initialEntries={['/owner']}>
+        <OwnerDashboard />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
     expect(screen.getByText('Access Denied')).toBeInTheDocument()
   })
 
@@ -78,22 +98,22 @@ describe('OwnerDashboard', () => {
       bookings: [],
     })
 
-    const router = createMemoryRouter(
-      [{ path: '/owner', element: <OwnerDashboard /> }],
-      { initialEntries: ['/owner'] },
+    render(
+      <MemoryRouter initialEntries={['/owner']}>
+        <OwnerDashboard />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
 
     await waitFor(() => expect(screen.getByLabelText('Property')).toBeInTheDocument())
 
     fireEvent.click(screen.getByRole('button', { name: /Generate Report/i }))
 
-    await waitFor(() => expect(screen.getByText('Gross Revenue')).toBeInTheDocument())
-    expect(screen.getByText('OTA Commission')).toBeInTheDocument()
-    expect(screen.getByText('Partner Commission')).toBeInTheDocument()
-    expect(screen.getByText('GST')).toBeInTheDocument()
-    expect(screen.getByText('Net Distributable')).toBeInTheDocument()
+    const pnlSection = await waitFor(() => screen.getByLabelText('Profit and loss summary'))
+    expect(within(pnlSection).getByText('Gross Revenue')).toBeInTheDocument()
+    expect(within(pnlSection).getByText('OTA Commission')).toBeInTheDocument()
+    expect(within(pnlSection).getByText('Partner Commission')).toBeInTheDocument()
+    expect(within(pnlSection).getByText('GST')).toBeInTheDocument()
+    expect(within(pnlSection).getByText('Net Distributable')).toBeInTheDocument()
   })
 
   it('shows split visualization with correct percentages', async () => {
@@ -132,12 +152,11 @@ describe('OwnerDashboard', () => {
       bookings: [],
     })
 
-    const router = createMemoryRouter(
-      [{ path: '/owner', element: <OwnerDashboard /> }],
-      { initialEntries: ['/owner'] },
+    render(
+      <MemoryRouter initialEntries={['/owner']}>
+        <OwnerDashboard />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
 
     await waitFor(() => expect(screen.getByLabelText('Property')).toBeInTheDocument())
 
@@ -160,12 +179,11 @@ describe('OwnerDashboard', () => {
       { id: 'p1', name: 'Test Villa', address: '123 Lane', is_active: true, is_archived: false, photos: [], amenities: [] },
     ])
 
-    const router = createMemoryRouter(
-      [{ path: '/owner', element: <OwnerDashboard /> }],
-      { initialEntries: ['/owner'] },
+    render(
+      <MemoryRouter initialEntries={['/owner']}>
+        <OwnerDashboard />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
 
     await waitFor(() => expect(screen.getByLabelText('Property')).toBeInTheDocument())
     expect(screen.getByRole('combobox', { name: /Property/i })).toBeInTheDocument()

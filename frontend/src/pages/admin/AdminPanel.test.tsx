@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 import AdminPanel from './AdminPanel'
 import * as adminApi from '@/services/adminApi'
 import { useAuthStore } from '@/store/authStore'
@@ -10,6 +10,7 @@ vi.mock('@/services/adminApi')
 describe('AdminPanel', () => {
   beforeEach(() => {
     vi.resetAllMocks()
+    vi.mocked(adminApi.fetchFeatureFlags).mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -25,12 +26,11 @@ describe('AdminPanel', () => {
       isAuthenticated: true,
     })
 
-    const router = createMemoryRouter(
-      [{ path: '/admin/*', element: <AdminPanel /> }],
-      { initialEntries: ['/admin'] },
+    render(
+      <MemoryRouter initialEntries={['/admin']}>
+        <AdminPanel />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
     expect(screen.getByText('Access Denied')).toBeInTheDocument()
   })
 
@@ -50,12 +50,11 @@ describe('AdminPanel', () => {
       description: 'Test flag',
     })
 
-    const router = createMemoryRouter(
-      [{ path: '/admin/*', element: <AdminPanel /> }],
-      { initialEntries: ['/admin/feature-flags'] },
+    render(
+      <MemoryRouter initialEntries={['/admin/feature-flags']}>
+        <AdminPanel />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
 
     await waitFor(() => expect(screen.getByText('flag1')).toBeInTheDocument())
     expect(screen.getByText('Test flag')).toBeInTheDocument()
@@ -72,6 +71,7 @@ describe('AdminPanel', () => {
       isAuthenticated: true,
     })
 
+    vi.mocked(adminApi.fetchFeatureFlags).mockResolvedValue([])
     vi.mocked(adminApi.fetchUsers).mockResolvedValue([
       {
         id: '2',
@@ -82,12 +82,11 @@ describe('AdminPanel', () => {
       },
     ])
 
-    const router = createMemoryRouter(
-      [{ path: '/admin/*', element: <AdminPanel /> }],
-      { initialEntries: ['/admin/user-management'] },
+    render(
+      <MemoryRouter initialEntries={['/admin/user-management']}>
+        <AdminPanel />
+      </MemoryRouter>,
     )
-
-    render(<RouterProvider router={router} />)
 
     await waitFor(() => expect(screen.getByText('Jane Doe')).toBeInTheDocument())
     expect(screen.getByText('jane@example.com')).toBeInTheDocument()

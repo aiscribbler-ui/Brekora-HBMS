@@ -125,7 +125,7 @@ describe('Login page', () => {
     await user.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toHaveTextContent(/invalid email or password/i)
     })
   })
 
@@ -146,7 +146,7 @@ describe('Login page', () => {
     await user.click(screen.getByRole('button', { name: /sign in/i }))
 
     await waitFor(() => {
-      expect(screen.getByText(/account is locked/i)).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toHaveTextContent(/account is locked/i)
     })
   })
 

@@ -28,7 +28,7 @@ async def _create_user(db_session: AsyncSession, email: str, password: str, is_a
     )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_success(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "login_success@example.com", "mypassword")
 
@@ -59,7 +59,7 @@ async def test_login_success(client: AsyncClient, db_session: AsyncSession):
     assert refresh_payload["sub"] == access_payload["sub"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_invalid_password(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "login_badpass@example.com", "mypassword")
 
@@ -71,7 +71,7 @@ async def test_login_invalid_password(client: AsyncClient, db_session: AsyncSess
     assert response.json()["detail"] == "Invalid credentials"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_inactive_user(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "login_inactive@example.com", "mypassword", is_active=False)
 
@@ -83,7 +83,7 @@ async def test_login_inactive_user(client: AsyncClient, db_session: AsyncSession
     assert response.json()["detail"] == "Invalid credentials"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_rate_limit(client: AsyncClient, db_session: AsyncSession):
     email = "ratelimit@example.com"
     await _create_user(db_session, email, "mypassword")
@@ -146,7 +146,7 @@ async def test_login_rate_limit(client: AsyncClient, db_session: AsyncSession):
     assert response.status_code == 429
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_refresh_token_rotation(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "refresh_test@example.com", "mypassword")
 
@@ -185,7 +185,7 @@ async def test_refresh_token_rotation(client: AsyncClient, db_session: AsyncSess
     assert response.status_code == 200
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_refresh_token_invalid(client: AsyncClient):
     response = await client.post(
         "/api/v1/auth/refresh",
@@ -194,7 +194,7 @@ async def test_refresh_token_invalid(client: AsyncClient):
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_refresh_token_access_token_rejected(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "refresh_access@example.com", "mypassword")
 
@@ -211,7 +211,7 @@ async def test_refresh_token_access_token_rejected(client: AsyncClient, db_sessi
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_logout_invalidates_refresh_token(client: AsyncClient, db_session: AsyncSession):
     await _create_user(db_session, "logout_test@example.com", "mypassword")
 
@@ -236,7 +236,7 @@ async def test_logout_invalidates_refresh_token(client: AsyncClient, db_session:
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_logout_with_invalid_token(client: AsyncClient):
     response = await client.post(
         "/api/v1/auth/logout",
@@ -245,7 +245,7 @@ async def test_logout_with_invalid_token(client: AsyncClient):
     assert response.status_code == 204
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_access_token_expiry(client: AsyncClient, db_session: AsyncSession):
     from unittest.mock import patch
 

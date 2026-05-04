@@ -52,15 +52,10 @@ class ChannelSource(ABC):
             for li in line_items
         ]
 
-        if line_items_data:
-            booking_data["line_items_data"] = line_items_data
-
         org_id = canonical.metadata.get("org_id")
         if org_id is not None:
             repo = BookingRepository(db_session, org_id)
-            return await repo.create_with_line_items(booking_data, line_items=None)
+            return await repo.create_with_line_items(booking_data, line_items=line_items_data or None)
 
         # Stub path: return a transient Booking object for testing / interface validation
-        # Remove line_items_data since it is a schema field, not a model column
-        stub_data = {k: v for k, v in booking_data.items() if k != "line_items_data"}
-        return Booking(**stub_data)
+        return Booking(**booking_data)

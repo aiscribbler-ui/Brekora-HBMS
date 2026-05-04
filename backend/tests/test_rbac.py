@@ -67,7 +67,7 @@ async def _login(client: AsyncClient, email: str, password: str) -> str:
     return response.json()["access_token"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_get_current_user_valid_token(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user_with_role(
         db_session, "rbac_any@example.com", "password", "Guest"
@@ -84,7 +84,7 @@ async def test_get_current_user_valid_token(client: AsyncClient, db_session: Asy
     assert data["role"] == "Guest"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_get_current_user_invalid_token(client: AsyncClient):
     response = await client.get(
         "/api/v1/test-rbac/any-role",
@@ -94,14 +94,14 @@ async def test_get_current_user_invalid_token(client: AsyncClient):
     assert response.json()["detail"] == "Invalid or expired token"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_get_current_user_missing_token(client: AsyncClient):
     response = await client.get("/api/v1/test-rbac/any-role")
     assert response.status_code == 401
     assert response.json()["detail"] == "Not authenticated"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_get_current_user_inactive_user(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user_with_role(
         db_session, "rbac_inactive@example.com", "password", "Guest"
@@ -121,7 +121,7 @@ async def test_get_current_user_inactive_user(client: AsyncClient, db_session: A
     assert response.json()["detail"] == "User not found or inactive"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_require_role_admin_allows_admin_blocks_others(
     client: AsyncClient, db_session: AsyncSession
 ):
@@ -150,7 +150,7 @@ async def test_require_role_admin_allows_admin_blocks_others(
     assert response.json()["detail"] == "Insufficient permissions"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_require_role_user_without_role(client: AsyncClient, db_session: AsyncSession):
     repo = UserRepository(db_session, DEFAULT_ORG_ID)
     user = await repo.create(
@@ -172,7 +172,7 @@ async def test_require_role_user_without_role(client: AsyncClient, db_session: A
     assert response.json()["detail"] == "User has no assigned role"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_require_role_all_five_roles(client: AsyncClient, db_session: AsyncSession):
     roles = ["Admin", "Owner", "Manager", "Partner", "Guest"]
 

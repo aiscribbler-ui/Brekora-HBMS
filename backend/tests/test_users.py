@@ -18,7 +18,7 @@ def _hash_password(password: str) -> str:
     return get_password_hash(password)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_roles_seeded(db_session: AsyncSession):
     result = await db_session.execute(select(Role).where(Role.org_id == DEFAULT_ORG_ID))
     roles = result.scalars().all()
@@ -26,7 +26,7 @@ async def test_roles_seeded(db_session: AsyncSession):
     assert names == {"Admin", "Owner", "Manager", "Partner", "Guest"}
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_repository_crud(db_session: AsyncSession):
     repo = UserRepository(db_session, DEFAULT_ORG_ID)
 
@@ -67,7 +67,7 @@ async def test_user_repository_crud(db_session: AsyncSession):
     assert deactivated.is_active is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_role_assignment(db_session: AsyncSession):
     role_repo = RoleRepository(db_session, DEFAULT_ORG_ID)
     roles = await role_repo.get_multi()
@@ -88,7 +88,7 @@ async def test_user_role_assignment(db_session: AsyncSession):
     assert fetched.role_id == admin_role.id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_api_crud(client: AsyncClient):
     # Create
     response = await client.post(
@@ -137,7 +137,7 @@ async def test_user_api_crud(client: AsyncClient):
     assert response.json()["is_active"] is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_login(client: AsyncClient):
     # Create user
     response = await client.post(
@@ -177,7 +177,7 @@ async def test_user_login(client: AsyncClient):
     assert response.status_code == 401
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_unique_email_per_org(db_session: AsyncSession):
     repo = UserRepository(db_session, DEFAULT_ORG_ID)
     await repo.create(
@@ -199,7 +199,7 @@ async def test_user_unique_email_per_org(db_session: AsyncSession):
         )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_password_bcrypt_cost(client: AsyncClient):
     response = await client.post(
         "/api/v1/users/",
@@ -224,7 +224,7 @@ async def test_user_password_bcrypt_cost(client: AsyncClient):
     assert response.status_code == 200
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_user_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
     response = await client.get(f"/api/v1/users/{fake_id}")
@@ -237,7 +237,7 @@ async def test_user_not_found(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_create_user_with_invalid_role(client: AsyncClient):
     fake_role_id = str(uuid.uuid4())
     response = await client.post(

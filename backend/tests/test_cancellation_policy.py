@@ -12,7 +12,7 @@ from app.services.refund_calculator import RefundCalculator
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_cancellation_policy_repository_crud(db_session: AsyncSession):
     repo = CancellationPolicyRepository(db_session, DEFAULT_ORG_ID)
 
@@ -50,7 +50,7 @@ async def test_cancellation_policy_repository_crud(db_session: AsyncSession):
     assert after_delete is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_cancellation_policy_api_crud(client: AsyncClient):
     # Create
     response = await client.post(
@@ -103,7 +103,7 @@ async def test_cancellation_policy_api_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_cancellation_policy_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
 

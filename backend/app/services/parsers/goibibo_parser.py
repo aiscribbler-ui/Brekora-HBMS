@@ -107,6 +107,10 @@ class GoibiboParser:
                 confidence[key] = text_conf.get(key, 0.5)
 
         # Build result
+        if "listing_id" not in confidence:
+            confidence["listing_id"] = confidence.get("hotel_id", 0.0)
+        if "booking_reference" not in confidence:
+            confidence["booking_reference"] = confidence.get("ota_reference_id", 0.0)
         result_data = {
             "ota_reference_id": data.get("ota_reference_id"),
             "guest_name": data.get("guest_name"),

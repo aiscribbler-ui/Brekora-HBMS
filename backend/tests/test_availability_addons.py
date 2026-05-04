@@ -81,7 +81,7 @@ async def _create_add_on_capacity(
     return cap
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_slot_no_bookings(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     addon = await _create_add_on(db_session, prop.id, AddOnType.slot)
@@ -102,7 +102,7 @@ async def test_addon_availability_slot_no_bookings(client: AsyncClient, db_sessi
     assert data[0]["held_count"] == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_day_no_bookings(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     addon = await _create_add_on(db_session, prop.id, AddOnType.day)
@@ -121,7 +121,7 @@ async def test_addon_availability_day_no_bookings(client: AsyncClient, db_sessio
     assert data[0]["total_capacity"] == 10
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_package_instance(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     addon = await _create_add_on(db_session, prop.id, AddOnType.package_instance, default_capacity=20)
@@ -138,7 +138,7 @@ async def test_addon_availability_package_instance(client: AsyncClient, db_sessi
     assert data[0]["total_capacity"] == 20
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_with_confirmed_booking(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -169,7 +169,7 @@ async def test_addon_availability_with_confirmed_booking(client: AsyncClient, db
     assert data[0]["available_capacity"] == 3
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_with_active_hold(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -200,7 +200,7 @@ async def test_addon_availability_with_active_hold(client: AsyncClient, db_sessi
     assert data[0]["available_capacity"] == 7
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_expired_hold_ignored(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -230,7 +230,7 @@ async def test_addon_availability_expired_hold_ignored(client: AsyncClient, db_s
     assert data[0]["available_capacity"] == 10
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_cache_hit(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     addon = await _create_add_on(db_session, prop.id, AddOnType.day)
@@ -261,7 +261,7 @@ async def test_addon_availability_cache_hit(client: AsyncClient, db_session: Asy
     assert cached is not None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_range(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     addon = await _create_add_on(db_session, prop.id, AddOnType.day)
@@ -279,7 +279,7 @@ async def test_addon_availability_range(client: AsyncClient, db_session: AsyncSe
     assert data[1]["date"] == "2026-05-02"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_addon_availability_invalid_dates(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     addon = await _create_add_on(db_session, prop.id, AddOnType.day)

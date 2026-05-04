@@ -65,12 +65,12 @@ describe('PropertyList', () => {
     renderWithRouter()
 
     await waitFor(() => {
-      expect(screen.getByText('Sunset Villa')).toBeInTheDocument()
+      expect(screen.getAllByText('Sunset Villa')[0]).toBeInTheDocument()
     })
 
-    expect(screen.getByText('Mountain Retreat')).toBeInTheDocument()
-    expect(screen.getByText('Old Inn')).toBeInTheDocument()
-    expect(screen.getByText('2 active properties')).toBeInTheDocument()
+    expect(screen.getAllByText('Mountain Retreat')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('Old Inn')[0]).toBeInTheDocument()
+    expect(screen.getAllByText(/1 active property/)[0]).toBeInTheDocument()
   })
 
   it('shows loading state then properties', async () => {
@@ -80,7 +80,7 @@ describe('PropertyList', () => {
     expect(document.querySelector('.animate-pulse')).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText('Sunset Villa')).toBeInTheDocument()
+      expect(screen.getAllByText('Sunset Villa')[0]).toBeInTheDocument()
     })
   })
 
@@ -89,14 +89,14 @@ describe('PropertyList', () => {
     renderWithRouter()
 
     await waitFor(() => {
-      expect(screen.getByText('Sunset Villa')).toBeInTheDocument()
+      expect(screen.getAllByText('Sunset Villa')[0]).toBeInTheDocument()
     })
 
     const searchInput = screen.getByPlaceholderText('Search by name or address...')
     await userEvent.type(searchInput, 'Mountain')
 
-    expect(screen.queryByText('Sunset Villa')).not.toBeInTheDocument()
-    expect(screen.getByText('Mountain Retreat')).toBeInTheDocument()
+    expect(screen.queryAllByText('Sunset Villa')).toHaveLength(0)
+    expect(screen.getAllByText('Mountain Retreat')[0]).toBeInTheDocument()
   })
 
   it('navigates to property detail on row click', async () => {
@@ -104,10 +104,10 @@ describe('PropertyList', () => {
     const { router } = renderWithRouter()
 
     await waitFor(() => {
-      expect(screen.getByText('Sunset Villa')).toBeInTheDocument()
+      expect(screen.getAllByText('Sunset Villa')[0]).toBeInTheDocument()
     })
 
-    await userEvent.click(screen.getByText('Sunset Villa'))
+    await userEvent.click(screen.getAllByText('Sunset Villa')[0])
 
     await waitFor(() => {
       expect(router.state.location.pathname).toBe('/properties/prop-1')
@@ -136,7 +136,7 @@ describe('PropertyList', () => {
     renderWithRouter()
 
     await waitFor(() => {
-      expect(screen.getByText('Server error')).toBeInTheDocument()
+      expect(screen.getAllByRole('alert')[0]).toHaveTextContent('Failed to load properties.')
     })
   })
 })

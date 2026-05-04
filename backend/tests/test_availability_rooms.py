@@ -44,7 +44,7 @@ async def _create_room_type(
     return rt
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_no_bookings_or_holds(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -70,7 +70,7 @@ async def test_availability_no_bookings_or_holds(client: AsyncClient, db_session
     assert data[1]["available_count"] == 5
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_with_confirmed_booking(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -105,7 +105,7 @@ async def test_availability_with_confirmed_booking(client: AsyncClient, db_sessi
     assert data[1]["available_count"] == 4
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_with_active_hold(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -139,7 +139,7 @@ async def test_availability_with_active_hold(client: AsyncClient, db_session: As
     assert data[0]["held_count"] == 1
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_expired_hold_ignored(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -171,7 +171,7 @@ async def test_availability_expired_hold_ignored(client: AsyncClient, db_session
     assert data[0]["held_count"] == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_cancelled_booking_ignored(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -203,7 +203,7 @@ async def test_availability_cancelled_booking_ignored(client: AsyncClient, db_se
     assert data[0]["booked_count"] == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_cache_hit(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -248,7 +248,7 @@ async def test_availability_cache_hit(client: AsyncClient, db_session: AsyncSess
     assert cached is not None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_invalid_dates(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -265,7 +265,7 @@ async def test_availability_invalid_dates(client: AsyncClient, db_session: Async
     assert response.status_code == 422
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_availability_nonexistent_room_type(client: AsyncClient):
     fake_id = uuid.uuid4()
     response = await client.get(

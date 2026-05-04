@@ -14,7 +14,7 @@ from app.models.package import Package, PackageComposition
 from app.models.property import Property
 from app.models.promo_code import PromoCode
 from app.models.room_type import RoomType
-from app.repositories.promo_code import PromoCodeRepository
+from app.repositories.pricing import PromoCodeRepository
 from app.schemas.search import SearchRequest
 from app.services.search_service import SearchService
 
@@ -100,7 +100,7 @@ async def _create_promo_code(
     )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_search_with_available_rooms(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -124,7 +124,7 @@ async def test_search_with_available_rooms(client: AsyncClient, db_session: Asyn
     assert float(item["price_breakdown"]["subtotal"]) > 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_search_with_sold_out_rooms_filtered_out(
     client: AsyncClient, db_session: AsyncSession
 ):
@@ -158,7 +158,7 @@ async def test_search_with_sold_out_rooms_filtered_out(
     assert not any(r["id"] == str(rt.id) for r in room_results)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_search_with_packages(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -182,7 +182,7 @@ async def test_search_with_packages(client: AsyncClient, db_session: AsyncSessio
     assert float(item["price_breakdown"]["subtotal"]) > 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_search_with_promo_code_applied(
     client: AsyncClient, db_session: AsyncSession
 ):
@@ -209,7 +209,7 @@ async def test_search_with_promo_code_applied(
     assert float(item["price_breakdown"]["discount_amount"]) == 1000.0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_search_cache_hit(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -242,7 +242,7 @@ async def test_search_cache_hit(client: AsyncClient, db_session: AsyncSession):
     assert cached is not None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_search_invalid_date_range(client: AsyncClient, db_session: AsyncSession):
     prop = await _create_property(db_session)
     await _create_room_type(db_session, prop.id)

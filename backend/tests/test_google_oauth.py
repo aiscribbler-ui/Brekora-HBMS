@@ -11,7 +11,7 @@ from app.repositories.user import UserRepository
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_google_login_creates_guest_user(
     client: AsyncClient, db_session: AsyncSession
 ):
@@ -20,6 +20,7 @@ async def test_google_login_creates_guest_user(
         "email": "google_new@example.com",
         "name": "Google User",
         "picture": "https://example.com/pic.png",
+        "iss": "https://accounts.google.com",
     }
 
     with patch(
@@ -44,7 +45,7 @@ async def test_google_login_creates_guest_user(
         assert user.google_id == "google_12345"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_google_login_existing_user_links_account(
     client: AsyncClient, db_session: AsyncSession
 ):
@@ -64,6 +65,7 @@ async def test_google_login_existing_user_links_account(
         "email": "google_existing@example.com",
         "name": "Existing User",
         "picture": "https://example.com/pic.png",
+        "iss": "https://accounts.google.com",
     }
 
     with patch(
@@ -82,7 +84,7 @@ async def test_google_login_existing_user_links_account(
         assert updated_user.google_id == "google_67890"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_google_login_invalid_token(client: AsyncClient):
     with patch(
         "app.services.google_oauth_service.id_token.verify_oauth2_token",

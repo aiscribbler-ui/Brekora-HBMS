@@ -14,6 +14,8 @@ def configure_logging(*, json_logs: bool = False, log_level: str = "INFO") -> No
         json_logs: When True, output JSON; otherwise colored console.
         log_level: Minimum log level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
     """
+    structlog.reset_defaults()
+
     shared_processors: list[Any] = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,

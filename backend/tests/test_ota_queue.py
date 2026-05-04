@@ -10,10 +10,12 @@ from app.models.booking import BookingStatus
 from app.models.parsed_booking import ParsedBookingQueue, ParsedBookingStatus
 from app.models.property import Property
 from app.models.room_type import RoomType
+from app.models.user import User
 from app.repositories.parsed_booking_queue import ParsedBookingQueueRepository
 from app.repositories.property import PropertyRepository
 from app.repositories.room_type import RoomTypeRepository
 from app.repositories.raw_email import RawEmailRepository
+from app.repositories.user import UserRepository
 from app.services.ota_queue_service import OTAQueueService
 
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
@@ -76,7 +78,20 @@ async def _create_queue_item(
     return await repo.create(data)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+async def _create_manager_user(db_session: AsyncSession) -> User:
+    """Create a real manager user for FK tests."""
+    repo = UserRepository(db_session, DEFAULT_ORG_ID)
+    return await repo.create(
+        {
+            "email": f"manager_{uuid.uuid4().hex}@example.com",
+            "password_hash": "hash",
+            "first_name": "Manager",
+            "last_name": "User",
+        }
+    )
+
+
+@pytest.mark.asyncio
 async def test_ota_queue_repository_methods(db_session: AsyncSession):
     raw_email_id = await _create_raw_email(db_session)
     item = await _create_queue_item(db_session, raw_email_id=raw_email_id)
@@ -102,7 +117,7 @@ async def test_ota_queue_repository_methods(db_session: AsyncSession):
     assert not any(i.id == item.id for i in out_of_range)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_service_list_and_details(db_session: AsyncSession):
     raw_email_id = await _create_raw_email(db_session)
     item = await _create_queue_item(db_session, raw_email_id=raw_email_id)
@@ -127,7 +142,7 @@ async def test_ota_queue_service_list_and_details(db_session: AsyncSession):
     assert details["raw_email"].id == raw_email_id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_service_edit(db_session: AsyncSession):
     item = await _create_queue_item(db_session)
     svc = OTAQueueService(db_session, DEFAULT_ORG_ID)
@@ -147,23 +162,25 @@ async def test_ota_queue_service_edit(db_session: AsyncSession):
     assert updated.review_notes == "Updated guest info"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_service_reject(db_session: AsyncSession):
     item = await _create_queue_item(db_session)
+    manager = await _create_manager_user(db_session)
     svc = OTAQueueService(db_session, DEFAULT_ORG_ID)
 
     from app.schemas.parsed_booking_queue import ParsedBookingQueueRejectRequest
 
     reject_req = ParsedBookingQueueRejectRequest(rejection_reason="Duplicate booking")
-    updated = await svc.reject(item.id, reject_req, manager_id=DEFAULT_ORG_ID)
+    updated = await svc.reject(item.id, reject_req, manager_id=manager.id)
     assert updated.status == ParsedBookingStatus.rejected.value
     assert updated.rejection_reason == "Duplicate booking"
-    assert updated.manager_id == DEFAULT_ORG_ID
+    assert updated.manager_id == manager.id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_service_confirm_with_mapping(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
+    manager = await _create_manager_user(db_session)
 
     # Create OTA mapping
     from app.repositories.ota_mapping import OTAMappingRepository
@@ -201,7 +218,7 @@ async def test_ota_queue_service_confirm_with_mapping(db_session: AsyncSession):
         gross_amount=Decimal("2000.00"),
         guest_name="John Doe",
     )
-    booking = await svc.confirm(item.id, confirm_req, manager_id=DEFAULT_ORG_ID)
+    booking = await svc.confirm(item.id, confirm_req, manager_id=manager.id)
     assert booking.property_id == prop.id
     assert booking.status == BookingStatus.confirmed.value
     assert booking.source_type == "gmail_airbnb"
@@ -211,12 +228,13 @@ async def test_ota_queue_service_confirm_with_mapping(db_session: AsyncSession):
     updated_item = await queue_repo.get(item.id)
     assert updated_item.status == ParsedBookingStatus.confirmed.value
     assert updated_item.confirmed_booking_id == booking.id
-    assert updated_item.manager_id == DEFAULT_ORG_ID
+    assert updated_item.manager_id == manager.id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_service_confirm_with_explicit_ids(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
+    manager = await _create_manager_user(db_session)
     item = await _create_queue_item(
         db_session,
         parsed_data={
@@ -239,12 +257,12 @@ async def test_ota_queue_service_confirm_with_explicit_ids(db_session: AsyncSess
         check_out=date.today() + timedelta(days=32),
         gross_amount=Decimal("1500.00"),
     )
-    booking = await svc.confirm(item.id, confirm_req, manager_id=DEFAULT_ORG_ID)
+    booking = await svc.confirm(item.id, confirm_req, manager_id=manager.id)
     assert booking.property_id == prop.id
     assert booking.status == BookingStatus.confirmed.value
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_service_confirm_insufficient_inventory(db_session: AsyncSession):
     from app.models.inventory_hold import InventoryHold
     from datetime import datetime, timezone
@@ -277,6 +295,7 @@ async def test_ota_queue_service_confirm_insufficient_inventory(db_session: Asyn
     db_session.add(hold)
     await db_session.flush()
 
+    manager = await _create_manager_user(db_session)
     item = await _create_queue_item(
         db_session,
         parsed_data={
@@ -300,10 +319,10 @@ async def test_ota_queue_service_confirm_insufficient_inventory(db_session: Asyn
         gross_amount=Decimal("500.00"),
     )
     with pytest.raises(ValueError, match="Insufficient inventory"):
-        await svc.confirm(item.id, confirm_req, manager_id=DEFAULT_ORG_ID)
+        await svc.confirm(item.id, confirm_req, manager_id=manager.id)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_api_crud(client: AsyncClient, db_session: AsyncSession):
     # Create raw email and queue item via repository
     raw_email_id = await _create_raw_email(db_session)
@@ -335,7 +354,7 @@ async def test_ota_queue_api_crud(client: AsyncClient, db_session: AsyncSession)
     assert not any(i["id"] == str(item.id) for i in data)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_api_detail_and_actions(client: AsyncClient, db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     raw_email_id = await _create_raw_email(db_session)
@@ -397,7 +416,7 @@ async def test_ota_queue_api_detail_and_actions(client: AsyncClient, db_session:
     assert rejected["rejection_reason"] == "Test rejection"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_queue_api_confirm(client: AsyncClient, db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     raw_email_id = await _create_raw_email(db_session)

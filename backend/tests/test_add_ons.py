@@ -14,7 +14,7 @@ from app.repositories.property import PropertyRepository
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_add_on_repository_crud(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "AddOn Test Hotel"})
@@ -63,7 +63,7 @@ async def test_add_on_repository_crud(db_session: AsyncSession):
     assert archived.is_active is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_add_on_capacity_repository_crud(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "Capacity Test Hotel"})
@@ -116,7 +116,7 @@ async def test_add_on_capacity_repository_crud(db_session: AsyncSession):
     assert after_delete is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_add_on_api_crud(client: AsyncClient):
     # Create property
     response = await client.post("/api/v1/properties/", json={"name": "API AddOn Hotel"})
@@ -171,7 +171,7 @@ async def test_add_on_api_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_add_on_capacity_api_crud(client: AsyncClient):
     # Create property and add-on
     response = await client.post("/api/v1/properties/", json={"name": "Capacity API Hotel"})
@@ -229,7 +229,7 @@ async def test_add_on_capacity_api_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_generate_capacity_day_based(client: AsyncClient):
     # Create property and day-based add-on
     response = await client.post("/api/v1/properties/", json={"name": "Gen Day Hotel"})
@@ -280,7 +280,7 @@ async def test_generate_capacity_day_based(client: AsyncClient):
     assert len(items) == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_generate_capacity_slot_based(client: AsyncClient):
     # Create property and slot-based add-on
     response = await client.post(
@@ -320,7 +320,7 @@ async def test_generate_capacity_slot_based(client: AsyncClient):
         assert item["slot_time"] in ("09:00:00", "17:00:00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_generate_capacity_package_instance_rejected(client: AsyncClient):
     response = await client.post(
         "/api/v1/properties/", json={"name": "Gen Pkg Hotel"}
@@ -351,7 +351,7 @@ async def test_generate_capacity_package_instance_rejected(client: AsyncClient):
     assert response.status_code == 400
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_generate_capacity_slot_times_required(client: AsyncClient):
     response = await client.post(
         "/api/v1/properties/", json={"name": "Gen SlotReq Hotel"}
@@ -382,7 +382,7 @@ async def test_generate_capacity_slot_times_required(client: AsyncClient):
     assert response.status_code == 400
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_add_on_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
 

@@ -12,7 +12,7 @@ from app.models.room_type import RoomType
 from app.repositories.package import PackageRepository
 from app.repositories.property import PropertyRepository
 from app.repositories.room_type import RoomTypeRepository
-from app.schemas.package import PackageCreate, PackageRead
+from app.schemas.package import PackageBase, PackageCreate, PackageRead
 from app.schemas.property import PropertyCreate, PropertyRead, PropertyUpdate
 from app.schemas.room_type import RoomTypeCreate, RoomTypeRead
 
@@ -172,7 +172,7 @@ async def list_property_packages(
 @router.post("/{property_id}/packages", response_model=PackageRead, status_code=201)
 async def create_property_package(
     property_id: uuid.UUID,
-    data: PackageCreate,
+    data: PackageBase,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
 ) -> PackageRead:

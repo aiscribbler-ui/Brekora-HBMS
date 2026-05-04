@@ -113,7 +113,7 @@ async def _create_ota_mapping(
     )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_auto_confirm_triggers_when_enabled_and_high_confidence(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     await _create_ota_mapping(db_session, prop, rt)
@@ -134,7 +134,7 @@ async def test_auto_confirm_triggers_when_enabled_and_high_confidence(db_session
     assert updated.confirmed_booking_id == booking.id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_auto_confirm_skipped_when_disabled(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     await _create_ota_mapping(db_session, prop, rt)
@@ -152,7 +152,7 @@ async def test_auto_confirm_skipped_when_disabled(db_session: AsyncSession):
     assert updated.status == ParsedBookingStatus.pending.value
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_auto_confirm_skipped_when_confidence_below_threshold(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     await _create_ota_mapping(db_session, prop, rt)
@@ -170,7 +170,7 @@ async def test_auto_confirm_skipped_when_confidence_below_threshold(db_session: 
     assert updated.status == ParsedBookingStatus.pending.value
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_auto_confirm_skipped_when_no_mapping_exists(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     # No mapping created
@@ -188,7 +188,7 @@ async def test_auto_confirm_skipped_when_no_mapping_exists(db_session: AsyncSess
     assert updated.status == ParsedBookingStatus.pending.value
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_auto_confirm_skipped_when_no_settings(db_session: AsyncSession):
     prop, rt = await _create_property_and_room(db_session)
     await _create_ota_mapping(db_session, prop, rt)
@@ -206,7 +206,7 @@ async def test_auto_confirm_skipped_when_no_settings(db_session: AsyncSession):
     assert updated.status == ParsedBookingStatus.pending.value
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ota_settings_crud_api(client: AsyncClient, db_session: AsyncSession):
     # Create settings
     resp = await client.put(

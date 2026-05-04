@@ -35,7 +35,7 @@ async def _login_and_get_token(client: AsyncClient, email: str, password: str) -
     return response.json()["access_token"]
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_setup_2fa_returns_provisioning_uri(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "2fa_setup@example.com", "mypassword")
     access_token = await _login_and_get_token(client, user.email, "mypassword")
@@ -51,7 +51,7 @@ async def test_setup_2fa_returns_provisioning_uri(client: AsyncClient, db_sessio
     assert data["provisioning_uri"].startswith("otpauth://totp/")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_verify_2fa_enables_2fa(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "2fa_verify@example.com", "mypassword")
     access_token = await _login_and_get_token(client, user.email, "mypassword")
@@ -80,7 +80,7 @@ async def test_verify_2fa_enables_2fa(client: AsyncClient, db_session: AsyncSess
     assert updated_user.totp_secret == secret
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_with_2fa_enabled_returns_temp_token(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "2fa_login@example.com", "mypassword")
     access_token = await _login_and_get_token(client, user.email, "mypassword")
@@ -118,7 +118,7 @@ async def test_login_with_2fa_enabled_returns_temp_token(client: AsyncClient, db
     assert temp_payload["org_id"] == str(DEFAULT_ORG_ID)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_verify_with_valid_totp_returns_full_tokens(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "2fa_login_verify@example.com", "mypassword")
     access_token = await _login_and_get_token(client, user.email, "mypassword")
@@ -167,7 +167,7 @@ async def test_login_verify_with_valid_totp_returns_full_tokens(client: AsyncCli
     assert refresh_payload["sub"] == str(user.id)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_login_verify_with_invalid_totp_returns_401(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "2fa_invalid@example.com", "mypassword")
     access_token = await _login_and_get_token(client, user.email, "mypassword")
@@ -200,7 +200,7 @@ async def test_login_verify_with_invalid_totp_returns_401(client: AsyncClient, d
     assert response.json()["detail"] == "Invalid TOTP token"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_disable_2fa(client: AsyncClient, db_session: AsyncSession):
     user = await _create_user(db_session, "2fa_disable@example.com", "mypassword")
     access_token = await _login_and_get_token(client, user.email, "mypassword")

@@ -8,6 +8,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
+from app.exceptions import ConflictError, InventoryError
 from app.models.add_on import AddOn, AddOnType
 from app.models.add_on_capacity import AddOnCapacity
 from app.models.booking import Booking, BookingLineItem
@@ -87,7 +88,7 @@ async def _create_booking(
 # Availability queries
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_no_room_type(db_session: AsyncSession):
     svc = InventoryService(db_session)
     fake_id = uuid.uuid4()
@@ -97,7 +98,7 @@ async def test_check_availability_no_room_type(db_session: AsyncSession):
     assert available == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_invalid_dates(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -114,7 +115,7 @@ async def test_check_availability_invalid_dates(db_session: AsyncSession):
     assert available == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_basic(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -126,7 +127,7 @@ async def test_check_availability_basic(db_session: AsyncSession):
     assert available == 5
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_with_active_hold(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -151,7 +152,7 @@ async def test_check_availability_with_active_hold(db_session: AsyncSession):
     assert available == 4
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_expired_hold_ignored(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -175,7 +176,7 @@ async def test_check_availability_expired_hold_ignored(db_session: AsyncSession)
     assert available == 5
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_multiple_nights(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=3)
@@ -202,7 +203,7 @@ async def test_check_availability_multiple_nights(db_session: AsyncSession):
     assert available == 2
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_availability_counts_committed(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=3)
@@ -230,7 +231,7 @@ async def test_check_availability_counts_committed(db_session: AsyncSession):
 # Hold creation
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_hold_inventory_success(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=2)
@@ -259,7 +260,7 @@ async def test_hold_inventory_success(db_session: AsyncSession):
     assert hold.expires_at > datetime.now(timezone.utc)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_hold_inventory_reduces_availability(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=2)
@@ -291,7 +292,7 @@ async def test_hold_inventory_reduces_availability(db_session: AsyncSession):
     assert available == 0
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_hold_inventory_insufficient_inventory(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=1)
@@ -314,7 +315,7 @@ async def test_hold_inventory_insufficient_inventory(db_session: AsyncSession):
         )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_hold_inventory_empty_dates(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -330,7 +331,7 @@ async def test_hold_inventory_empty_dates(db_session: AsyncSession):
         )
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_hold_inventory_redis_tracking(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -351,9 +352,10 @@ async def test_hold_inventory_redis_tracking(db_session: AsyncSession):
 # Add-on availability and holds
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_check_addon_availability(db_session: AsyncSession):
     prop = await _create_property(db_session)
+    rt = await _create_room_type(db_session, prop.id)
     addon = AddOn(
         org_id=DEFAULT_ORG_ID,
         property_id=prop.id,
@@ -389,7 +391,7 @@ async def test_check_addon_availability(db_session: AsyncSession):
         org_id=DEFAULT_ORG_ID,
         booking_id=booking.id,
         property_id=prop.id,
-        room_type_id=uuid.uuid4(),
+        room_type_id=rt.id,
         dates=[date(2026, 5, 10)],
         add_on_holds=[
             {
@@ -411,7 +413,7 @@ async def test_check_addon_availability(db_session: AsyncSession):
     assert avail == 3
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_hold_inventory_with_addons(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -461,7 +463,7 @@ async def test_hold_inventory_with_addons(db_session: AsyncSession):
 # Commit
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_commit_inventory_success(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=2)
@@ -499,7 +501,7 @@ async def test_commit_inventory_success(db_session: AsyncSession):
     assert line_items[0].nights == 2
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_commit_inventory_expired_hold(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=2)
@@ -524,7 +526,7 @@ async def test_commit_inventory_expired_hold(db_session: AsyncSession):
         await svc.commit_inventory(hold.id)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_commit_inventory_concurrent_conflict(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=1)
@@ -562,7 +564,7 @@ async def test_commit_inventory_concurrent_conflict(db_session: AsyncSession):
         await svc.commit_inventory(hold_a.id)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_commit_inventory_with_addon_holds(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=5)
@@ -627,7 +629,7 @@ async def test_commit_inventory_with_addon_holds(db_session: AsyncSession):
 # Release
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_release_inventory_success(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=1)
@@ -655,7 +657,7 @@ async def test_release_inventory_success(db_session: AsyncSession):
     assert hold.status == "released"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_release_inventory_with_addon_holds(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=1)
@@ -706,7 +708,7 @@ async def test_release_inventory_with_addon_holds(db_session: AsyncSession):
     assert cap.available_capacity == 5
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_release_inventory_redis_cleanup(db_session: AsyncSession):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id)
@@ -731,7 +733,7 @@ async def test_release_inventory_redis_cleanup(db_session: AsyncSession):
 # Concurrent load
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_concurrent_commit_last_room(db_session: AsyncSession, postgres_url: str):
     prop = await _create_property(db_session)
     rt = await _create_room_type(db_session, prop.id, count=1)

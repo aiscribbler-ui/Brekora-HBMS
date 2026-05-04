@@ -54,7 +54,7 @@ def make_parsed_result(**overrides) -> dict:
 # ---------------------------------------------------------------------------
 # 1. Adapter normalize() tests
 # ---------------------------------------------------------------------------
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_direct_source_normalize():
     src = DirectSource()
     payload = {
@@ -78,7 +78,7 @@ async def test_direct_source_normalize():
     assert cb.metadata["channel"] == "direct_booking_site"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_manual_source_normalize():
     src = ManualSource()
     payload = {
@@ -93,7 +93,7 @@ async def test_manual_source_normalize():
     assert cb.metadata["entered_by"] == "manager_01"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_airbnb_source_normalize_without_mapping():
     src = GmailAirbnbSource()
     payload = {"parsed_result": make_parsed_result()}
@@ -105,7 +105,7 @@ async def test_gmail_airbnb_source_normalize_without_mapping():
     assert cb.metadata["parser_confidence"] == 0.95
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_mmt_source_normalize_without_mapping():
     src = GmailMMTSource()
     parsed = make_parsed_result(
@@ -120,7 +120,7 @@ async def test_gmail_mmt_source_normalize_without_mapping():
     assert cb.metadata["hotel_name"] == "Taj"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_goibibo_source_normalize_without_mapping():
     src = GmailGoibiboSource()
     parsed = make_parsed_result(
@@ -135,7 +135,7 @@ async def test_gmail_goibibo_source_normalize_without_mapping():
     assert cb.metadata["hotel_id"] == "HOTEL-99"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_ical_source_normalize():
     src = ICalSource()
     payload = {
@@ -151,7 +151,7 @@ async def test_ical_source_normalize():
     assert cb.metadata["feed_url"] == "https://example.com/cal.ics"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_channel_manager_stub_normalize():
     src = ChannelManagerStub()
     cb = await src.normalize({"some": "data"})
@@ -162,7 +162,7 @@ async def test_channel_manager_stub_normalize():
 # ---------------------------------------------------------------------------
 # 2. Validation tests
 # ---------------------------------------------------------------------------
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_validate_passes():
     src = DirectSource()
     cb = CanonicalBooking(
@@ -174,7 +174,7 @@ async def test_validate_passes():
     assert await src.validate(cb) is True
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_validate_fails_missing_property():
     src = DirectSource()
     cb = CanonicalBooking(
@@ -185,7 +185,7 @@ async def test_validate_fails_missing_property():
     assert await src.validate(cb) is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_validate_fails_missing_dates():
     src = DirectSource()
     cb = CanonicalBooking(
@@ -198,7 +198,7 @@ async def test_validate_fails_missing_dates():
 # ---------------------------------------------------------------------------
 # 3. create_booking() stub tests
 # ---------------------------------------------------------------------------
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_create_booking_stub_without_org_id():
     src = DirectSource()
     cb = CanonicalBooking(
@@ -215,7 +215,7 @@ async def test_create_booking_stub_without_org_id():
     assert booking.property_id == cb.property_id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_create_booking_with_org_id(db_session: AsyncSession):
     # Setup property
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
@@ -253,7 +253,7 @@ async def test_create_booking_with_org_id(db_session: AsyncSession):
 # ---------------------------------------------------------------------------
 # 4. OTAMapping resolution tests for Gmail sources
 # ---------------------------------------------------------------------------
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_airbnb_resolves_mapping(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "Airbnb Map Hotel"})
@@ -291,7 +291,7 @@ async def test_gmail_airbnb_resolves_mapping(db_session: AsyncSession):
     assert cb.property_id == prop.id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_mmt_resolves_mapping(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "MMT Map Hotel"})
@@ -333,7 +333,7 @@ async def test_gmail_mmt_resolves_mapping(db_session: AsyncSession):
     assert cb.property_id == prop.id
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_gmail_goibibo_resolves_mapping(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "Goibibo Map Hotel"})
@@ -378,7 +378,7 @@ async def test_gmail_goibibo_resolves_mapping(db_session: AsyncSession):
 # ---------------------------------------------------------------------------
 # 5. source_type attribute tests
 # ---------------------------------------------------------------------------
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_source_type_attributes():
     assert DirectSource.source_type == "direct"
     assert ManualSource.source_type == "manual"
@@ -392,7 +392,7 @@ async def test_source_type_attributes():
 # ---------------------------------------------------------------------------
 # 6. CanonicalBooking helper tests
 # ---------------------------------------------------------------------------
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_canonical_to_booking_create():
     cb = CanonicalBooking(
         source_type="direct",
@@ -410,7 +410,7 @@ async def test_canonical_to_booking_create():
     assert "guest_name" not in data  # not part of BookingCreate
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_canonical_to_line_items():
     rt_id = uuid.uuid4()
     cb = CanonicalBooking(
@@ -428,7 +428,7 @@ async def test_canonical_to_line_items():
     assert items[0]["total_price"] == Decimal("1000.00")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_canonical_to_line_items_no_room_type():
     cb = CanonicalBooking(
         source_type="direct",
@@ -439,7 +439,7 @@ async def test_canonical_to_line_items_no_room_type():
     assert items == []
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_canonical_to_line_items_zero_nights():
     rt_id = uuid.uuid4()
     cb = CanonicalBooking(

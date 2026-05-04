@@ -56,14 +56,14 @@ _DATE_PATTERNS = [
 ]
 
 _CHECK_IN_LABELS = re.compile(
-    r"(?:Check[\s\-]?in|Arrival|Arrive|From)[:\s]*", re.IGNORECASE
+    r"(?:Check[\s\-]?in|Arrival|Arrive)[:\s]*", re.IGNORECASE
 )
 _CHECK_OUT_LABELS = re.compile(
-    r"(?:Check[\s\-]?out|Departure|Depart|Until|To)[:\s]*", re.IGNORECASE
+    r"(?:Check[\s\-]?out|Departure|Depart|Until)[:\s]*", re.IGNORECASE
 )
 
 _NUMBER_OF_GUESTS_RE = re.compile(
-    r"(\d+)\s+(?:guest|adult|traveler)s?", re.IGNORECASE
+    r"(?<!\w)(\d+)\s+(?:guest|adult|traveler)s?", re.IGNORECASE
 )
 
 _LISTING_ID_RE = re.compile(
@@ -572,7 +572,9 @@ class AirbnbParser:
     def _extract_commission(text: str) -> tuple[Decimal | None, float]:
         m = _COMMISSION_RE.search(text)
         if m:
-            return _parse_amount(m.group(1)), 0.9
+            amount = _parse_amount(m.group(1))
+            if amount is not None:
+                return abs(amount), 0.9
         return None, 0.0
 
     @staticmethod
@@ -606,11 +608,6 @@ class AirbnbParser:
             dt = _parse_date(m.group(1))
             if dt:
                 return dt, 0.95
-        # Fallback: look for any date that might be the booking date
-        # (usually appears near top or bottom of email)
-        fallback = _parse_date(text)
-        if fallback:
-            return fallback, 0.5
         return None, 0.0
 
     def _compute_overall_confidence(self, result: ParsedBookingResult) -> float:

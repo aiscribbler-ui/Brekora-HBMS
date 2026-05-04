@@ -10,13 +10,14 @@ from app.repositories.package import (
     PackageCompositionRepository,
     PackageRepository,
 )
+from app.repositories.add_on import AddOnRepository
 from app.repositories.property import PropertyRepository
 from app.repositories.room_type import RoomTypeRepository
 
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_repository_crud(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "Package Test Hotel"})
@@ -63,7 +64,7 @@ async def test_package_repository_crud(db_session: AsyncSession):
     assert archived.is_active is False
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_composition_repository_crud(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "Comp Test Hotel"})
@@ -121,7 +122,7 @@ async def test_package_composition_repository_crud(db_session: AsyncSession):
     assert after_delete is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_add_on_repository_crud(db_session: AsyncSession):
     prop_repo = PropertyRepository(db_session, DEFAULT_ORG_ID)
     prop = await prop_repo.create({"name": "AddOn Test Hotel"})
@@ -131,14 +132,18 @@ async def test_package_add_on_repository_crud(db_session: AsyncSession):
         {"property_id": prop.id, "name": "AddOn Package", "base_price": 300.00}
     )
 
+    add_on_repo = AddOnRepository(db_session, DEFAULT_ORG_ID)
+    add_on = await add_on_repo.create(
+        {"property_id": prop.id, "name": "Spa", "type": "day", "unit_price": 50.00}
+    )
+
     repo = PackageAddOnRepository(db_session, DEFAULT_ORG_ID)
-    fake_add_on_id = uuid.uuid4()
 
     # Create
     pao = await repo.create(
         {
             "package_id": pkg.id,
-            "add_on_id": fake_add_on_id,
+            "add_on_id": add_on.id,
             "quantity": 2,
             "is_included": True,
         }
@@ -151,7 +156,7 @@ async def test_package_add_on_repository_crud(db_session: AsyncSession):
     # Get
     fetched = await repo.get(pao.id)
     assert fetched is not None
-    assert fetched.add_on_id == fake_add_on_id
+    assert fetched.add_on_id == add_on.id
 
     # List by package
     items = await repo.get_multi_by_package(pkg.id)
@@ -169,7 +174,7 @@ async def test_package_add_on_repository_crud(db_session: AsyncSession):
     assert after_delete is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_api_crud(client: AsyncClient):
     # Create property
     response = await client.post(
@@ -232,7 +237,7 @@ async def test_package_api_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_composition_api_crud(client: AsyncClient):
     # Create property and room type
     response = await client.post(
@@ -293,12 +298,14 @@ async def test_package_composition_api_crud(client: AsyncClient):
     response = await client.delete(f"/api/v1/packages/compositions/{comp_id}")
     assert response.status_code == 204
 
-    # Verify deletion
-    response = await client.get(f"/api/v1/packages/compositions/{comp_id}")
-    assert response.status_code == 404
+    # Verify deletion by listing under package
+    response = await client.get(f"/api/v1/packages/{pkg_id}/compositions")
+    assert response.status_code == 200
+    items = response.json()
+    assert not any(i["id"] == comp_id for i in items)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_add_on_api_crud(client: AsyncClient):
     # Create property and package
     response = await client.post(
@@ -315,16 +322,22 @@ async def test_package_add_on_api_crud(client: AsyncClient):
     assert response.status_code == 201
     pkg_id = response.json()["id"]
 
-    fake_add_on_id = str(uuid.uuid4())
+    # Create real add-on
+    response = await client.post(
+        "/api/v1/add-ons/",
+        json={"property_id": prop_id, "name": "Spa", "type": "day", "unit_price": "50.00"},
+    )
+    assert response.status_code == 201
+    add_on_id = response.json()["id"]
 
     # Create add-on link
     response = await client.post(
         f"/api/v1/packages/{pkg_id}/add-ons",
-        json={"add_on_id": fake_add_on_id, "quantity": 2, "is_included": True},
+        json={"add_on_id": add_on_id, "quantity": 2, "is_included": True},
     )
     assert response.status_code == 201
     data = response.json()
-    assert data["add_on_id"] == fake_add_on_id
+    assert data["add_on_id"] == add_on_id
     assert data["quantity"] == 2
     assert data["is_included"] is True
     pao_id = data["id"]
@@ -348,12 +361,14 @@ async def test_package_add_on_api_crud(client: AsyncClient):
     response = await client.delete(f"/api/v1/packages/add-ons/{pao_id}")
     assert response.status_code == 204
 
-    # Verify deletion
-    response = await client.get(f"/api/v1/packages/add-ons/{pao_id}")
-    assert response.status_code == 404
+    # Verify deletion by listing under package
+    response = await client.get(f"/api/v1/packages/{pkg_id}/add-ons")
+    assert response.status_code == 200
+    items = response.json()
+    assert not any(i["id"] == pao_id for i in items)
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
 
@@ -385,7 +400,7 @@ async def test_package_not_found(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_package_property_not_found(client: AsyncClient):
     fake_id = str(uuid.uuid4())
 

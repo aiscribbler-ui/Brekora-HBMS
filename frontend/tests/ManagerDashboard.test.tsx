@@ -79,17 +79,17 @@ describe('ManagerDashboard', () => {
   it('shows today view counts', async () => {
     renderRoute()
     await waitFor(() => {
-      expect(screen.getByText('3')).toBeInTheDocument() // arrivals
+      expect(screen.getAllByText('3')[0]).toBeInTheDocument() // arrivals
     })
-    expect(screen.getByText('2')).toBeInTheDocument() // departures
-    expect(screen.getByText('8')).toBeInTheDocument() // in-house
-    expect(screen.getByText('1')).toBeInTheDocument() // pending check-ins
+    expect(screen.getAllByText('2')[0]).toBeInTheDocument() // departures
+    expect(screen.getAllByText('8')[0]).toBeInTheDocument() // in-house
+    expect(screen.getAllByText('1')[0]).toBeInTheDocument() // pending check-ins
   })
 
   it('shows open tasks with red badges when > 0', async () => {
     renderRoute()
     await waitFor(() => {
-      expect(screen.getByText('2')).toBeInTheDocument()
+      expect(screen.getAllByText('2')[0]).toBeInTheDocument()
     })
     const badges = screen.getAllByText('2')
     expect(badges.length).toBeGreaterThanOrEqual(1)

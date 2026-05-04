@@ -11,7 +11,7 @@ from app.repositories.base import OrgScopedRepository
 from app.repositories.organization import OrganizationRepository
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_default_organization_seeded(db_session: AsyncSession):
     result = await db_session.execute(select(Organization))
     orgs = result.scalars().all()
@@ -21,7 +21,7 @@ async def test_default_organization_seeded(db_session: AsyncSession):
     assert default[0].name == "Brekora"
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_organization_crud(db_session: AsyncSession):
     repo = OrganizationRepository(db_session)
 
@@ -51,7 +51,7 @@ async def test_organization_crud(db_session: AsyncSession):
     assert after_delete is None
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_organization_api_crud(client: AsyncClient):
     # Create
     response = await client.post(
@@ -92,12 +92,12 @@ async def test_organization_api_crud(client: AsyncClient):
     assert response.status_code == 404
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_organization_mixin_has_org_id():
     assert hasattr(OrganizationMixin, "org_id")
 
 
-@pytest.mark.asyncio(loop_scope="session")
+@pytest.mark.asyncio
 async def test_org_scoped_repository_query_logic():
     """Verify OrgScopedRepository _apply_org_scope filters by org_id."""
 

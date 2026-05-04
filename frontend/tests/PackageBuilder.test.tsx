@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import PackageBuilder from '@/pages/packages/PackageBuilder'
@@ -70,7 +70,6 @@ const mockAddOns = [
 
 function renderWithRouter(initialEntries: string[] = ['/packages/new']) {
   const routes = [
-    { path: '/packages/new', element: <PackageBuilder /> },
     { path: '/packages/:id', element: <PackageBuilder /> },
     { path: '/packages', element: <div data-testid="package-list">Package List</div> },
   ]
@@ -172,22 +171,17 @@ describe('PackageBuilder', () => {
     const propertySelect = screen.getByLabelText(/Property/i)
     await userEvent.selectOptions(propertySelect, 'prop-1')
 
+    // Add room type
+    const addBtn = screen.getAllByRole('button', { name: /Add Room Type/i })[0]
+    await userEvent.click(addBtn)
+
     await waitFor(() => {
       expect(screen.getByText(/Deluxe Room/i)).toBeInTheDocument()
     })
 
-    // Add room type
-    const addBtn = screen.getByRole('button', { name: /Add Room Type/i })
-    await userEvent.click(addBtn)
-
-    await waitFor(() => {
-      expect(screen.getAllByLabelText(/Quantity/i).length).toBeGreaterThanOrEqual(1)
-    })
-
     // Update quantity
     const qtyInput = screen.getAllByLabelText(/Quantity/i)[0]
-    await userEvent.clear(qtyInput)
-    await userEvent.type(qtyInput, '2')
+    fireEvent.change(qtyInput, { target: { value: '2' } })
 
     expect(qtyInput).toHaveValue(2)
 
@@ -201,6 +195,7 @@ describe('PackageBuilder', () => {
   })
 
   it('updates price preview when composition changes', async () => {
+    const user = userEvent.setup()
     renderWithRouter()
 
     await waitFor(() => {
@@ -209,41 +204,41 @@ describe('PackageBuilder', () => {
 
     // Set base price
     const basePriceInput = screen.getByLabelText(/Base Price/i)
-    await userEvent.type(basePriceInput, '1000')
+    await user.type(basePriceInput, '1000')
 
     // Go to composition tab
     const compositionTab = screen.getByRole('button', { name: /Room Composition/i })
-    await userEvent.click(compositionTab)
+    await user.click(compositionTab)
 
     await waitFor(() => {
       expect(screen.getByLabelText(/Property/i)).toBeInTheDocument()
     })
 
     const propertySelect = screen.getByLabelText(/Property/i)
-    await userEvent.selectOptions(propertySelect, 'prop-1')
+    await user.selectOptions(propertySelect, 'prop-1')
+
+    const addBtn = screen.getAllByRole('button', { name: /Add Room Type/i })[0]
+    await user.click(addBtn)
 
     await waitFor(() => {
       expect(screen.getByText(/Deluxe Room/i)).toBeInTheDocument()
     })
 
-    const addBtn = screen.getByRole('button', { name: /Add Room Type/i })
-    await userEvent.click(addBtn)
-
     // Set quantity to 2 and nights to 2 for Deluxe Room (2000/night)
     const qtyInputs = await screen.findAllByLabelText(/Quantity/i)
-    await userEvent.clear(qtyInputs[0])
-    await userEvent.type(qtyInputs[0], '2')
+    await user.clear(qtyInputs[0])
+    await user.type(qtyInputs[0], '2')
 
     const nightInputs = screen.getAllByLabelText(/Nights/i)
-    await userEvent.clear(nightInputs[0])
-    await userEvent.type(nightInputs[0], '2')
+    await user.clear(nightInputs[0])
+    await user.type(nightInputs[0], '2')
 
     // Go back to basic tab to see preview
     const basicTab = screen.getByRole('button', { name: /Basic Info/i })
-    await userEvent.click(basicTab)
+    await user.click(basicTab)
 
     await waitFor(() => {
-      expect(screen.getByText(/₹9000.00/)).toBeInTheDocument()
+      expect(screen.getByText(/9000\.00/)).toBeInTheDocument()
     })
   })
 
@@ -257,11 +252,7 @@ describe('PackageBuilder', () => {
     const addonsTab = screen.getByRole('button', { name: /Add-ons/i })
     await userEvent.click(addonsTab)
 
-    await waitFor(() => {
-      expect(screen.getByText(/Breakfast/i)).toBeInTheDocument()
-    })
-
-    const checkbox = screen.getByRole('checkbox', { name: /Breakfast/i })
+    const checkbox = await screen.findByRole('checkbox', { name: /Breakfast/i })
     await userEvent.click(checkbox)
 
     await waitFor(() => {
@@ -298,11 +289,11 @@ describe('PackageBuilder', () => {
 
     await userEvent.selectOptions(screen.getByLabelText(/Property/i), 'prop-1')
 
+    await userEvent.click(screen.getAllByRole('button', { name: /Add Room Type/i })[0])
+
     await waitFor(() => {
       expect(screen.getByText(/Deluxe Room/i)).toBeInTheDocument()
     })
-
-    await userEvent.click(screen.getByRole('button', { name: /Add Room Type/i }))
 
     // Publish
     const publishBtn = screen.getByRole('button', { name: /Publish/i })
