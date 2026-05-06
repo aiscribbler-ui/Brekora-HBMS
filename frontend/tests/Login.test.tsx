@@ -77,7 +77,7 @@ describe('Login page', () => {
     await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
     await waitFor(() => {
       expect(screen.getByText(/email is required/i)).toBeInTheDocument()
-      expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument()
+      expect(screen.getByText(/password is required/i)).toBeInTheDocument()
     })
   })
 
@@ -191,10 +191,13 @@ describe('TwoFactor page', () => {
     expect(screen.getByRole('button', { name: /back to login/i })).toBeInTheDocument()
   })
 
-  it('warns when reached without temp_token', async () => {
+  it('warns when verify clicked without temp_token', async () => {
     renderRoute('/2fa?email=test%40brekora.test')
+    const user = userEvent.setup()
+    await user.type(screen.getByLabelText(/authenticator code/i), '123456')
+    await user.click(screen.getByRole('button', { name: /^Verify$/i }))
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/sign-in session expired/i)
+      expect(screen.getByRole('alert')).toHaveTextContent(/missing temporary token/i)
     })
   })
 })

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGuestAuth } from '@/hooks/useGuestAuth'
 import {
@@ -30,6 +31,32 @@ function statusBadge(status: string): string {
 export default function GuestDashboard() {
   const { user, logout } = useGuestAuth()
   const navigate = useNavigate()
+  const [profile, setProfile] = useState<GuestProfile | null>(null)
+  const [bookings, setBookings] = useState<GuestBooking[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    Promise.all([
+      fetchGuestProfile().catch(() => null),
+      fetchGuestBookings().catch(() => []),
+    ])
+      .then(([p, b]) => {
+        if (cancelled) return
+        setProfile(p)
+        setBookings(b)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const greetingName =
+    profile?.first_name || user?.name || profile?.email?.split('@')[0] || ''
 
   return (
     <div className="min-h-screen bg-teal-50">
@@ -51,24 +78,27 @@ export default function GuestDashboard() {
           </div>
         </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-800">My Bookings</h2>
-              <p className="text-sm text-gray-500 mt-1">You have no upcoming bookings.</p>
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">My Bookings</h2>
+          {loading ? (
+            <p className="text-sm text-gray-500">Loading…</p>
+          ) : bookings.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center">
+              <p className="text-sm text-gray-500">You have no bookings yet.</p>
               <button
-                onClick={() => navigate('/guest/bookings')}
+                type="button"
+                onClick={() => navigate('/book')}
                 className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 Find a stay →
-              </a>
+              </button>
             </div>
           ) : (
             <ul className="divide-y divide-gray-100">
               {bookings.map((b) => (
                 <li key={b.id} className="py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-gray-400" />
+                    <p className="text-sm font-medium text-gray-900">
                       Booking {b.id.slice(0, 8)}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">
@@ -77,9 +107,7 @@ export default function GuestDashboard() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge(
-                        b.status,
-                      )}`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge(b.status)}`}
                     >
                       {b.status.replace(/_/g, ' ')}
                     </span>
@@ -93,16 +121,10 @@ export default function GuestDashboard() {
           )}
         </section>
 
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-800">Profile</h2>
-              <p className="text-sm text-gray-500 mt-1">Manage your personal details.</p>
-              <button
-                onClick={() => navigate('/guest/profile')}
-                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
-              >
-                Edit profile
-              </button>
-            </div>
+        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile</h2>
+          {loading ? (
+            <p className="text-sm text-gray-500">Loading…</p>
           ) : profile ? (
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div>
@@ -120,7 +142,18 @@ export default function GuestDashboard() {
                 <dd className="font-medium text-gray-900">{profile.phone || '—'}</dd>
               </div>
             </dl>
-          ) : null}
+          ) : (
+            <p className="text-sm text-gray-500">Profile unavailable.</p>
+          )}
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => navigate('/guest/profile')}
+              className="text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
+            >
+              Edit profile
+            </button>
+          </div>
         </section>
       </div>
     </div>

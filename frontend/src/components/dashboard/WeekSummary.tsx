@@ -1,4 +1,4 @@
-import { TrendingUp, BarChart3 } from 'lucide-react'
+import { BarChart3 } from 'lucide-react'
 
 export interface AdrByProperty {
   propertyId: string

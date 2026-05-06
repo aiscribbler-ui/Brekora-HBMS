@@ -23,7 +23,7 @@ vi.mock('@/hooks/useGuestAuth', async () => {
       user: null,
       isAuthenticated: false,
       login: async (email: string, password: string) => {
-        const data = await mockPost({ email, password })
+        await mockPost({ email, password })
         return true
       },
       logout: vi.fn(),
@@ -70,7 +70,7 @@ describe('GuestLogin page', () => {
     await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
     await waitFor(() => {
       expect(screen.getByText(/email is required/i)).toBeInTheDocument()
-      expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument()
+      expect(screen.getByText(/password is required/i)).toBeInTheDocument()
     })
   })
 

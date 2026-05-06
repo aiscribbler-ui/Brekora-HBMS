@@ -10,18 +10,6 @@ export const api = axios.create({
   timeout: 30000,
 })
 
-function pickActiveToken(): { token: string; isGuest: boolean } | null {
-  const manager = useAuthStore.getState()
-  if (manager.accessToken) {
-    return { token: manager.accessToken, isGuest: false }
-  }
-  const guest = useGuestAuthStore.getState()
-  if (guest.accessToken) {
-    return { token: guest.accessToken, isGuest: true }
-  }
-  return null
-}
-
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const { accessToken, user } = useAuthStore.getState()

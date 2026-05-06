@@ -10,7 +10,7 @@ export const passwordSchema = z
   .min(10, 'Password must be at least 10 characters')
   .max(128, 'Password must be less than 128 characters')
   .regex(
-    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"|,.<>/?]).+$/,
+    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"|,.<>/?]).+$/,
     'Password must contain uppercase, lowercase, number, and special character',
   )
 

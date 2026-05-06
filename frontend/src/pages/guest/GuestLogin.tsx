@@ -1,18 +1,13 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useGuestAuth } from '@/hooks/useGuestAuth'
-import { useGuestAuthStore } from '@/store/guestAuthStore'
 import { loginSchema, type LoginInput } from '@/lib/validation'
 import { isAxiosError } from '@/lib/api'
-import { googleLogin } from '@/services/authApi'
-import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 
 export default function GuestLogin() {
   const { login } = useGuestAuth()
-  const navigate = useNavigate()
-  const setGuestAuth = useGuestAuthStore((s) => s.setAuth)
   const {
     register,
     handleSubmit,
@@ -21,33 +16,6 @@ export default function GuestLogin() {
     resolver: zodResolver(loginSchema),
   })
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-
-  const handleGoogleIdToken = async (idToken: string) => {
-    setErrorMsg(null)
-    try {
-      const data = await googleLogin(idToken)
-      const fullName = [data.user.first_name, data.user.last_name].filter(Boolean).join(' ').trim()
-      setGuestAuth({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        tokenType: data.token_type,
-        sessionId: data.session_id,
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          role: data.user.role || 'Guest',
-          name: fullName || undefined,
-        },
-      })
-      navigate('/guest')
-    } catch (err) {
-      if (isAxiosError<{ detail?: string }>(err)) {
-        setErrorMsg(err.response?.data?.detail || 'Google sign-in failed.')
-      } else {
-        setErrorMsg('Google sign-in failed.')
-      }
-    }
-  }
 
   const onSubmit = async (data: LoginInput) => {
     setErrorMsg(null)

@@ -124,7 +124,7 @@ describe('ManagerDashboard', () => {
     })
   })
 
-  it('navigates to /properties on Edit OTA Mapping click', async () => {
+  it('navigates to /ota/mappings on Edit OTA Mapping click', async () => {
     renderRoute()
     await waitFor(() => {
       expect(screen.getByTestId('action-ota-mapping')).toBeInTheDocument()
@@ -132,7 +132,7 @@ describe('ManagerDashboard', () => {
     const user = userEvent.setup()
     await user.click(screen.getByTestId('action-ota-mapping'))
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/properties')
+      expect(mockNavigate).toHaveBeenCalledWith('/ota/mappings')
     })
   })
 

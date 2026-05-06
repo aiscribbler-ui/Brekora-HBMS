@@ -59,7 +59,7 @@ export default function Setup() {
       next.adminPassword = 'Password is required'
     } else if (form.adminPassword.length < 10) {
       next.adminPassword = 'Password must be at least 10 characters'
-    } else if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"|,.<>/?]).+$/.test(form.adminPassword)) {
+    } else if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"|,.<>/?]).+$/.test(form.adminPassword)) {
       next.adminPassword = 'Password must contain uppercase, lowercase, number, and special character'
     }
     if (form.confirmPassword !== form.adminPassword) {

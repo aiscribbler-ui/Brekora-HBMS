@@ -36,7 +36,6 @@ export default function TwoFactorEnrol() {
 
   useEffect(() => {
     startSetup()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const verify = async () => {

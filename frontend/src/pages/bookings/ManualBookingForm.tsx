@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -60,7 +59,6 @@ const manualBookingSchema = z
 export type ManualBookingFormData = z.infer<typeof manualBookingSchema>
 
 export default function ManualBookingForm() {
-  const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
 
   const methods = useForm<ManualBookingFormData>({

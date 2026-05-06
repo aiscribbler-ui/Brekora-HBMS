@@ -47,27 +47,13 @@ export interface OpenTasksData {
   pendingRefunds: number
 }
 
-interface BookingRecord {
-  id: string
-  property_id?: string
-  check_in: string
-  check_out: string
-  status: string
-  total_amount?: number
-}
-
-interface BookingListResponse {
-  items?: BookingRecord[]
-  total?: number
-}
-
 interface BookingSummaryResponse {
-  arrivals: number
-  departures: number
-  in_house: number
-  pending_check_ins: number
-  payment_failures: number
-  pending_refunds: number
+  arrivals?: number
+  departures?: number
+  inHouse?: number
+  in_house?: number
+  pendingCheckIns?: number
+  pending_check_ins?: number
 }
 
 export async function fetchProperties(): Promise<Property[]> {
@@ -85,28 +71,9 @@ export async function fetchAvailability(params: AvailabilityParams): Promise<Ava
   return data
 }
 
-async function fetchBookings(params?: Record<string, string>): Promise<BookingRecord[]> {
-  try {
-    const { data } = await api.get<BookingRecord[] | BookingListResponse>('/bookings', { params })
-    if (Array.isArray(data)) return data
-    return data.items ?? []
-  } catch {
-    return []
-  }
-}
-
-async function fetchBookingsSummary(): Promise<BookingSummaryResponse | null> {
-  try {
-    const { data } = await api.get<BookingSummaryResponse>('/bookings/summary')
-    return data
-  } catch {
-    return null
-  }
-}
-
 export async function fetchRawEmailQueue(): Promise<{ count: number }> {
   try {
-    const { data } = await api.get<{ items: unknown[] }>('/ota/queue')
+    const { data } = await api.get<{ items?: unknown[] }>('/ota/queue')
     return { count: data.items?.length ?? 0 }
   } catch {
     return { count: 0 }
@@ -114,6 +81,20 @@ export async function fetchRawEmailQueue(): Promise<{ count: number }> {
 }
 
 export async function fetchDashboardSummary(): Promise<DashboardSummary> {
+  // Prefer the dedicated summary endpoint when available; fall back to the
+  // raw bookings list for older backends.
+  try {
+    const { data } = await api.get<BookingSummaryResponse>('/bookings/summary')
+    return {
+      arrivals: data.arrivals ?? 0,
+      departures: data.departures ?? 0,
+      inHouse: data.inHouse ?? data.in_house ?? 0,
+      pendingCheckIns: data.pendingCheckIns ?? data.pending_check_ins ?? 0,
+    }
+  } catch {
+    // ignore, fall through
+  }
+
   try {
     const today = new Date().toISOString().split('T')[0]
     const { data } = await api.get<Array<{
@@ -140,8 +121,6 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   } catch {
     return { arrivals: 0, departures: 0, inHouse: 0, pendingCheckIns: 0 }
   }
-
-  return { arrivals, departures, inHouse, pendingCheckIns }
 }
 
 export async function fetchWeekSummary(): Promise<WeekSummaryData> {

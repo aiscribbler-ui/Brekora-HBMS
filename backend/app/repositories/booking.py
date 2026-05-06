@@ -2,7 +2,7 @@ import uuid
 from datetime import date
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 
 from app.models.booking import Booking, BookingLineItem
 from app.repositories.base import OrgScopedRepository

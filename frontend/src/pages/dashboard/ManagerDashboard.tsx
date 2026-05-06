@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom'
-import { RefreshCw, Building2, AlertTriangle, ArrowRight } from 'lucide-react'
 import TodayView from '@/components/dashboard/TodayView'
 import WeekSummary from '@/components/dashboard/WeekSummary'
 import OpenTasks from '@/components/dashboard/OpenTasks'
@@ -9,7 +7,6 @@ import { ArrowPathIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
 
 export default function ManagerDashboard() {
   const { properties, summary, weekSummary, openTasks, isLoading, error, refresh } = useDashboard()
-  const navigate = useNavigate()
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">

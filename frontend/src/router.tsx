@@ -1,9 +1,8 @@
-import { createBrowserRouter, type RouteObject, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { api } from '@/lib/api'
+import { createBrowserRouter, type RouteObject } from 'react-router-dom'
 import App from '@/App'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { RoleGuard } from '@/components/auth/RoleGuard'
+import SetupRedirect from '@/components/auth/SetupRedirect'
 import Login from '@/pages/auth/Login'
 import Setup from '@/pages/auth/Setup'
 import TwoFactor from '@/pages/auth/TwoFactor'
@@ -34,43 +33,6 @@ import BookingConfirmation from '@/pages/public/BookingConfirmation'
 import AdminPanel from '@/pages/admin/AdminPanel'
 import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
-function SetupRedirect() {
-  const navigate = useNavigate()
-  const [checked, setChecked] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    api
-      .get<{ setup_required: boolean }>('/auth/setup-status')
-      .then((res) => {
-        if (!cancelled) {
-          setChecked(true)
-          if (res.data.setup_required) {
-            navigate('/setup', { replace: true })
-          } else {
-            navigate('/dashboard', { replace: true })
-          }
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setChecked(true)
-          navigate('/dashboard', { replace: true })
-        }
-      })
-    return () => { cancelled = true }
-  }, [navigate])
-
-  if (!checked) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse h-8 w-8 rounded-full bg-brand-600" />
-      </div>
-    )
-  }
-  return null
-}
-
 export const routes: RouteObject[] = [
   {
     path: '/',
@@ -100,9 +62,9 @@ export const routes: RouteObject[] = [
       {
         path: '2fa/setup',
         element: (
-          <RequireRole allowed={STAFF_OR_OWNER}>
+          <RoleGuard allowedRoles={['Admin', 'Manager', 'Owner']}>
             <TwoFactorEnrol />
-          </RequireRole>
+          </RoleGuard>
         ),
       },
       {

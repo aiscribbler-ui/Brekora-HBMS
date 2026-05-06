@@ -1,18 +1,34 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { twoFactorSchema, type TwoFactorInput } from '@/lib/validation'
-import { api } from '@/lib/api'
+import { api, isAxiosError } from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
+
+interface LocationState {
+  tempToken?: string | null
+  email?: string
+}
+
+interface TwoFAVerifyResponse {
+  access_token: string
+  refresh_token: string
+  token_type?: string
+  user?: {
+    id: string
+    email: string
+    role?: string
+    name?: string
+  }
+}
 
 export default function TwoFactor() {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const { verify2FA } = useAuth()
   const state = (location.state as LocationState | null) ?? null
-  const tempToken = state?.tempToken ?? null
+  const tempToken = state?.tempToken ?? searchParams.get('temp_token') ?? null
   const email = state?.email || searchParams.get('email') || ''
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
@@ -26,13 +42,12 @@ export default function TwoFactor() {
 
   const onSubmit = async (data: TwoFactorInput) => {
     setErrorMsg(null)
+    if (!tempToken) {
+      setErrorMsg('Missing temporary token. Please log in again.')
+      return
+    }
     try {
-      const tempToken = searchParams.get('temp_token')
-      if (!tempToken) {
-        setErrorMsg('Missing temporary token. Please log in again.')
-        return
-      }
-      const response = await api.post('/auth/2fa/login-verify', {
+      const response = await api.post<TwoFAVerifyResponse>('/auth/2fa/login-verify', {
         temp_token: tempToken,
         token: data.code,
       })
@@ -41,14 +56,20 @@ export default function TwoFactor() {
         accessToken: access_token,
         refreshToken: refresh_token,
         tokenType: token_type || 'bearer',
-        user: user || { id: '', email, role: 'Admin' },
+        user: user
+          ? { id: user.id, email: user.email, role: user.role || '', name: user.name }
+          : { id: '', email, role: '' },
       })
       navigate('/dashboard')
-    } catch (err: any) {
-      if (err.response?.status === 401) {
-        setErrorMsg('Invalid code. Please try again.')
+    } catch (err) {
+      if (isAxiosError<{ detail?: string }>(err)) {
+        if (err.response?.status === 401) {
+          setErrorMsg('Invalid code. Please try again.')
+        } else {
+          setErrorMsg(err.response?.data?.detail || 'Verification failed.')
+        }
       } else {
-        setErrorMsg(err.response?.data?.detail || 'Verification failed.')
+        setErrorMsg('Verification failed.')
       }
     }
   }
@@ -92,7 +113,7 @@ export default function TwoFactor() {
 
           <button
             type="submit"
-            disabled={isSubmitting || !tempToken}
+            disabled={isSubmitting}
             className="w-full py-2.5 px-4 bg-brand-600 text-white font-medium rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Verifying...' : 'Verify'}

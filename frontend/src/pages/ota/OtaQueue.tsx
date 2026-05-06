@@ -148,6 +148,8 @@ export default function OtaQueue() {
   useEffect(() => {
     const cleanup = fetchQueue()
     return cleanup
+    // fetchQueue closes over the same filter state already in the dep list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, sourceFilter, statusFilter, dateFrom, dateTo])
 
   useEffect(() => {
