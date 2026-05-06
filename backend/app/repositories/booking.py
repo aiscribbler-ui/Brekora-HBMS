@@ -13,6 +13,42 @@ class BookingRepository(OrgScopedRepository[Booking]):
     def model_class(self) -> type[Booking]:
         return Booking
 
+    async def list_filtered(
+        self,
+        *,
+        property_id: uuid.UUID | None = None,
+        status: str | None = None,
+        statuses: list[str] | None = None,
+        guest_id: uuid.UUID | None = None,
+        # bookings that overlap the closed-open window [check_in_from, check_in_to)
+        overlaps_from: date | None = None,
+        overlaps_to: date | None = None,
+        check_in_on: date | None = None,
+        check_out_on: date | None = None,
+        skip: int = 0,
+        limit: int = 200,
+    ) -> list[Booking]:
+        stmt = select(Booking)
+        if property_id:
+            stmt = stmt.where(Booking.property_id == property_id)
+        if status:
+            stmt = stmt.where(Booking.status == status)
+        if statuses:
+            stmt = stmt.where(Booking.status.in_(statuses))
+        if guest_id:
+            stmt = stmt.where(Booking.guest_id == guest_id)
+        if check_in_on:
+            stmt = stmt.where(Booking.check_in == check_in_on)
+        if check_out_on:
+            stmt = stmt.where(Booking.check_out == check_out_on)
+        if overlaps_from and overlaps_to:
+            stmt = stmt.where(
+                and_(Booking.check_in < overlaps_to, Booking.check_out > overlaps_from)
+            )
+        stmt = self._apply_org_scope(stmt).order_by(Booking.check_in.desc()).offset(skip).limit(limit)
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
     async def get_by_guest(
         self, guest_id: uuid.UUID, *, skip: int = 0, limit: int = 100
     ) -> list[Booking]:

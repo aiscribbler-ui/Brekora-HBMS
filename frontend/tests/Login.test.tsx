@@ -12,6 +12,9 @@ vi.mock('@/services/authApi', () => ({
   login: (...args: unknown[]) => mockPost(...args),
   logout: vi.fn(),
   refreshToken: vi.fn(),
+  verifyTwoFactorLogin: vi.fn(),
+  googleLogin: vi.fn(),
+  getMe: vi.fn().mockRejectedValue(new Error('not authenticated')),
 }))
 
 vi.mock('@/hooks/useAuth', async () => {
@@ -21,13 +24,15 @@ vi.mock('@/hooks/useAuth', async () => {
     useAuth: () => ({
       user: null,
       isAuthenticated: false,
+      sessionId: null,
       login: async (email: string, password: string) => {
         const data = await mockPost({ email, password })
         if (data.requires_2fa) {
-          return { success: false, requires2FA: true }
+          return { success: false, requires2FA: true, tempToken: data.temp_token ?? null }
         }
         return { success: true, requires2FA: false }
       },
+      verify2FA: vi.fn(),
       logout: vi.fn(),
     }),
   }
@@ -63,13 +68,13 @@ describe('Login page', () => {
     renderRoute()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^Sign In$/i })).toBeInTheDocument()
   })
 
   it('shows validation errors for empty fields', async () => {
     renderRoute()
     const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
     await waitFor(() => {
       expect(screen.getByText(/email is required/i)).toBeInTheDocument()
       expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument()
@@ -81,7 +86,7 @@ describe('Login page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'not-an-email')
     await user.type(screen.getByLabelText(/password/i), 'password123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
     await waitFor(() => {
       expect(screen.getByText(/invalid email address/i)).toBeInTheDocument()
     })
@@ -98,7 +103,7 @@ describe('Login page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'manager@brekora.test')
     await user.type(screen.getByLabelText(/password/i), 'Password123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
 
     await waitFor(() => {
       expect(mockPost).toHaveBeenCalledWith({
@@ -122,7 +127,7 @@ describe('Login page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'manager@brekora.test')
     await user.type(screen.getByLabelText(/password/i), 'WrongPass123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/invalid email or password/i)
@@ -143,35 +148,38 @@ describe('Login page', () => {
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), 'locked@brekora.test')
     await user.type(screen.getByLabelText(/password/i), 'Password123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent(/account is locked/i)
     })
   })
 
-  it('redirects to 2fa page when 2fa is required', async () => {
+  it('redirects to 2fa page with temp_token when 2fa is required', async () => {
     mockPost.mockResolvedValue({
-      access_token: '',
-      refresh_token: '',
-      token_type: '',
+      access_token: null,
+      refresh_token: null,
+      token_type: 'bearer',
       requires_2fa: true,
+      temp_token: 'temp-abc',
     })
 
     renderRoute()
     const user = userEvent.setup()
     await user.type(screen.getByLabelText(/email/i), '2fa@brekora.test')
     await user.type(screen.getByLabelText(/password/i), 'Password123')
-    await user.click(screen.getByRole('button', { name: /sign in/i }))
+    await user.click(screen.getByRole('button', { name: /^Sign In$/i }))
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/2fa?email=2fa%40brekora.test')
+      expect(mockNavigate).toHaveBeenCalledWith('/2fa', {
+        state: { tempToken: 'temp-abc', email: '2fa@brekora.test' },
+      })
     })
   })
 
-  it('renders forgot password link', () => {
+  it('renders forgot password helper text', () => {
     renderRoute()
-    expect(screen.getByText(/forgot password/i)).toBeInTheDocument()
+    expect(screen.getByText(/forgot your password/i)).toBeInTheDocument()
   })
 })
 
@@ -183,14 +191,10 @@ describe('TwoFactor page', () => {
     expect(screen.getByRole('button', { name: /back to login/i })).toBeInTheDocument()
   })
 
-  it('shows not implemented message on submit', async () => {
+  it('warns when reached without temp_token', async () => {
     renderRoute('/2fa?email=test%40brekora.test')
-    const user = userEvent.setup()
-    await user.type(screen.getByLabelText(/authenticator code/i), '123456')
-    await user.click(screen.getByRole('button', { name: /verify/i }))
-
     await waitFor(() => {
-      expect(screen.getByText(/2FA verification is not yet implemented/i)).toBeInTheDocument()
+      expect(screen.getByRole('alert')).toHaveTextContent(/sign-in session expired/i)
     })
   })
 })

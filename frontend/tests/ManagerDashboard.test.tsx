@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { routes } from '@/router'
+import { useAuthStore } from '@/store/authStore'
 
 const mockFetchProperties = vi.fn()
 const mockFetchAvailability = vi.fn()
@@ -36,6 +37,14 @@ function renderRoute(initialEntry = '/dashboard') {
 
 describe('ManagerDashboard', () => {
   beforeEach(() => {
+    useAuthStore.setState({
+      accessToken: 'test-token',
+      refreshToken: 'test-refresh',
+      tokenType: 'bearer',
+      sessionId: 'test-session',
+      isAuthenticated: true,
+      user: { id: 'u1', email: 'manager@brekora.test', role: 'Manager', name: 'Manager' },
+    })
     vi.useFakeTimers({ shouldAdvanceTime: true })
     mockFetchProperties.mockResolvedValue([
       { id: 'p1', name: 'Sunset Villa', address: 'Goa', status: 'active' },
@@ -63,6 +72,7 @@ describe('ManagerDashboard', () => {
   afterEach(() => {
     vi.useRealTimers()
     vi.clearAllMocks()
+    useAuthStore.getState().clearAuth()
   })
 
   it('renders all widgets', async () => {
@@ -102,7 +112,7 @@ describe('ManagerDashboard', () => {
     })
   })
 
-  it('navigates to /bookings/new on Create Booking click', async () => {
+  it('navigates to /bookings/manual on Create Booking click', async () => {
     renderRoute()
     await waitFor(() => {
       expect(screen.getByTestId('action-create-booking')).toBeInTheDocument()
@@ -114,7 +124,7 @@ describe('ManagerDashboard', () => {
     })
   })
 
-  it('navigates to /ota/mappings on Edit OTA Mapping click', async () => {
+  it('navigates to /properties on Edit OTA Mapping click', async () => {
     renderRoute()
     await waitFor(() => {
       expect(screen.getByTestId('action-ota-mapping')).toBeInTheDocument()
@@ -122,7 +132,7 @@ describe('ManagerDashboard', () => {
     const user = userEvent.setup()
     await user.click(screen.getByTestId('action-ota-mapping'))
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/ota/mappings')
+      expect(mockNavigate).toHaveBeenCalledWith('/properties')
     })
   })
 

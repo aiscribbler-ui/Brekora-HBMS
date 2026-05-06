@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { MapPin, Sparkles, Wifi, ShieldCheck } from 'lucide-react'
 import SearchBar from '@/components/public/SearchBar'
 import { getProperties, type Property } from '@/services/propertyApi'
 import {
@@ -172,8 +173,12 @@ export default function Landing() {
                 </button>
               </div>
             </div>
-          ))}
-        </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">{title}</h3>
+              <p className="text-sm text-gray-500 mt-0.5">{desc}</p>
+            </div>
+          </div>
+        ))}
       </section>
 
       {/* Footer */}

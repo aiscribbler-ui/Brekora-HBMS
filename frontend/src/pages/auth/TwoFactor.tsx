@@ -1,15 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { twoFactorSchema, type TwoFactorInput } from '@/lib/validation'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
 
 export default function TwoFactor() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
-  const email = searchParams.get('email') || ''
+  const { verify2FA } = useAuth()
+  const state = (location.state as LocationState | null) ?? null
+  const tempToken = state?.tempToken ?? null
+  const email = state?.email || searchParams.get('email') || ''
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const {
@@ -88,7 +92,7 @@ export default function TwoFactor() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !tempToken}
             className="w-full py-2.5 px-4 bg-brand-600 text-white font-medium rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Verifying...' : 'Verify'}

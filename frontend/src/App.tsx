@@ -1,14 +1,17 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { LogOut, ShieldCheck } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useAuth } from '@/hooks/useAuth'
 import SkipLink from '@/components/a11y/SkipLink'
 import Sidebar from '@/components/layout/Sidebar'
 
 function App() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
   const { logout } = useAuth()
   const location = useLocation()
-  const isAuthPage =
+  const navigate = useNavigate()
+  const sidebar = useSidebarState()
+  const isStandalonePage =
     location.pathname === '/login' ||
     location.pathname === '/2fa' ||
     location.pathname.startsWith('/guest') ||

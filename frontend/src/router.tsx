@@ -7,6 +7,7 @@ import { RoleGuard } from '@/components/auth/RoleGuard'
 import Login from '@/pages/auth/Login'
 import Setup from '@/pages/auth/Setup'
 import TwoFactor from '@/pages/auth/TwoFactor'
+import TwoFactorEnrol from '@/pages/auth/TwoFactorEnrol'
 import ManagerDashboard from '@/pages/dashboard/ManagerDashboard'
 import GuestLogin from '@/pages/guest/GuestLogin'
 import GuestSignup from '@/pages/guest/GuestSignup'
@@ -95,6 +96,14 @@ export const routes: RouteObject[] = [
       {
         path: '2fa',
         element: <TwoFactor />,
+      },
+      {
+        path: '2fa/setup',
+        element: (
+          <RequireRole allowed={STAFF_OR_OWNER}>
+            <TwoFactorEnrol />
+          </RequireRole>
+        ),
       },
       {
         path: 'properties',

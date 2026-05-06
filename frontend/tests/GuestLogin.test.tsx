@@ -12,6 +12,7 @@ vi.mock('@/services/authApi', () => ({
   login: (...args: unknown[]) => mockPost(...args),
   logout: vi.fn(),
   refreshToken: vi.fn(),
+  googleLogin: vi.fn(),
 }))
 
 vi.mock('@/hooks/useGuestAuth', async () => {
@@ -136,8 +137,8 @@ describe('GuestLogin page', () => {
     })
   })
 
-  it('shows coming soon for google sign in', () => {
+  it('renders google sign in fallback when client id missing', () => {
     renderRoute()
-    expect(screen.getByText(/coming soon/i)).toBeInTheDocument()
+    expect(screen.getByText(/sign in with google/i)).toBeInTheDocument()
   })
 })

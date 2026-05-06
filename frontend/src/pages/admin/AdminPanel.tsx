@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { hasRole } from '@/lib/roles'
 import FeatureFlags from '@/components/admin/FeatureFlags'
 import SystemSettings from '@/components/admin/SystemSettings'
 import UserManagement from '@/components/admin/UserManagement'
@@ -29,13 +30,13 @@ export default function AdminPanel() {
   }, [location.pathname])
 
   useEffect(() => {
-    if (!user || user.role !== 'Admin') {
+    if (!hasRole(user?.role, ['Admin'])) {
       const timer = setTimeout(() => navigate('/', { replace: true }), 3000)
       return () => clearTimeout(timer)
     }
   }, [user, navigate])
 
-  if (!user || user.role !== 'Admin') {
+  if (!hasRole(user?.role, ['Admin'])) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

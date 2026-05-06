@@ -47,6 +47,29 @@ export interface OpenTasksData {
   pendingRefunds: number
 }
 
+interface BookingRecord {
+  id: string
+  property_id?: string
+  check_in: string
+  check_out: string
+  status: string
+  total_amount?: number
+}
+
+interface BookingListResponse {
+  items?: BookingRecord[]
+  total?: number
+}
+
+interface BookingSummaryResponse {
+  arrivals: number
+  departures: number
+  in_house: number
+  pending_check_ins: number
+  payment_failures: number
+  pending_refunds: number
+}
+
 export async function fetchProperties(): Promise<Property[]> {
   const { data } = await api.get<Property[]>('/properties/')
   return data
@@ -60,6 +83,25 @@ export async function fetchRoomTypes(propertyId: string): Promise<RoomType[]> {
 export async function fetchAvailability(params: AvailabilityParams): Promise<AvailabilityResponse[]> {
   const { data } = await api.get<AvailabilityResponse[]>('/availability/rooms', { params })
   return data
+}
+
+async function fetchBookings(params?: Record<string, string>): Promise<BookingRecord[]> {
+  try {
+    const { data } = await api.get<BookingRecord[] | BookingListResponse>('/bookings', { params })
+    if (Array.isArray(data)) return data
+    return data.items ?? []
+  } catch {
+    return []
+  }
+}
+
+async function fetchBookingsSummary(): Promise<BookingSummaryResponse | null> {
+  try {
+    const { data } = await api.get<BookingSummaryResponse>('/bookings/summary')
+    return data
+  } catch {
+    return null
+  }
 }
 
 export async function fetchRawEmailQueue(): Promise<{ count: number }> {
@@ -98,6 +140,8 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   } catch {
     return { arrivals: 0, departures: 0, inHouse: 0, pendingCheckIns: 0 }
   }
+
+  return { arrivals, departures, inHouse, pendingCheckIns }
 }
 
 export async function fetchWeekSummary(): Promise<WeekSummaryData> {

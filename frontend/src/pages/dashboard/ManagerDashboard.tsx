@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+import { RefreshCw, Building2, AlertTriangle, ArrowRight } from 'lucide-react'
 import TodayView from '@/components/dashboard/TodayView'
 import WeekSummary from '@/components/dashboard/WeekSummary'
 import OpenTasks from '@/components/dashboard/OpenTasks'
@@ -7,6 +9,7 @@ import { ArrowPathIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
 
 export default function ManagerDashboard() {
   const { properties, summary, weekSummary, openTasks, isLoading, error, refresh } = useDashboard()
+  const navigate = useNavigate()
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -20,6 +23,7 @@ export default function ManagerDashboard() {
           className="inline-flex items-center gap-2 text-sm px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 shadow-sm"
           data-testid="refresh-btn"
           aria-label="Refresh dashboard"
+          disabled={isLoading}
         >
           <ArrowPathIcon className="h-4 w-4" />
           Refresh
@@ -69,7 +73,7 @@ export default function ManagerDashboard() {
               pendingRefunds={openTasks.pendingRefunds}
             />
           </div>
-          <div aria-label="Quick actions">
+          <div aria-label="Quick actions" className="md:col-span-2 lg:col-span-1">
             <QuickActions />
           </div>
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2 lg:col-span-2 hover:shadow-md transition-shadow" aria-label="Properties list">
@@ -98,6 +102,12 @@ export default function ManagerDashboard() {
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                          p.status === 'active' ? 'bg-emerald-500' : 'bg-gray-400'
+                        }`}
+                        aria-hidden="true"
+                      />
                       {p.status}
                     </span>
                   </li>
