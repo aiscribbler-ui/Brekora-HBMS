@@ -6,6 +6,19 @@ from pydantic import BaseModel
 from app.schemas.user import UserRead
 
 
+class MeResponse(BaseModel):
+    id: uuid.UUID
+    org_id: uuid.UUID
+    email: str
+    role: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    name: str | None = None
+    is_2fa_enabled: bool = False
+    is_active: bool = True
+    last_login: datetime | None = None
+
+
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
 

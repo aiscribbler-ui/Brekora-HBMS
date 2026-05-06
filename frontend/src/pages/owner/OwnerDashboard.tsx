@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
+import { hasRole } from '@/lib/roles'
 import { getProperties, type Property } from '@/services/propertyApi'
 import { getPnl, getPayout, getStatement } from '@/services/ownerApi'
 import type { PnLSummary as PnLSummaryType, PayoutRecord, Statement } from '@/services/ownerApi'
@@ -71,13 +72,13 @@ export default function OwnerDashboard() {
   }, [selectedPropertyId, month])
 
   useEffect(() => {
-    if (!user || (user.role !== 'Owner' && user.role !== 'Admin')) {
+    if (!hasRole(user?.role, ['Owner', 'Admin'])) {
       const timer = setTimeout(() => navigate('/', { replace: true }), 3000)
       return () => clearTimeout(timer)
     }
   }, [user, navigate])
 
-  if (!user || (user.role !== 'Owner' && user.role !== 'Admin')) {
+  if (!hasRole(user?.role, ['Owner', 'Admin'])) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

@@ -62,7 +62,7 @@ export function useDashboard() {
             occupancyPercent = Math.round(((totalRooms - availableRooms) / totalRooms) * 100)
           }
         } catch {
-          // fallback to stub
+          // availability API not available — leave as-is (empty data, not zero stub)
         }
       }
 

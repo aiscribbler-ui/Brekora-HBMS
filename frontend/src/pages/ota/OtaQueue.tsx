@@ -124,8 +124,8 @@ export default function OtaQueue() {
     getOtaQueue(filters)
       .then((data) => {
         if (!cancelled) {
-          setItems(data.items)
-          setTotal(data.total)
+          setItems(Array.isArray(data?.items) ? data.items : [])
+          setTotal(typeof data?.total === 'number' ? data.total : 0)
         }
       })
       .catch((err) => {

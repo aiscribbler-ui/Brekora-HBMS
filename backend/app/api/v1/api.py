@@ -9,6 +9,7 @@ from app.api.v1.endpoints import (
     feature_flags,
     google_auth,
     gst,
+    guests,
     inventory_buffers,
     organizations,
     ota_alerts,
@@ -55,6 +56,7 @@ api_router.include_router(
 )
 api_router.include_router(sessions.router)
 api_router.include_router(google_auth.router)
+api_router.include_router(guests.router, tags=["guests"])
 api_router.include_router(
     ota_gmail.router, prefix="/ota/gmail", tags=["ota-gmail"]
 )

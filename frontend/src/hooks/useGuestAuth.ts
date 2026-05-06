@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '@/store/authStore'
+import { useGuestAuthStore } from '@/store/guestAuthStore'
 import { login as apiLogin, logout as apiLogout, refreshToken } from '@/services/authApi'
 import type { User } from '@/store/authStore'
 
@@ -34,7 +34,8 @@ function getUserFromToken(token: string): User | null {
 
 export function useGuestAuth() {
   const navigate = useNavigate()
-  const { accessToken, refreshToken: storedRefreshToken, user, isAuthenticated, setAuth, clearAuth } = useAuthStore()
+  const { accessToken, refreshToken: storedRefreshToken, user, isAuthenticated, setAuth, clearAuth } =
+    useGuestAuthStore()
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const scheduleRefresh = useCallback(
@@ -56,6 +57,7 @@ export function useGuestAuth() {
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
             tokenType: data.token_type,
+            sessionId: data.session_id ?? null,
             user: newUser || { id: '', email: '', role: '' },
           })
           scheduleRefresh(data.access_token, data.refresh_token)
@@ -82,11 +84,18 @@ export function useGuestAuth() {
   const login = useCallback(
     async (email: string, password: string): Promise<boolean> => {
       const data = await apiLogin({ email, password })
+      if (data.requires_2fa) {
+        throw new Error('2FA is not supported on the guest portal')
+      }
+      if (!data.access_token || !data.refresh_token) {
+        throw new Error('Invalid login response')
+      }
       const decodedUser = getUserFromToken(data.access_token)
       setAuth({
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
         tokenType: data.token_type,
+        sessionId: data.session_id ?? null,
         user: decodedUser || { id: '', email: '', role: '' },
       })
       scheduleRefresh(data.access_token, data.refresh_token)
@@ -97,8 +106,11 @@ export function useGuestAuth() {
   )
 
   const logout = useCallback(async () => {
+    const { refreshToken: rt, sessionId: sid } = useGuestAuthStore.getState()
     try {
-      await apiLogout()
+      if (rt) {
+        await apiLogout(rt, sid)
+      }
     } catch {
       // ignore errors during logout
     } finally {

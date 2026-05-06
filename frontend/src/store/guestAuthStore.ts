@@ -1,28 +1,22 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { User } from '@/store/authStore'
 
-export interface User {
-  id: string
-  email: string
-  role: string
-  name?: string
-}
-
-export interface AuthTokens {
+export interface GuestAuthTokens {
   accessToken: string
   refreshToken: string
   tokenType: string
   sessionId?: string | null
 }
 
-interface AuthState extends AuthTokens {
+interface GuestAuthState extends GuestAuthTokens {
   user: User | null
   isAuthenticated: boolean
-  setAuth: (tokens: AuthTokens & { user: User }) => void
+  setAuth: (tokens: GuestAuthTokens & { user: User }) => void
   clearAuth: () => void
 }
 
-const initialState: Omit<AuthState, 'setAuth' | 'clearAuth'> = {
+const initialState: Omit<GuestAuthState, 'setAuth' | 'clearAuth'> = {
   accessToken: '',
   refreshToken: '',
   tokenType: '',
@@ -31,7 +25,7 @@ const initialState: Omit<AuthState, 'setAuth' | 'clearAuth'> = {
   isAuthenticated: false,
 }
 
-export const useAuthStore = create<AuthState>()(
+export const useGuestAuthStore = create<GuestAuthState>()(
   persist(
     (set) => ({
       ...initialState,
@@ -47,7 +41,7 @@ export const useAuthStore = create<AuthState>()(
       clearAuth: () => set({ ...initialState }),
     }),
     {
-      name: 'brekora-auth',
+      name: 'brekora-guest-auth',
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

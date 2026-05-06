@@ -30,6 +30,11 @@ export interface BlockDatesInput {
   reason: string
 }
 
+export async function fetchCalendarProperties(): Promise<CalendarProperty[]> {
+  const { data } = await api.get<CalendarProperty[]>('/properties')
+  return data
+}
+
 export async function fetchCalendarData(
   property_id: string,
   year: number,

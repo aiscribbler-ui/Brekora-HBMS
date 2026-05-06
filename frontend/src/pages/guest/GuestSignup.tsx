@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { guestSignupSchema, type GuestSignupInput } from '@/lib/validation'
+import { signupGuest } from '@/services/guestApi'
+import { useGuestAuthStore } from '@/store/guestAuthStore'
+import { isAxiosError } from '@/lib/api'
 
 export default function GuestSignup() {
+  const navigate = useNavigate()
+  const setAuth = useGuestAuthStore((s) => s.setAuth)
   const {
     register,
     handleSubmit,
@@ -12,10 +17,46 @@ export default function GuestSignup() {
   } = useForm<GuestSignupInput>({
     resolver: zodResolver(guestSignupSchema),
   })
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  const onSubmit = async () => {
-    setInfoMsg('Registration will be available soon. Please contact us to book.')
+  const onSubmit = async (data: GuestSignupInput) => {
+    setErrorMsg(null)
+    try {
+      const response = await signupGuest({
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone: data.phone || undefined,
+        password: data.password,
+      })
+      setAuth({
+        accessToken: response.access_token,
+        refreshToken: response.refresh_token,
+        tokenType: response.token_type,
+        sessionId: response.session_id,
+        user: {
+          id: '',
+          email: data.email,
+          role: 'Guest',
+          name: `${data.firstName} ${data.lastName}`.trim(),
+        },
+      })
+      navigate('/guest')
+    } catch (err) {
+      if (isAxiosError<{ detail?: string }>(err)) {
+        const status = err.response?.status
+        const detail = err.response?.data?.detail
+        if (status === 409) {
+          setErrorMsg(detail || 'An account with this email already exists.')
+        } else if (detail) {
+          setErrorMsg(detail)
+        } else {
+          setErrorMsg('Could not create your account. Please try again.')
+        }
+      } else {
+        setErrorMsg('Could not create your account. Please try again.')
+      }
+    }
   }
 
   return (
@@ -26,9 +67,9 @@ export default function GuestSignup() {
           <p className="text-sm text-teal-600 mt-1">Join us for a seamless booking experience</p>
         </div>
 
-        {infoMsg && (
-          <div className="mb-4 p-3 bg-amber-50 text-amber-800 rounded-lg border border-amber-200" role="status">
-            {infoMsg}
+        {errorMsg && (
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
+            {errorMsg}
           </div>
         )}
 

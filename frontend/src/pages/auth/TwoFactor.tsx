@@ -1,13 +1,24 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { twoFactorSchema, type TwoFactorInput } from '@/lib/validation'
+import { useAuth } from '@/hooks/useAuth'
+import { isAxiosError } from '@/lib/api'
+
+interface LocationState {
+  tempToken?: string | null
+  email?: string
+}
 
 export default function TwoFactor() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
-  const email = searchParams.get('email') || ''
+  const { verify2FA } = useAuth()
+  const state = (location.state as LocationState | null) ?? null
+  const tempToken = state?.tempToken ?? null
+  const email = state?.email || searchParams.get('email') || ''
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const {
@@ -18,10 +29,37 @@ export default function TwoFactor() {
     resolver: zodResolver(twoFactorSchema),
   })
 
-  const onSubmit = async () => {
+  useEffect(() => {
+    if (!tempToken) {
+      // Direct navigation without going through /login first.
+      setErrorMsg('Your sign-in session expired. Please log in again.')
+    }
+  }, [tempToken])
+
+  const onSubmit = async (data: TwoFactorInput) => {
     setErrorMsg(null)
-    // Stub: TOTP verification endpoint not yet implemented
-    setErrorMsg('2FA verification is not yet implemented.')
+    if (!tempToken) {
+      navigate('/login', { replace: true })
+      return
+    }
+    try {
+      await verify2FA(tempToken, data.code)
+      // verify2FA navigates by role on success
+    } catch (err) {
+      if (isAxiosError<{ detail?: string }>(err)) {
+        const status = err.response?.status
+        const detail = err.response?.data?.detail
+        if (status === 401) {
+          setErrorMsg(detail || 'Invalid or expired code. Please try again.')
+        } else if (detail) {
+          setErrorMsg(detail)
+        } else {
+          setErrorMsg('Could not verify code. Please try again.')
+        }
+      } else {
+        setErrorMsg('Could not verify code. Please try again.')
+      }
+    }
   }
 
   return (
@@ -63,7 +101,7 @@ export default function TwoFactor() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !tempToken}
             className="w-full py-2.5 px-4 bg-brand-600 text-white font-medium rounded-md hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Verifying...' : 'Verify'}

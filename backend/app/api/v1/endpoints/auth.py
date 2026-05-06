@@ -11,6 +11,7 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.auth import (
     LoginResponse,
+    MeResponse,
     RefreshTokenRequest,
     TokenResponse,
     TwoFADisableRequest,
@@ -43,6 +44,24 @@ async def _check_rate_limit(
     pipe.expire(key, window_seconds)
     await pipe.execute()
     return True
+
+
+@router.get("/me", response_model=MeResponse)
+async def me(current_user: User = Depends(get_current_user)) -> MeResponse:
+    role_name = current_user.role.name if current_user.role else None
+    full_name = f"{current_user.first_name or ''} {current_user.last_name or ''}".strip() or None
+    return MeResponse(
+        id=current_user.id,
+        org_id=current_user.org_id,
+        email=current_user.email,
+        role=role_name,
+        first_name=current_user.first_name,
+        last_name=current_user.last_name,
+        name=full_name,
+        is_2fa_enabled=bool(current_user.is_2fa_enabled),
+        is_active=bool(current_user.is_active),
+        last_login=current_user.last_login,
+    )
 
 
 @router.post("/login", response_model=LoginResponse)

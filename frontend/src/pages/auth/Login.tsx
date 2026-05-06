@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { loginSchema, type LoginInput } from '@/lib/validation'
 import { isAxiosError } from '@/lib/api'
 import LiveRegion from '@/components/a11y/LiveRegion'
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
+import { googleLogin } from '@/services/authApi'
+import { useAuthStore } from '@/store/authStore'
+import { defaultRouteForRole, normaliseRole } from '@/lib/roles'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const setAuth = useAuthStore((s) => s.setAuth)
   const {
     register,
     handleSubmit,
@@ -19,27 +24,53 @@ export default function Login() {
   })
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
+  const handleGoogleIdToken = async (idToken: string) => {
+    setErrorMsg(null)
+    try {
+      const data = await googleLogin(idToken)
+      const fullName = [data.user.first_name, data.user.last_name].filter(Boolean).join(' ').trim()
+      const role = data.user.role || 'Guest'
+      setAuth({
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        tokenType: data.token_type,
+        sessionId: data.session_id,
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          role,
+          name: fullName || undefined,
+        },
+      })
+      navigate(defaultRouteForRole(normaliseRole(role)))
+    } catch (err) {
+      if (isAxiosError<{ detail?: string }>(err)) {
+        setErrorMsg(err.response?.data?.detail || 'Google sign-in failed.')
+      } else {
+        setErrorMsg('Google sign-in failed.')
+      }
+    }
+  }
+
   const onSubmit = async (data: LoginInput) => {
     setErrorMsg(null)
     try {
       const result = await login(data.email, data.password)
       if (result.requires2FA) {
-        navigate(`/2fa?email=${encodeURIComponent(data.email)}`)
+        navigate('/2fa', { state: { tempToken: result.tempToken, email: data.email } })
         return
       }
-      // success navigates to dashboard inside useAuth.login
+      // success navigates inside useAuth.login (role-based redirect)
     } catch (err) {
       if (isAxiosError<{ detail?: string; requires_2fa?: boolean }>(err)) {
-        if (err.response?.data?.requires_2fa) {
-          navigate(`/2fa?email=${encodeURIComponent(data.email)}`)
-          return
-        }
         const status = err.response?.status
         const detail = err.response?.data?.detail
         if (status === 401) {
           setErrorMsg('Invalid email or password.')
         } else if (status === 423) {
           setErrorMsg('Account is locked. Please contact support.')
+        } else if (status === 429) {
+          setErrorMsg(detail || 'Too many login attempts. Please try again later.')
         } else if (detail) {
           setErrorMsg(detail)
         } else {
@@ -110,13 +141,20 @@ export default function Login() {
           </button>
         </form>
 
+        <div className="mt-5 mb-3 flex items-center gap-3">
+          <div className="h-px flex-1 bg-gray-200" />
+          <span className="text-xs uppercase tracking-wider text-gray-400">or</span>
+          <div className="h-px flex-1 bg-gray-200" />
+        </div>
+        <GoogleSignInButton
+          onIdToken={handleGoogleIdToken}
+          onError={(msg) => setErrorMsg(msg)}
+        />
+
         <div className="mt-4 text-center">
-          <Link
-            to="/forgot-password"
-            className="text-sm text-brand-600 hover:text-brand-700 hover:underline focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
-          >
-            Forgot password?
-          </Link>
+          <p className="text-xs text-gray-500">
+            Forgot your password? Contact your administrator to reset it.
+          </p>
         </div>
       </div>
     </div>

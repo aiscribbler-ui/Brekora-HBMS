@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   fetchCalendarData,
+  fetchCalendarProperties,
   blockDates,
   type CalendarProperty,
   type CalendarRoomType,
@@ -30,11 +31,34 @@ export function useCalendar() {
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('')
   const [state, setState] = useState<CalendarState>(initialState)
 
-  const loadCalendar = useCallback(async () => {
-    if (!selectedPropertyId) {
-      setState((prev) => ({ ...prev, isLoading: false, error: null }))
-      return
+  // Always load properties so the dropdown is populated, regardless of selection.
+  useEffect(() => {
+    let cancelled = false
+    fetchCalendarProperties()
+      .then((properties) => {
+        if (cancelled) return
+        setState((prev) => ({ ...prev, properties }))
+        if (properties.length > 0) {
+          setSelectedPropertyId((prev) => prev || properties[0].id)
+        } else {
+          setState((prev) => ({ ...prev, isLoading: false }))
+        }
+      })
+      .catch((err) => {
+        if (cancelled) return
+        let message = 'Failed to load properties.'
+        if (isAxiosError(err) && err.response?.data?.detail) {
+          message = err.response.data.detail
+        }
+        setState((prev) => ({ ...prev, isLoading: false, error: message }))
+      })
+    return () => {
+      cancelled = true
     }
+  }, [])
+
+  const loadCalendar = useCallback(async () => {
+    if (!selectedPropertyId) return
 
     setState((prev) => ({ ...prev, isLoading: true, error: null }))
 
@@ -42,13 +66,13 @@ export function useCalendar() {
       const year = currentMonth.getFullYear()
       const month = currentMonth.getMonth()
       const data = await fetchCalendarData(selectedPropertyId, year, month)
-      setState({
-        properties: data.properties,
+      setState((prev) => ({
+        properties: data.properties.length > 0 ? data.properties : prev.properties,
         roomTypes: data.roomTypes,
         availability: data.availability,
         isLoading: false,
         error: null,
-      })
+      }))
     } catch (err) {
       let message = 'Failed to load calendar data.'
       if (isAxiosError(err) && err.response?.data?.detail) {
@@ -65,12 +89,6 @@ export function useCalendar() {
   useEffect(() => {
     loadCalendar()
   }, [loadCalendar])
-
-  useEffect(() => {
-    if (state.properties.length > 0 && !selectedPropertyId) {
-      setSelectedPropertyId(state.properties[0].id)
-    }
-  }, [state.properties, selectedPropertyId])
 
   const goToPrevMonth = useCallback(() => {
     setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))

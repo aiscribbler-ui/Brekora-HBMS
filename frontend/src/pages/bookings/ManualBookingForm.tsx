@@ -4,6 +4,7 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuth } from '@/hooks/useAuth'
+import { hasRole } from '@/lib/roles'
 import { getProperties, type Property, type RoomType } from '@/services/propertyApi'
 import { getPackages, type Package } from '@/services/packageApi'
 import { getRoomAvailability } from '@/services/publicApi'
@@ -61,12 +62,6 @@ export type ManualBookingFormData = z.infer<typeof manualBookingSchema>
 export default function ManualBookingForm() {
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
-
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'manager') {
-      navigate('/login')
-    }
-  }, [isAuthenticated, user, navigate])
 
   const methods = useForm<ManualBookingFormData>({
     resolver: zodResolver(manualBookingSchema),
@@ -286,7 +281,9 @@ export default function ManualBookingForm() {
     }
   }
 
-  if (!isAuthenticated || user?.role !== 'manager') {
+  if (!isAuthenticated || !hasRole(user?.role, ['Manager', 'Admin'])) {
+    // RequireRole around the route handles the redirect; render nothing while
+    // the user shape is reconciling on cold load to avoid a flash of content.
     return null
   }
 

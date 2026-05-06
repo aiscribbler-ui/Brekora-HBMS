@@ -70,8 +70,33 @@ export interface OtaMapping {
 }
 
 export async function getOtaQueue(filters?: QueueFilters): Promise<QueueListResponse> {
-  const { data } = await api.get<QueueListResponse>('/ota/queue', { params: filters })
-  return data
+  // The backend currently returns a flat list; normalise to the paginated shape
+  // the UI expects so a missing `items` doesn't crash useMemo lookups.
+  const params: Record<string, string | number | undefined> = {}
+  if (filters?.source_type) params.source_type = filters.source_type
+  if (filters?.status) params.status = filters.status
+  if (filters?.date_from) params.date_from = filters.date_from
+  if (filters?.date_to) params.date_to = filters.date_to
+  const pageSize = filters?.page_size ?? 50
+  const page = filters?.page ?? 1
+  params.skip = (page - 1) * pageSize
+  params.limit = pageSize
+
+  const { data } = await api.get<ParsedBooking[] | QueueListResponse>('/ota/queue/', { params })
+  if (Array.isArray(data)) {
+    return {
+      items: data,
+      total: data.length,
+      page,
+      page_size: pageSize,
+    }
+  }
+  return {
+    items: data.items ?? [],
+    total: data.total ?? 0,
+    page: data.page ?? page,
+    page_size: data.page_size ?? pageSize,
+  }
 }
 
 export async function getOtaQueueItem(id: string): Promise<ParsedBooking> {

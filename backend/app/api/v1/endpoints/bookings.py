@@ -1,8 +1,9 @@
 import uuid
-from datetime import date
+from datetime import date, timedelta
 from typing import List
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from pydantic import BaseModel
 from redis.asyncio import Redis
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -78,12 +79,79 @@ def _validate_status_transition(current: str | None, new: str) -> None:
 @router.get("/", response_model=List[BookingRead])
 async def list_bookings(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = Query(200, le=500),
+    property_id: uuid.UUID | None = None,
+    status_filter: str | None = Query(default=None, alias="status"),
+    check_in_on: date | None = None,
+    check_out_on: date | None = None,
+    overlaps_from: date | None = None,
+    overlaps_to: date | None = None,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
 ) -> List[BookingRead]:
     repo = BookingRepository(db, org_id)
+    if any([property_id, status_filter, check_in_on, check_out_on, overlaps_from, overlaps_to]):
+        return await repo.list_filtered(
+            property_id=property_id,
+            status=status_filter,
+            check_in_on=check_in_on,
+            check_out_on=check_out_on,
+            overlaps_from=overlaps_from,
+            overlaps_to=overlaps_to,
+            skip=skip,
+            limit=limit,
+        )
     return await repo.get_multi(skip=skip, limit=limit)
+
+
+class DashboardSummaryResponse(BaseModel):
+    arrivals: int
+    departures: int
+    in_house: int
+    pending_check_ins: int
+    payment_failures: int
+    pending_refunds: int
+
+
+@router.get("/summary", response_model=DashboardSummaryResponse)
+async def bookings_summary(
+    on_date: date | None = Query(default=None, alias="on_date"),
+    db: AsyncSession = Depends(get_db),
+    org_id: uuid.UUID = Depends(get_org_id),
+) -> DashboardSummaryResponse:
+    today = on_date or date.today()
+    repo = BookingRepository(db, org_id)
+    # Pull a window we know covers the metrics we need (yesterday..tomorrow + status flags).
+    relevant = await repo.list_filtered(
+        overlaps_from=today - timedelta(days=1),
+        overlaps_to=today + timedelta(days=2),
+        limit=500,
+    )
+    arrivals = sum(1 for b in relevant if b.check_in == today and b.status != BookingStatus.cancelled.value)
+    departures = sum(1 for b in relevant if b.check_out == today and b.status != BookingStatus.cancelled.value)
+    in_house = sum(
+        1 for b in relevant
+        if b.check_in <= today < b.check_out and b.status not in (BookingStatus.cancelled.value, BookingStatus.pending_payment.value)
+    )
+    pending_check_ins = sum(
+        1 for b in relevant
+        if b.check_in == today and b.status == BookingStatus.confirmed.value
+    )
+
+    failed = await repo.list_filtered(status=BookingStatus.payment_failed.value, limit=500)
+    pending_refunds = await repo.list_filtered(status=BookingStatus.cancelled.value, limit=500)
+    pending_refund_count = sum(
+        1 for b in pending_refunds if (b.payment_state or '').lower() == 'refund_pending'
+    )
+
+    return DashboardSummaryResponse(
+        arrivals=arrivals,
+        departures=departures,
+        in_house=in_house,
+        pending_check_ins=pending_check_ins,
+        payment_failures=len(failed),
+        pending_refunds=pending_refund_count,
+    )
 
 
 @router.post("/", response_model=BookingRead, status_code=201)

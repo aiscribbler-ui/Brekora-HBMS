@@ -1,7 +1,9 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
 import App from '@/App'
+import RequireRole from '@/components/auth/RequireRole'
 import Login from '@/pages/auth/Login'
 import TwoFactor from '@/pages/auth/TwoFactor'
+import TwoFactorEnrol from '@/pages/auth/TwoFactorEnrol'
 import ManagerDashboard from '@/pages/dashboard/ManagerDashboard'
 import GuestLogin from '@/pages/guest/GuestLogin'
 import GuestSignup from '@/pages/guest/GuestSignup'
@@ -24,6 +26,9 @@ import BookingConfirmation from '@/pages/public/BookingConfirmation'
 import AdminPanel from '@/pages/admin/AdminPanel'
 import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
+const STAFF = ['Manager', 'Admin'] as const
+const STAFF_OR_OWNER = ['Manager', 'Admin', 'Owner'] as const
+
 export const routes: RouteObject[] = [
   {
     path: '/',
@@ -32,7 +37,11 @@ export const routes: RouteObject[] = [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       {
         path: 'dashboard',
-        element: <ManagerDashboard />,
+        element: (
+          <RequireRole allowed={STAFF_OR_OWNER}>
+            <ManagerDashboard />
+          </RequireRole>
+        ),
       },
       {
         path: 'login',
@@ -43,36 +52,76 @@ export const routes: RouteObject[] = [
         element: <TwoFactor />,
       },
       {
+        path: '2fa/setup',
+        element: (
+          <RequireRole allowed={STAFF_OR_OWNER}>
+            <TwoFactorEnrol />
+          </RequireRole>
+        ),
+      },
+      {
         path: 'properties',
-        element: <PropertyList />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <PropertyList />
+          </RequireRole>
+        ),
       },
       {
         path: 'properties/:id',
-        element: <PropertyDetail />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <PropertyDetail />
+          </RequireRole>
+        ),
       },
       {
         path: 'properties/:id/room-types',
-        element: <RoomTypeList />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <RoomTypeList />
+          </RequireRole>
+        ),
       },
       {
         path: 'properties/:id/room-types/:roomTypeId',
-        element: <RoomTypeForm />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <RoomTypeForm />
+          </RequireRole>
+        ),
       },
       {
         path: 'calendar',
-        element: <CalendarGrid />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <CalendarGrid />
+          </RequireRole>
+        ),
       },
       {
         path: 'packages',
-        element: <PackageList />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <PackageList />
+          </RequireRole>
+        ),
       },
       {
         path: 'packages/:id',
-        element: <PackageBuilder />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <PackageBuilder />
+          </RequireRole>
+        ),
       },
       {
         path: 'ota/queue',
-        element: <OtaQueue />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <OtaQueue />
+          </RequireRole>
+        ),
       },
       {
         path: 'guest/login',
@@ -84,19 +133,35 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'guest',
-        element: <GuestDashboard />,
+        element: (
+          <RequireRole allowed={['Guest']} redirectTo="/guest/login">
+            <GuestDashboard />
+          </RequireRole>
+        ),
       },
       {
         path: 'bookings/manual',
-        element: <ManualBookingForm />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <ManualBookingForm />
+          </RequireRole>
+        ),
       },
       {
         path: 'bookings/:id',
-        element: <BookingDetail />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <BookingDetail />
+          </RequireRole>
+        ),
       },
       {
         path: 'bookings/:id/edit',
-        element: <BookingEdit />,
+        element: (
+          <RequireRole allowed={STAFF}>
+            <BookingEdit />
+          </RequireRole>
+        ),
       },
       {
         path: 'book',
@@ -116,15 +181,27 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'owner',
-        element: <OwnerDashboard />,
+        element: (
+          <RequireRole allowed={['Owner', 'Admin']}>
+            <OwnerDashboard />
+          </RequireRole>
+        ),
       },
       {
         path: 'admin',
-        element: <AdminPanel />,
+        element: (
+          <RequireRole allowed={['Admin']}>
+            <AdminPanel />
+          </RequireRole>
+        ),
       },
       {
         path: 'admin/*',
-        element: <AdminPanel />,
+        element: (
+          <RequireRole allowed={['Admin']}>
+            <AdminPanel />
+          </RequireRole>
+        ),
       },
       {
         path: '*',
