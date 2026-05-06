@@ -3,18 +3,18 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RoomTypeBase(BaseModel):
     name: str
     description: str | None = None
-    count: int = 0
-    base_capacity: int = 1
-    max_capacity: int = 1
-    default_rate: Decimal = Decimal("0.00")
-    min_stay: int | None = None
-    max_stay: int | None = None
+    count: int = Field(default=0, ge=0)
+    base_capacity: int = Field(default=1, ge=1)
+    max_capacity: int = Field(default=1, ge=1)
+    default_rate: Decimal = Field(default=Decimal("0.00"), ge=0)
+    min_stay: int | None = Field(default=None, ge=1)
+    max_stay: int | None = Field(default=None, ge=1)
     photos: list[dict[str, Any]] | None = None
     is_active: bool = True
 
@@ -25,10 +25,12 @@ class RoomTypeCreate(RoomTypeBase):
 
 class RoomTypeUpdate(RoomTypeBase):
     name: str | None = None
-    count: int | None = None
-    base_capacity: int | None = None
-    max_capacity: int | None = None
-    default_rate: Decimal | None = None
+    count: int | None = Field(default=None, ge=0)
+    base_capacity: int | None = Field(default=None, ge=1)
+    max_capacity: int | None = Field(default=None, ge=1)
+    default_rate: Decimal | None = Field(default=None, ge=0)
+    min_stay: int | None = Field(default=None, ge=1)
+    max_stay: int | None = Field(default=None, ge=1)
     is_active: bool | None = None
     is_archived: bool | None = None
 

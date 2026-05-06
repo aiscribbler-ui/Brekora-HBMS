@@ -153,7 +153,6 @@ export default function RoomCompositionBuilder({
       {!loading && roomTypes.length > 0 && (
         <div className="space-y-3">
           {compositions.map((comp, idx) => {
-            const rt = roomTypeMap.get(comp.room_type_id)
             return (
               <div
                 key={idx}

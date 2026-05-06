@@ -1,4 +1,9 @@
-import { Users, LogOut, Home, Clock } from 'lucide-react'
+import {
+  UserPlusIcon,
+  ArrowRightOnRectangleIcon,
+  HomeIcon,
+  ClockIcon,
+} from '@heroicons/react/24/outline'
 
 export interface TodayViewProps {
   arrivals: number
@@ -7,77 +12,63 @@ export interface TodayViewProps {
   pendingCheckIns: number
 }
 
-interface Stat {
-  label: string
-  value: number
-  icon: typeof Users
-  bg: string
-  iconBg: string
-  text: string
-  valueText: string
-}
+const stats = [
+  {
+    label: 'Arrivals',
+    key: 'arrivals' as const,
+    icon: UserPlusIcon,
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    number: 'text-emerald-800',
+  },
+  {
+    label: 'Departures',
+    key: 'departures' as const,
+    icon: ArrowRightOnRectangleIcon,
+    bg: 'bg-orange-50',
+    text: 'text-orange-700',
+    number: 'text-orange-800',
+  },
+  {
+    label: 'In-House',
+    key: 'inHouse' as const,
+    icon: HomeIcon,
+    bg: 'bg-blue-50',
+    text: 'text-blue-700',
+    number: 'text-blue-800',
+  },
+  {
+    label: 'Pending Check-ins',
+    key: 'pendingCheckIns' as const,
+    icon: ClockIcon,
+    bg: 'bg-amber-50',
+    text: 'text-amber-700',
+    number: 'text-amber-800',
+  },
+]
 
 export default function TodayView({ arrivals, departures, inHouse, pendingCheckIns }: TodayViewProps) {
-  const stats: Stat[] = [
-    {
-      label: 'Arrivals',
-      value: arrivals,
-      icon: Users,
-      bg: 'bg-emerald-50',
-      iconBg: 'bg-emerald-100 text-emerald-600',
-      text: 'text-emerald-700',
-      valueText: 'text-emerald-900',
-    },
-    {
-      label: 'Departures',
-      value: departures,
-      icon: LogOut,
-      bg: 'bg-orange-50',
-      iconBg: 'bg-orange-100 text-orange-600',
-      text: 'text-orange-700',
-      valueText: 'text-orange-900',
-    },
-    {
-      label: 'In-House',
-      value: inHouse,
-      icon: Home,
-      bg: 'bg-blue-50',
-      iconBg: 'bg-blue-100 text-blue-600',
-      text: 'text-blue-700',
-      valueText: 'text-blue-900',
-    },
-    {
-      label: 'Pending Check-ins',
-      value: pendingCheckIns,
-      icon: Clock,
-      bg: 'bg-amber-50',
-      iconBg: 'bg-amber-100 text-amber-600',
-      text: 'text-amber-700',
-      valueText: 'text-amber-900',
-    },
-  ]
+  const values = { arrivals, departures, inHouse, pendingCheckIns }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 h-full">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <span className="w-1.5 h-5 bg-gradient-to-b from-brand-500 to-brand-700 rounded-full" aria-hidden="true" />
-        Today
-      </h3>
-      <div className="grid grid-cols-2 gap-3">
-        {stats.map(({ label, value, icon: Icon, bg, iconBg, text, valueText }) => (
-          <div key={label} className={`${bg} rounded-xl p-3 transition-transform hover:scale-[1.02]`}>
-            <div className="flex items-center justify-between mb-2">
-              <span className={`text-xs font-medium ${text}`}>{label}</span>
-              <span
-                className={`inline-flex items-center justify-center w-7 h-7 rounded-lg ${iconBg}`}
-                aria-hidden="true"
-              >
-                <Icon className="w-4 h-4" />
-              </span>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Today</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon
+          return (
+            <div
+              key={stat.key}
+              className={`${stat.bg} rounded-xl p-3 flex flex-col gap-1`}
+            >
+              <div className="flex items-center gap-1.5">
+                <Icon className={`h-4 w-4 ${stat.text}`} aria-hidden="true" />
+                <p className={`text-xs ${stat.text} font-medium`}>{stat.label}</p>
+              </div>
+              <p className={`text-2xl font-bold ${stat.number}`}>{values[stat.key]}</p>
             </div>
-            <p className={`text-2xl font-bold ${valueText}`}>{value}</p>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

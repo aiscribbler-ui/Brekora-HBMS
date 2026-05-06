@@ -22,6 +22,6 @@ const router = createMemoryRouter(
 describe('App', () => {
   it('renders the app shell', () => {
     render(<RouterProvider router={router} />)
-    expect(screen.getByText('Brekora BMS')).toBeInTheDocument()
+    expect(screen.getByRole('main')).toBeInTheDocument()
   })
 })

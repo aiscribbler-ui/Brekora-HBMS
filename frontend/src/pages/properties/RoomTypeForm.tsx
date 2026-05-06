@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
@@ -64,8 +64,8 @@ export default function RoomTypeForm() {
       base_capacity: 2,
       max_capacity: 3,
       default_rate: '',
-      min_stay: '',
-      max_stay: '',
+      min_stay: undefined,
+      max_stay: undefined,
     },
   })
 
@@ -90,8 +90,8 @@ export default function RoomTypeForm() {
           base_capacity: data.base_capacity,
           max_capacity: data.max_capacity,
           default_rate: data.default_rate,
-          min_stay: data.min_stay ?? '',
-          max_stay: data.max_stay ?? '',
+          min_stay: data.min_stay ?? undefined,
+          max_stay: data.max_stay ?? undefined,
         })
       })
       .catch((err) => {
@@ -109,7 +109,7 @@ export default function RoomTypeForm() {
     return () => { cancelled = true }
   }, [propertyId, roomTypeId, isNew, reset])
 
-  const onSubmit = async (form: RoomTypeFormData) => {
+  const onSubmit: SubmitHandler<RoomTypeFormData> = async (form) => {
     if (!propertyId) return
     setError(null)
     setSaving(true)
@@ -137,8 +137,8 @@ export default function RoomTypeForm() {
           base_capacity: updated.base_capacity,
           max_capacity: updated.max_capacity,
           default_rate: updated.default_rate,
-          min_stay: updated.min_stay ?? '',
-          max_stay: updated.max_stay ?? '',
+          min_stay: updated.min_stay ?? undefined,
+          max_stay: updated.max_stay ?? undefined,
         })
       }
     } catch (err) {

@@ -566,8 +566,8 @@ export default function PackageBuilder() {
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Pricing Rules</h2>
             <PricingRules
-              value={pricingRules as Record<string, unknown>}
-              onChange={(next) => setValue('pricing_rules', next, { shouldValidate: true })}
+              value={pricingRules as unknown as Record<string, unknown>}
+              onChange={(next) => setValue('pricing_rules', next as unknown as Record<string, unknown>, { shouldValidate: true })}
             />
           </div>
         )}

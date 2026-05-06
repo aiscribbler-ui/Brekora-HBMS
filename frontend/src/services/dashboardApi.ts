@@ -71,7 +71,7 @@ interface BookingSummaryResponse {
 }
 
 export async function fetchProperties(): Promise<Property[]> {
-  const { data } = await api.get<Property[]>('/properties')
+  const { data } = await api.get<Property[]>('/properties/')
   return data
 }
 
@@ -106,94 +106,90 @@ async function fetchBookingsSummary(): Promise<BookingSummaryResponse | null> {
 
 export async function fetchRawEmailQueue(): Promise<{ count: number }> {
   try {
-    const { data } = await api.get<{ items?: unknown[]; total?: number }>('/ota/queue')
-    const count = Array.isArray(data?.items) ? data.items.length : (data?.total ?? 0)
-    return { count }
+    const { data } = await api.get<{ items: unknown[] }>('/ota/queue')
+    return { count: data.items?.length ?? 0 }
   } catch {
     return { count: 0 }
   }
 }
 
 export async function fetchDashboardSummary(): Promise<DashboardSummary> {
-  const summary = await fetchBookingsSummary()
-  if (summary) {
-    return {
-      arrivals: summary.arrivals,
-      departures: summary.departures,
-      inHouse: summary.in_house,
-      pendingCheckIns: summary.pending_check_ins,
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const { data } = await api.get<Array<{
+      check_in: string
+      check_out: string
+      status: string
+    }>>('/bookings')
+
+    let arrivals = 0
+    let departures = 0
+    let inHouse = 0
+    let pendingCheckIns = 0
+
+    for (const b of data) {
+      if (b.check_in === today) {
+        arrivals++
+        if (b.status === 'confirmed') pendingCheckIns++
+      }
+      if (b.check_out === today) departures++
+      if (b.check_in <= today && b.check_out > today) inHouse++
     }
-  }
 
-  // Fallback: derive locally if /bookings/summary is unavailable.
-  const today = new Date().toISOString().split('T')[0]
-  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  const bookings = await fetchBookings({ overlaps_from: today, overlaps_to: tomorrow })
-
-  let arrivals = 0
-  let departures = 0
-  let inHouse = 0
-  let pendingCheckIns = 0
-
-  for (const b of bookings) {
-    const checkIn = (b.check_in || '').slice(0, 10)
-    const checkOut = (b.check_out || '').slice(0, 10)
-    const status = (b.status || '').toLowerCase()
-
-    if (status === 'cancelled') continue
-
-    if (checkIn === today) arrivals += 1
-    if (checkOut === today) departures += 1
-    if (checkIn <= today && checkOut > today) inHouse += 1
-    if (checkIn === today && status === 'confirmed') pendingCheckIns += 1
+    return { arrivals, departures, inHouse, pendingCheckIns }
+  } catch {
+    return { arrivals: 0, departures: 0, inHouse: 0, pendingCheckIns: 0 }
   }
 
   return { arrivals, departures, inHouse, pendingCheckIns }
 }
 
 export async function fetchWeekSummary(): Promise<WeekSummaryData> {
-  return {
-    occupancyPercent: 0,
-    adrByProperty: [],
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+    const properties = await fetchProperties()
+    if (properties.length === 0) {
+      return { occupancyPercent: 0, adrByProperty: [] }
+    }
+
+    const availabilityData = await fetchAvailability({
+      property_id: properties[0].id,
+      check_in: today,
+      check_out: weekFromNow,
+    })
+
+    const totalRooms = availabilityData.reduce((sum, d) => sum + d.total_count, 0)
+    const availableRooms = availabilityData.reduce((sum, d) => sum + d.available_count, 0)
+    const occupancyPercent = totalRooms > 0 ? Math.round(((totalRooms - availableRooms) / totalRooms) * 100) : 0
+
+    return {
+      occupancyPercent,
+      adrByProperty: properties.map((p) => ({
+        propertyId: p.id,
+        propertyName: p.name,
+        adr: 0,
+      })),
+    }
+  } catch {
+    return { occupancyPercent: 0, adrByProperty: [] }
   }
 }
 
 export async function fetchOpenTasks(): Promise<OpenTasksData> {
-  let otaQueueReview = 0
   try {
-    const { data } = await api.get<Record<string, number> | { total?: number; counts?: Record<string, number> }>(
-      '/ota/alerts/count',
-    )
-    if (typeof data === 'object' && data !== null) {
-      if ('counts' in data && data.counts) {
-        otaQueueReview = Object.values(data.counts).reduce((sum, n) => sum + (Number(n) || 0), 0)
-      } else if ('total' in data && typeof data.total === 'number') {
-        otaQueueReview = data.total
-      } else {
-        otaQueueReview = Object.values(data as Record<string, number>).reduce(
-          (sum, n) => sum + (Number(n) || 0),
-          0,
-        )
-      }
-    }
+    // OTA queue review count from alerts
+    const { data: alertCounts } = await api.get<Array<{ source_type: string; count: number }>>('/ota/alerts/count')
+    const otaQueueReview = alertCounts.reduce((sum, entry) => sum + (entry.count ?? 0), 0)
+
+    // Payment failures and pending refunds from bookings
+    const { data: bookings } = await api.get<Array<{ status: string }>>('/bookings/')
+    const paymentFailures = bookings.filter((b) => b.status === 'payment_failed').length
+    const pendingRefunds = bookings.filter((b) => b.status === 'refund_pending').length
+
+    return { otaQueueReview, paymentFailures, pendingRefunds }
   } catch {
-    otaQueueReview = 0
-  }
-
-  const summary = await fetchBookingsSummary()
-  if (summary) {
-    return {
-      otaQueueReview,
-      paymentFailures: summary.payment_failures,
-      pendingRefunds: summary.pending_refunds,
-    }
-  }
-
-  // Fallback to scanning the list endpoint.
-  const bookings = await fetchBookings({ status: 'payment_failed' })
-  return {
-    otaQueueReview,
-    paymentFailures: bookings.length,
-    pendingRefunds: 0,
+    return { otaQueueReview: 0, paymentFailures: 0, pendingRefunds: 0 }
   }
 }

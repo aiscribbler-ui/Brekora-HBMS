@@ -78,6 +78,8 @@ class SearchService:
             .where(
                 (Property.address.ilike(location_pattern))
                 | (Property.name.ilike(location_pattern))
+                | (Property.city.ilike(location_pattern))
+                | (Property.state.ilike(location_pattern))
             )
         )
         result = await self.session.execute(prop_stmt)

@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, time
+from decimal import Decimal
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict
@@ -11,6 +12,12 @@ class PropertyBase(BaseModel):
     gstin: str | None = None
     pan: str | None = None
     owner_contact: str | None = None
+    city: str | None = None
+    state: str | None = None
+    country: str | None = None
+    postal_code: str | None = None
+    latitude: Decimal | None = None
+    longitude: Decimal | None = None
     photos: list[dict[str, Any]] | None = None
     amenities: list[str] | None = None
     default_check_in_time: time | None = None

@@ -10,6 +10,7 @@ from app.db.session import get_db
 from app.models.add_on import AddOn, AddOnType
 from app.models.add_on_capacity import AddOnCapacity
 from app.repositories.add_on import AddOnCapacityRepository, AddOnRepository
+from app.api.deps import require_role
 from app.repositories.property import PropertyRepository
 from app.schemas.add_on import (
     AddOnCapacityCreate,
@@ -50,7 +51,7 @@ async def list_add_ons(
     return await repo.get_multi(skip=skip, limit=limit)
 
 
-@router.post("/", response_model=AddOnRead, status_code=201)
+@router.post("/", response_model=AddOnRead, status_code=201, dependencies=[Depends(require_role(["Admin", "Manager"]))])
 async def create_add_on(
     data: AddOnCreate,
     db: AsyncSession = Depends(get_db),
@@ -81,7 +82,7 @@ async def get_add_on(
     return addon
 
 
-@router.patch("/{add_on_id}", response_model=AddOnRead)
+@router.patch("/{add_on_id}", response_model=AddOnRead, dependencies=[Depends(require_role(["Admin", "Manager"]))])
 async def update_add_on(
     add_on_id: uuid.UUID,
     data: AddOnUpdate,
@@ -96,7 +97,7 @@ async def update_add_on(
     return await repo.update(addon, update_data)
 
 
-@router.delete("/{add_on_id}", status_code=204)
+@router.delete("/{add_on_id}", status_code=204, dependencies=[Depends(require_role(["Admin", "Manager"]))])
 async def delete_add_on(
     add_on_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -130,7 +131,7 @@ async def list_add_on_capacities(
 
 
 @router.post(
-    "/{add_on_id}/capacity", response_model=AddOnCapacityRead, status_code=201
+    "/{add_on_id}/capacity", response_model=AddOnCapacityRead, status_code=201, dependencies=[Depends(require_role(["Admin", "Manager"]))]
 )
 async def create_add_on_capacity(
     add_on_id: uuid.UUID,
@@ -153,6 +154,7 @@ async def create_add_on_capacity(
     "/{add_on_id}/generate-capacity",
     response_model=List[AddOnCapacityRead],
     status_code=201,
+    dependencies=[Depends(require_role(["Admin", "Manager"]))],
 )
 async def generate_capacity(
     add_on_id: uuid.UUID,
@@ -245,7 +247,7 @@ async def get_add_on_capacity(
     return cap
 
 
-@router.patch("/capacity/{capacity_id}", response_model=AddOnCapacityRead)
+@router.patch("/capacity/{capacity_id}", response_model=AddOnCapacityRead, dependencies=[Depends(require_role(["Admin", "Manager"]))])
 async def update_add_on_capacity(
     capacity_id: uuid.UUID,
     data: AddOnCapacityUpdate,
@@ -267,7 +269,7 @@ async def update_add_on_capacity(
     return await cap_repo.update(cap, update_data)
 
 
-@router.delete("/capacity/{capacity_id}", status_code=204)
+@router.delete("/capacity/{capacity_id}", status_code=204, dependencies=[Depends(require_role(["Admin", "Manager"]))])
 async def delete_add_on_capacity(
     capacity_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),

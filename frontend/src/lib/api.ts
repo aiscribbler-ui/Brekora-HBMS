@@ -24,9 +24,12 @@ function pickActiveToken(): { token: string; isGuest: boolean } | null {
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const active = pickActiveToken()
-    if (active) {
-      config.headers.set('Authorization', `Bearer ${active.token}`)
+    const { accessToken, user } = useAuthStore.getState()
+    if (accessToken) {
+      config.headers.set('Authorization', `Bearer ${accessToken}`)
+    }
+    if (user?.org_id) {
+      config.headers.set('X-Org-ID', user.org_id)
     }
     return config
   },
@@ -69,6 +72,6 @@ api.interceptors.response.use(
   },
 )
 
-export function isAxiosError<T = unknown>(error: unknown): error is AxiosError<T> {
+export function isAxiosError<T = { detail?: string }>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
 }

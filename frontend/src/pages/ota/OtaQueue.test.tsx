@@ -81,7 +81,11 @@ describe('OtaQueue', () => {
       page: 1,
       page_size: 10,
     })
-    vi.spyOn(otaApi, 'getOtaQueueItem').mockResolvedValue(booking)
+    vi.spyOn(otaApi, 'getOtaQueueItem').mockResolvedValue({
+      parsed_booking: booking,
+      raw_email: null,
+      email_link: null,
+    })
 
     render(
       <MemoryRouter>

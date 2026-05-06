@@ -7,19 +7,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 from app.core.config import get_settings
 from app.core.redis import get_redis_client
+from app.core.security import create_access_token, create_refresh_token, get_password_hash
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.auth import (
     LoginResponse,
     MeResponse,
     RefreshTokenRequest,
+    SetupRequest,
+    SetupStatusResponse,
     TokenResponse,
     TwoFADisableRequest,
     TwoFALoginVerifyRequest,
     TwoFASetupResponse,
     TwoFAVerifyRequest,
 )
-from app.schemas.user import UserLogin
+from app.schemas.user import UserCreate, UserLogin
 from app.services.auth_service import AuthService
 from app.services.totp_service import TOTPService
 
@@ -72,7 +75,18 @@ async def login(
     org_id: uuid.UUID = Depends(get_org_id),
     redis_client: Redis = Depends(get_redis_client),
 ) -> LoginResponse:
-    rate_key = f"login_attempts:{org_id}:{data.email}"
+    from app.repositories.user import UserRepository
+
+    # If no X-Org-ID header was provided, look up user globally to discover their org
+    effective_org_id = org_id
+    header_org_id = request.headers.get("x-org-id")
+    if not header_org_id:
+        user_repo = UserRepository(db, org_id)
+        user = await user_repo.get_by_email_unscoped(data.email)
+        if user:
+            effective_org_id = user.org_id
+
+    rate_key = f"login_attempts:{effective_org_id}:{data.email}"
 
     allowed = await _check_rate_limit(redis_client, rate_key)
     if not allowed:
@@ -86,7 +100,7 @@ async def login(
         result = await auth_service.login(
             email=data.email,
             password=data.password,
-            org_id=org_id,
+            org_id=effective_org_id,
             ip=request.client.host if request.client else None,
             user_agent=request.headers.get("user-agent"),
         )
@@ -203,3 +217,179 @@ async def login_verify_2fa(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)
         )
     return result
+
+
+@router.get("/setup-status", response_model=SetupStatusResponse)
+async def setup_status(db: AsyncSession = Depends(get_db)) -> SetupStatusResponse:
+    from sqlalchemy import func, select
+    from app.models.user import User
+
+    count_result = await db.execute(select(func.count()).select_from(User))
+    user_count = count_result.scalar() or 0
+    return SetupStatusResponse(setup_required=user_count == 0)
+
+
+@router.post("/setup", status_code=status.HTTP_201_CREATED)
+async def setup(
+    request: Request,
+    data: SetupRequest,
+    db: AsyncSession = Depends(get_db),
+    redis_client: Redis = Depends(get_redis_client),
+) -> dict:
+    from sqlalchemy import func, select
+
+    from app.models.organization import Organization
+    from app.models.role import Role
+    from app.models.user import User
+    from app.services.session_service import SessionService
+
+    # Guard: only allow when no users exist
+    count_result = await db.execute(select(func.count()).select_from(User))
+    user_count = count_result.scalar() or 0
+    if user_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Setup already completed.",
+        )
+
+    # Remove any pre-seeded default organizations/roles from migrations
+    # so the new admin gets a clean org with their chosen slug.
+    existing_orgs = await db.execute(select(Organization))
+    for org_obj in existing_orgs.scalars().all():
+        await db.delete(org_obj)
+    await db.flush()
+
+    # 1. Create default organization
+    org_slug = data.org_name.lower().strip().replace(" ", "-")[:50]
+    org = Organization(name=data.org_name, slug=org_slug)
+    db.add(org)
+    await db.flush()
+    await db.refresh(org)
+
+    # 2. Create Admin role for this org
+    admin_role = Role(org_id=org.id, name="Admin", description="System administrator with full access")
+    db.add(admin_role)
+    await db.flush()
+    await db.refresh(admin_role)
+
+    # 3. Create ListingManager role for this org
+    listing_role = Role(
+        org_id=org.id,
+        name="ListingManager",
+        description="Manages OTA listings and content across all properties",
+    )
+    db.add(listing_role)
+    await db.flush()
+    await db.refresh(listing_role)
+
+    # 4. Create Owner role
+    owner_role = Role(org_id=org.id, name="Owner", description="Property owner")
+    db.add(owner_role)
+    await db.flush()
+    await db.refresh(owner_role)
+
+    # 5. Create Manager role
+    manager_role = Role(org_id=org.id, name="Manager", description="Property manager")
+    db.add(manager_role)
+    await db.flush()
+    await db.refresh(manager_role)
+
+    # 6. Create Partner role
+    partner_role = Role(org_id=org.id, name="Partner", description="Business partner")
+    db.add(partner_role)
+    await db.flush()
+    await db.refresh(partner_role)
+
+    # 7. Create Guest role
+    guest_role = Role(org_id=org.id, name="Guest", description="Direct booking guest")
+    db.add(guest_role)
+    await db.flush()
+    await db.refresh(guest_role)
+
+    # 8. Create first admin user
+    password_hash = get_password_hash(data.admin_password)
+    first_name = (data.admin_name or "").strip().split(" ")[0] if data.admin_name else None
+    last_name = " ".join((data.admin_name or "").strip().split(" ")[1:]) if data.admin_name else None
+    admin_user = User(
+        org_id=org.id,
+        email=data.admin_email.lower().strip(),
+        password_hash=password_hash,
+        first_name=first_name,
+        last_name=last_name,
+        role_id=admin_role.id,
+        is_active=True,
+        is_2fa_enabled=False,
+    )
+    db.add(admin_user)
+    await db.flush()
+    await db.refresh(admin_user)
+
+    # 8. Issue tokens and session
+    role_name = admin_role.name
+    name = f"{first_name or ''} {last_name or ''}".strip()
+    access_token = create_access_token(
+        admin_user.id, org.id, role=role_name, email=admin_user.email, name=name or None
+    )
+    refresh_jti = uuid.uuid4()
+    refresh_token = create_refresh_token(admin_user.id, org.id, refresh_jti)
+
+    settings = get_settings()
+    ttl = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
+    await redis_client.setex(f"refresh:{refresh_jti}", ttl, str(admin_user.id))
+
+    session_service = SessionService(redis_client)
+    session_id = await session_service.create_session(
+        user_id=str(admin_user.id),
+        role=role_name,
+        ip=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+    )
+
+    await db.commit()
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        "session_id": session_id,
+    }
+
+
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register(
+    data: UserCreate,
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, uuid.UUID | str]:
+    from app.repositories.role import RoleRepository
+    from app.repositories.user import UserRepository
+
+    user_repo = UserRepository(db, DEFAULT_ORG_ID)
+    existing = await user_repo.get_by_email(str(data.email))
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
+
+    role_repo = RoleRepository(db, DEFAULT_ORG_ID)
+    guest_role = await role_repo.get_by_name("Guest")
+    if not guest_role:
+        guest_role = await role_repo.create(
+            {"name": "Guest", "description": "Default guest role"}
+        )
+
+    password_hash = get_password_hash(data.password)
+    user = await user_repo.create(
+        {
+            "email": data.email,
+            "password_hash": password_hash,
+            "first_name": data.first_name,
+            "last_name": data.last_name,
+            "phone": data.phone,
+            "role_id": guest_role.id,
+            "is_active": True,
+        }
+    )
+
+    return {"id": user.id, "email": user.email}

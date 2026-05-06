@@ -3,13 +3,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { twoFactorSchema, type TwoFactorInput } from '@/lib/validation'
-import { useAuth } from '@/hooks/useAuth'
-import { isAxiosError } from '@/lib/api'
-
-interface LocationState {
-  tempToken?: string | null
-  email?: string
-}
+import { api } from '@/lib/api'
+import { useAuthStore } from '@/store/authStore'
 
 export default function TwoFactor() {
   const navigate = useNavigate()
@@ -29,35 +24,31 @@ export default function TwoFactor() {
     resolver: zodResolver(twoFactorSchema),
   })
 
-  useEffect(() => {
-    if (!tempToken) {
-      // Direct navigation without going through /login first.
-      setErrorMsg('Your sign-in session expired. Please log in again.')
-    }
-  }, [tempToken])
-
   const onSubmit = async (data: TwoFactorInput) => {
     setErrorMsg(null)
-    if (!tempToken) {
-      navigate('/login', { replace: true })
-      return
-    }
     try {
-      await verify2FA(tempToken, data.code)
-      // verify2FA navigates by role on success
-    } catch (err) {
-      if (isAxiosError<{ detail?: string }>(err)) {
-        const status = err.response?.status
-        const detail = err.response?.data?.detail
-        if (status === 401) {
-          setErrorMsg(detail || 'Invalid or expired code. Please try again.')
-        } else if (detail) {
-          setErrorMsg(detail)
-        } else {
-          setErrorMsg('Could not verify code. Please try again.')
-        }
+      const tempToken = searchParams.get('temp_token')
+      if (!tempToken) {
+        setErrorMsg('Missing temporary token. Please log in again.')
+        return
+      }
+      const response = await api.post('/auth/2fa/login-verify', {
+        temp_token: tempToken,
+        token: data.code,
+      })
+      const { access_token, refresh_token, token_type, user } = response.data
+      useAuthStore.getState().setAuth({
+        accessToken: access_token,
+        refreshToken: refresh_token,
+        tokenType: token_type || 'bearer',
+        user: user || { id: '', email, role: 'Admin' },
+      })
+      navigate('/dashboard')
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        setErrorMsg('Invalid code. Please try again.')
       } else {
-        setErrorMsg('Could not verify code. Please try again.')
+        setErrorMsg(err.response?.data?.detail || 'Verification failed.')
       }
     }
   }

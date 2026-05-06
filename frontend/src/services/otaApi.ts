@@ -99,8 +99,14 @@ export async function getOtaQueue(filters?: QueueFilters): Promise<QueueListResp
   }
 }
 
-export async function getOtaQueueItem(id: string): Promise<ParsedBooking> {
-  const { data } = await api.get<ParsedBooking>(`/ota/queue/${id}`)
+export interface QueueItemDetail {
+  parsed_booking: ParsedBooking
+  raw_email: Record<string, unknown> | null
+  email_link: string | null
+}
+
+export async function getOtaQueueItem(id: string): Promise<QueueItemDetail> {
+  const { data } = await api.get<QueueItemDetail>(`/ota/queue/${id}`)
   return data
 }
 
@@ -122,4 +128,53 @@ export async function rejectOtaQueueItem(id: string, payload: RejectPayload): Pr
 export async function getOtaMappings(propertyId: string): Promise<OtaMapping[]> {
   const { data } = await api.get<OtaMapping[]>(`/properties/${propertyId}/ota-mappings`)
   return data
+}
+
+export interface OtaMappingListItem {
+  id: string
+  ota_source: string
+  listing_id: string
+  room_type_id: string
+  property_id: string
+  is_active: boolean
+  is_archived: boolean
+  created_at: string
+  updated_at: string
+  property?: { id: string; name: string }
+  room_type?: { id: string; name: string }
+}
+
+export interface OtaMappingCreatePayload {
+  ota_source: string
+  listing_id: string
+  room_type_id: string
+  property_id: string
+  is_active?: boolean
+}
+
+export interface OtaMappingUpdatePayload {
+  ota_source?: string
+  listing_id?: string
+  room_type_id?: string
+  property_id?: string
+  is_active?: boolean
+}
+
+export async function listOtaMappings(): Promise<OtaMappingListItem[]> {
+  const { data } = await api.get<OtaMappingListItem[]>('/ota/mappings')
+  return data
+}
+
+export async function createOtaMapping(payload: OtaMappingCreatePayload): Promise<OtaMappingListItem> {
+  const { data } = await api.post<OtaMappingListItem>('/ota/mappings', payload)
+  return data
+}
+
+export async function updateOtaMapping(id: string, payload: OtaMappingUpdatePayload): Promise<OtaMappingListItem> {
+  const { data } = await api.patch<OtaMappingListItem>(`/ota/mappings/${id}`, payload)
+  return data
+}
+
+export async function deleteOtaMapping(id: string): Promise<void> {
+  await api.delete(`/ota/mappings/${id}`)
 }

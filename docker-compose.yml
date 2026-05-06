@@ -54,6 +54,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}
       - REDIS_URL=${REDIS_URL}
+      - TOTP_ENCRYPTION_KEY=${TOTP_ENCRYPTION_KEY}
       - ENVIRONMENT=${ENVIRONMENT:-production}
     depends_on:
       db:
@@ -81,6 +82,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - SECRET_KEY=${SECRET_KEY}
       - REDIS_URL=${REDIS_URL}
+      - TOTP_ENCRYPTION_KEY=${TOTP_ENCRYPTION_KEY}
       - ENVIRONMENT=${ENVIRONMENT:-production}
     depends_on:
       db:

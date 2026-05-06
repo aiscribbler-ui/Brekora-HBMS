@@ -51,7 +51,7 @@ export async function fetchCalendarData(
   const end = endDate.toISOString().split('T')[0]
 
   const [properties, roomTypes, availability] = await Promise.all([
-    api.get<CalendarProperty[]>('/properties').then((r) => r.data),
+    api.get<CalendarProperty[]>('/properties/').then((r) => r.data),
     api.get<CalendarRoomType[]>(`/properties/${property_id}/room-types`).then((r) => r.data),
     api.get<CalendarAvailability[]>('/availability/rooms', {
       params: { property_id, check_in: start, check_out: end },

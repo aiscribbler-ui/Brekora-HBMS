@@ -13,24 +13,15 @@ export interface WeekSummaryProps {
 
 export default function WeekSummary({ occupancyPercent, adrByProperty }: WeekSummaryProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 h-full">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <span className="w-1.5 h-5 bg-gradient-to-b from-brand-500 to-brand-700 rounded-full" aria-hidden="true" />
-        This Week
-      </h3>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week</h3>
       <div className="mb-5">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-gray-600 flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4 text-brand-500" />
-            Occupancy
-          </p>
-          <span className="text-2xl font-bold text-gray-900">{occupancyPercent}%</span>
-        </div>
-        <div className="flex items-center gap-3">
+        <p className="text-sm text-gray-600 mb-1">Occupancy</p>
+        <div className="flex items-center gap-3 mt-1">
           <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-brand-500 to-brand-700 rounded-full transition-all duration-500 shadow-sm"
-              style={{ width: `${Math.max(0, Math.min(100, occupancyPercent))}%` }}
+              className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-brand-500 to-brand-700"
+              style={{ width: `${occupancyPercent}%` }}
               data-testid="occupancy-bar"
               role="progressbar"
               aria-valuenow={occupancyPercent}
@@ -38,6 +29,7 @@ export default function WeekSummary({ occupancyPercent, adrByProperty }: WeekSum
               aria-valuemax={100}
             />
           </div>
+          <span className="text-lg font-bold text-gray-900 w-12 text-right">{occupancyPercent}%</span>
         </div>
       </div>
       <div>
@@ -46,9 +38,9 @@ export default function WeekSummary({ occupancyPercent, adrByProperty }: WeekSum
           ADR by Property
         </p>
         {adrByProperty.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-3 py-4 text-center">
-            <p className="text-xs text-gray-500">No ADR data yet</p>
-            <p className="text-[11px] text-gray-400 mt-0.5">Bookings will populate this view</p>
+          <div className="py-4 text-center">
+            <p className="text-sm text-gray-400">No pricing data yet</p>
+            <p className="text-xs text-gray-300 mt-1">Bookings will populate this section</p>
           </div>
         ) : (
           <ul className="space-y-1.5">

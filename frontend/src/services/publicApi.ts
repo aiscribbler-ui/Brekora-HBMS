@@ -136,7 +136,7 @@ export interface PackageItem {
 }
 
 export async function searchProperties(query: string): Promise<Property[]> {
-  const { data } = await publicApi.get<Property[]>('/properties', { params: { q: query } })
+  const { data } = await publicApi.get<Property[]>('/properties/', { params: { q: query } })
   return data
 }
 
@@ -146,7 +146,7 @@ export async function getPropertyDetails(id: string): Promise<Property> {
 }
 
 export async function searchAvailability(data: SearchRequest): Promise<SearchResponse> {
-  const { data: responseData } = await publicApi.post<SearchResponse>('/search', data)
+  const { data: responseData } = await publicApi.post<SearchResponse>('/search/', data)
   return responseData
 }
 
@@ -170,6 +170,6 @@ export async function retryPayment(bookingId: string): Promise<OrderCreateRespon
   return data
 }
 
-export function isAxiosError<T = unknown>(error: unknown): error is import('axios').AxiosError<T> {
+export function isAxiosError<T = { detail?: string }>(error: unknown): error is import('axios').AxiosError<T> {
   return axios.isAxiosError(error)
 }

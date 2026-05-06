@@ -3,13 +3,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { guestSignupSchema, type GuestSignupInput } from '@/lib/validation'
-import { signupGuest } from '@/services/guestApi'
-import { useGuestAuthStore } from '@/store/guestAuthStore'
+import { registerGuest } from '@/services/authApi'
 import { isAxiosError } from '@/lib/api'
 
 export default function GuestSignup() {
   const navigate = useNavigate()
-  const setAuth = useGuestAuthStore((s) => s.setAuth)
   const {
     register,
     handleSubmit,
@@ -18,43 +16,34 @@ export default function GuestSignup() {
     resolver: zodResolver(guestSignupSchema),
   })
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
   const onSubmit = async (data: GuestSignupInput) => {
     setErrorMsg(null)
+    setSuccessMsg(null)
     try {
-      const response = await signupGuest({
+      await registerGuest({
+        email: data.email,
+        password: data.password,
         first_name: data.firstName,
         last_name: data.lastName,
-        email: data.email,
-        phone: data.phone || undefined,
-        password: data.password,
+        phone: data.phone,
       })
-      setAuth({
-        accessToken: response.access_token,
-        refreshToken: response.refresh_token,
-        tokenType: response.token_type,
-        sessionId: response.session_id,
-        user: {
-          id: '',
-          email: data.email,
-          role: 'Guest',
-          name: `${data.firstName} ${data.lastName}`.trim(),
-        },
-      })
-      navigate('/guest')
+      setSuccessMsg('Account created successfully! Redirecting to login...')
+      setTimeout(() => navigate('/guest/login'), 2000)
     } catch (err) {
       if (isAxiosError<{ detail?: string }>(err)) {
         const status = err.response?.status
         const detail = err.response?.data?.detail
         if (status === 409) {
-          setErrorMsg(detail || 'An account with this email already exists.')
+          setErrorMsg('Email is already registered.')
         } else if (detail) {
           setErrorMsg(detail)
         } else {
-          setErrorMsg('Could not create your account. Please try again.')
+          setErrorMsg('Registration failed. Please try again.')
         }
       } else {
-        setErrorMsg('Could not create your account. Please try again.')
+        setErrorMsg('An unexpected error occurred. Please try again.')
       }
     }
   }
@@ -70,6 +59,11 @@ export default function GuestSignup() {
         {errorMsg && (
           <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
             {errorMsg}
+          </div>
+        )}
+        {successMsg && (
+          <div className="mb-4 p-3 bg-green-50 text-green-800 rounded-lg border border-green-200" role="status">
+            {successMsg}
           </div>
         )}
 

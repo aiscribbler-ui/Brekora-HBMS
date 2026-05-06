@@ -4,7 +4,7 @@ import { useGuestAuthStore } from '@/store/guestAuthStore'
 import { login as apiLogin, logout as apiLogout, refreshToken } from '@/services/authApi'
 import type { User } from '@/store/authStore'
 
-function decodeJwt(token: string): { exp?: number; sub?: string; email?: string; role?: string; name?: string } | null {
+function decodeJwt(token: string): { exp?: number; sub?: string; email?: string; role?: string; name?: string; org_id?: string } | null {
   try {
     const base64Url = token.split('.')[1]
     if (!base64Url) return null
@@ -29,6 +29,7 @@ function getUserFromToken(token: string): User | null {
     email: payload.email || '',
     role: payload.role || '',
     name: payload.name || '',
+    org_id: payload.org_id || '',
   }
 }
 
@@ -57,8 +58,7 @@ export function useGuestAuth() {
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
             tokenType: data.token_type,
-            sessionId: data.session_id ?? null,
-            user: newUser || { id: '', email: '', role: '' },
+            user: newUser || { id: '', email: '', role: '', org_id: '' },
           })
           scheduleRefresh(data.access_token, data.refresh_token)
         } catch {
@@ -95,8 +95,7 @@ export function useGuestAuth() {
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
         tokenType: data.token_type,
-        sessionId: data.session_id ?? null,
-        user: decodedUser || { id: '', email: '', role: '' },
+        user: decodedUser || { id: '', email: '', role: '', org_id: '' },
       })
       scheduleRefresh(data.access_token, data.refresh_token)
       navigate('/guest')

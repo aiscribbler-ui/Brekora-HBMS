@@ -4,6 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import require_role
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.feature_flag import FeatureFlag
@@ -23,7 +24,11 @@ def get_org_id(x_org_id: str | None = Header(default=None, alias="X-Org-ID")) ->
     return uuid.UUID("00000000-0000-0000-0000-000000000001")
 
 
-@router.get("/", response_model=List[FeatureFlagRead])
+@router.get(
+    "/",
+    response_model=List[FeatureFlagRead],
+    dependencies=[Depends(require_role(["Admin"]))],
+)
 async def list_feature_flags(
     skip: int = 0,
     limit: int = 100,
@@ -34,7 +39,12 @@ async def list_feature_flags(
     return await repo.get_multi(skip=skip, limit=limit)
 
 
-@router.post("/", response_model=FeatureFlagRead, status_code=201)
+@router.post(
+    "/",
+    response_model=FeatureFlagRead,
+    status_code=201,
+    dependencies=[Depends(require_role(["Admin"]))],
+)
 async def create_feature_flag(
     data: FeatureFlagCreate,
     db: AsyncSession = Depends(get_db),
@@ -47,7 +57,11 @@ async def create_feature_flag(
     return await repo.create(obj_in)
 
 
-@router.get("/{flag_id}", response_model=FeatureFlagRead)
+@router.get(
+    "/{flag_id}",
+    response_model=FeatureFlagRead,
+    dependencies=[Depends(require_role(["Admin"]))],
+)
 async def get_feature_flag(
     flag_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -60,7 +74,11 @@ async def get_feature_flag(
     return flag
 
 
-@router.patch("/{flag_id}", response_model=FeatureFlagRead)
+@router.patch(
+    "/{flag_id}",
+    response_model=FeatureFlagRead,
+    dependencies=[Depends(require_role(["Admin"]))],
+)
 async def update_feature_flag(
     flag_id: uuid.UUID,
     data: FeatureFlagUpdate,
@@ -75,7 +93,11 @@ async def update_feature_flag(
     return await repo.update(flag, update_data)
 
 
-@router.delete("/{flag_id}", status_code=204)
+@router.delete(
+    "/{flag_id}",
+    status_code=204,
+    dependencies=[Depends(require_role(["Admin"]))],
+)
 async def delete_feature_flag(
     flag_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),

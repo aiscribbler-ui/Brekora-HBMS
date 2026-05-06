@@ -2,7 +2,7 @@ import uuid
 from datetime import date
 from typing import Any
 
-from sqlalchemy import and_, or_, select
+from sqlalchemy import func, select
 
 from app.models.booking import Booking, BookingLineItem
 from app.repositories.base import OrgScopedRepository
@@ -119,6 +119,76 @@ class BookingRepository(OrgScopedRepository[Booking]):
             await self.session.refresh(db_obj)
 
         return db_obj
+
+    async def get_filtered(
+        self,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+        status: str | None = None,
+        check_in_from: date | None = None,
+        check_in_to: date | None = None,
+        check_out_from: date | None = None,
+        check_out_to: date | None = None,
+    ) -> list[Booking]:
+        stmt = select(Booking).offset(skip).limit(limit)
+        if status is not None:
+            stmt = stmt.where(Booking.status == status)
+        if check_in_from is not None:
+            stmt = stmt.where(Booking.check_in >= check_in_from)
+        if check_in_to is not None:
+            stmt = stmt.where(Booking.check_in <= check_in_to)
+        if check_out_from is not None:
+            stmt = stmt.where(Booking.check_out >= check_out_from)
+        if check_out_to is not None:
+            stmt = stmt.where(Booking.check_out <= check_out_to)
+        stmt = self._apply_org_scope(stmt)
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+
+    async def count_by_check_in(self, target_date: date) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(Booking)
+            .where(Booking.org_id == self.org_id)
+            .where(Booking.check_in == target_date)
+            .where(Booking.status == "confirmed")
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar() or 0
+
+    async def count_by_check_out(self, target_date: date) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(Booking)
+            .where(Booking.org_id == self.org_id)
+            .where(Booking.check_out == target_date)
+            .where(Booking.status == "confirmed")
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar() or 0
+
+    async def count_in_house(self, target_date: date) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(Booking)
+            .where(Booking.org_id == self.org_id)
+            .where(Booking.check_in <= target_date)
+            .where(Booking.check_out > target_date)
+            .where(Booking.status == "confirmed")
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar() or 0
+
+    async def count_by_status(self, status: str) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(Booking)
+            .where(Booking.org_id == self.org_id)
+            .where(Booking.status == status)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar() or 0
 
 
 class BookingLineItemRepository(OrgScopedRepository[BookingLineItem]):

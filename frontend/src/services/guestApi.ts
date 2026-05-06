@@ -8,14 +8,6 @@ export interface GuestProfile {
   phone: string | null
 }
 
-export interface GuestProfileUpdate {
-  first_name?: string
-  last_name?: string
-  phone?: string
-  current_password?: string
-  new_password?: string
-}
-
 export interface GuestBooking {
   id: string
   property_id: string
@@ -26,38 +18,17 @@ export interface GuestBooking {
   currency: string
 }
 
-export interface GuestSignupRequest {
-  first_name: string
-  last_name: string
-  email: string
-  phone?: string
-  password: string
-}
-
-export interface GuestSignupResponse {
-  access_token: string
-  refresh_token: string
-  token_type: string
-  expires_in: number
-  session_id: string
-}
-
-export async function signupGuest(data: GuestSignupRequest): Promise<GuestSignupResponse> {
-  const { data: response } = await api.post<GuestSignupResponse>('/guest/signup', data)
-  return response
-}
-
 export async function fetchGuestProfile(): Promise<GuestProfile> {
   const { data } = await api.get<GuestProfile>('/guest/me')
   return data
 }
 
-export async function updateGuestProfile(payload: GuestProfileUpdate): Promise<GuestProfile> {
-  const { data } = await api.patch<GuestProfile>('/guest/me', payload)
+export async function fetchGuestBookings(): Promise<GuestBooking[]> {
+  const { data } = await api.get<GuestBooking[]>('/guest/bookings')
   return data
 }
 
-export async function fetchGuestBookings(): Promise<GuestBooking[]> {
-  const { data } = await api.get<GuestBooking[]>('/guest/bookings')
+export async function updateGuestProfile(payload: Partial<GuestProfile>): Promise<GuestProfile> {
+  const { data } = await api.patch<GuestProfile>('/guest/me', payload)
   return data
 }

@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { CalendarDays, MapPin, Loader2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useGuestAuth } from '@/hooks/useGuestAuth'
 import {
   fetchGuestBookings,
@@ -30,35 +29,7 @@ function statusBadge(status: string): string {
 
 export default function GuestDashboard() {
   const { user, logout } = useGuestAuth()
-  const [profile, setProfile] = useState<GuestProfile | null>(null)
-  const [bookings, setBookings] = useState<GuestBooking[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    setLoading(true)
-    Promise.all([fetchGuestProfile(), fetchGuestBookings()])
-      .then(([p, b]) => {
-        if (cancelled) return
-        setProfile(p)
-        setBookings(b)
-        setError(null)
-      })
-      .catch(() => {
-        if (cancelled) return
-        setError('Could not load your guest portal. Please try again later.')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const greetingName =
-    profile?.first_name || user?.name || profile?.email?.split('@')[0] || ''
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-teal-50">
@@ -80,27 +51,13 @@ export default function GuestDashboard() {
           </div>
         </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
-            {error}
-          </div>
-        )}
-
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <CalendarDays className="w-5 h-5 text-teal-600" />
-            My Bookings
-          </h2>
-          {loading ? (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Loader2 className="w-4 h-4 animate-spin" /> Loading…
-            </div>
-          ) : bookings.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center">
-              <p className="text-sm text-gray-500">You have no bookings yet.</p>
-              <a
-                href="/book"
-                className="inline-block mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium"
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-800">My Bookings</h2>
+              <p className="text-sm text-gray-500 mt-1">You have no upcoming bookings.</p>
+              <button
+                onClick={() => navigate('/guest/bookings')}
+                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 Find a stay →
               </a>
@@ -136,11 +93,15 @@ export default function GuestDashboard() {
           )}
         </section>
 
-        <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Profile</h2>
-          {loading ? (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Loader2 className="w-4 h-4 animate-spin" /> Loading…
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-800">Profile</h2>
+              <p className="text-sm text-gray-500 mt-1">Manage your personal details.</p>
+              <button
+                onClick={() => navigate('/guest/profile')}
+                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
+              >
+                Edit profile
+              </button>
             </div>
           ) : profile ? (
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">

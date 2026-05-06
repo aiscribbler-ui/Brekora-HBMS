@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getBooking, cancelBooking, type Booking } from '@/services/bookingApi'
+import { getBooking, cancelBooking, retryPayment, type Booking } from '@/services/bookingApi'
 import { isAxiosError } from '@/lib/api'
 import CancelModal from '@/components/bookings/CancelModal'
 import InvoiceViewer from '@/components/bookings/InvoiceViewer'
@@ -96,9 +96,16 @@ export default function BookingDetail() {
 
   const handleRetryPayment = async () => {
     if (!id) return
-    // Stub: existing retryPayment is in bookingApi but uses a different endpoint shape.
-    // For MVP we navigate or show alert. Per task, button shown only if payment_failed.
-    alert('Retry payment flow will be triggered here.')
+    setToast({ message: 'Initiating payment retry...', type: 'success' })
+    try {
+      await retryPayment(id)
+      setToast({ message: 'Payment retry initiated. Please complete payment.', type: 'success' })
+      // Refresh booking to get updated status
+      const updated = await getBooking(id)
+      setBooking(updated)
+    } catch {
+      setToast({ message: 'Payment retry failed. Please try again later.', type: 'error' })
+    }
   }
 
   if (loading) {

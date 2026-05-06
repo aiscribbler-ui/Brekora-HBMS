@@ -71,3 +71,14 @@ class GoogleAuthResponse(BaseModel):
     expires_in: int
     session_id: str
     user: UserRead
+
+
+class SetupStatusResponse(BaseModel):
+    setup_required: bool
+
+
+class SetupRequest(BaseModel):
+    org_name: str
+    admin_email: str
+    admin_password: str
+    admin_name: str | None = None

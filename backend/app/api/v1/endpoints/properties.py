@@ -5,10 +5,12 @@ from typing import List
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import get_current_user
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.property import Property
 from app.models.room_type import RoomType
+from app.models.user import User
 from app.repositories.package import PackageRepository
 from app.repositories.property import PropertyRepository
 from app.repositories.room_type import RoomTypeRepository
@@ -30,7 +32,7 @@ def get_org_id(x_org_id: str | None = Header(default=None, alias="X-Org-ID")) ->
     return DEFAULT_ORG_ID
 
 
-@router.get("/", response_model=List[PropertyRead])
+@router.get("/", response_model=List[PropertyRead], dependencies=[])
 async def list_properties(
     skip: int = 0,
     limit: int = 100,
@@ -46,6 +48,7 @@ async def create_property(
     data: PropertyCreate,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> Property:
     repo = PropertyRepository(db, org_id)
     obj_in = data.model_dump(exclude_unset=True)
@@ -54,7 +57,7 @@ async def create_property(
     return await repo.create(obj_in)
 
 
-@router.get("/{property_id}", response_model=PropertyRead)
+@router.get("/{property_id}", response_model=PropertyRead, dependencies=[])
 async def get_property(
     property_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -73,6 +76,7 @@ async def update_property(
     data: PropertyUpdate,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> Property:
     repo = PropertyRepository(db, org_id)
     prop = await repo.get(property_id)
@@ -87,6 +91,7 @@ async def delete_property(
     property_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> None:
     repo = PropertyRepository(db, org_id)
     prop = await repo.get(property_id)
@@ -102,6 +107,7 @@ async def list_room_types(
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> List[RoomType]:
     repo = RoomTypeRepository(db, org_id)
     return await repo.get_multi_by_property(property_id, skip=skip, limit=limit)
@@ -113,6 +119,7 @@ async def create_room_type(
     data: RoomTypeCreate,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> RoomType:
     prop_repo = PropertyRepository(db, org_id)
     prop = await prop_repo.get(property_id)
@@ -133,6 +140,7 @@ async def upload_property_photos(
     files: List[UploadFile] = File(...),
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     repo = PropertyRepository(db, org_id)
     prop = await repo.get(property_id)
@@ -146,7 +154,12 @@ async def upload_property_photos(
         filepath = os.path.join(UPLOAD_DIR, filename)
         with open(filepath, "wb") as f:
             f.write(await file.read())
-        photos.append({"filename": file.filename, "path": f"/uploads/{filename}"})
+        photos.append({
+            "filename": file.filename,
+            "path": f"/uploads/{filename}",
+            "url": f"/uploads/{filename}",
+            "caption": file.filename,
+        })
 
     updated = await repo.update(prop, {"photos": photos})
     return {"photos": updated.photos or []}
@@ -159,6 +172,7 @@ async def list_property_packages(
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> List[PackageRead]:
     prop_repo = PropertyRepository(db, org_id)
     prop = await prop_repo.get(property_id)
@@ -175,6 +189,7 @@ async def create_property_package(
     data: PackageBase,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> PackageRead:
     prop_repo = PropertyRepository(db, org_id)
     prop = await prop_repo.get(property_id)

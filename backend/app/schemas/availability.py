@@ -1,9 +1,11 @@
+import uuid
 from datetime import date, time
 
 from pydantic import BaseModel
 
 
 class RoomAvailabilityNight(BaseModel):
+    room_type_id: uuid.UUID
     date: date
     available_count: int
     total_count: int

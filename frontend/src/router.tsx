@@ -1,13 +1,19 @@
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
+import { createBrowserRouter, type RouteObject, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 import App from '@/App'
-import RequireRole from '@/components/auth/RequireRole'
+import { AuthGuard } from '@/components/auth/AuthGuard'
+import { RoleGuard } from '@/components/auth/RoleGuard'
 import Login from '@/pages/auth/Login'
+import Setup from '@/pages/auth/Setup'
 import TwoFactor from '@/pages/auth/TwoFactor'
 import TwoFactorEnrol from '@/pages/auth/TwoFactorEnrol'
 import ManagerDashboard from '@/pages/dashboard/ManagerDashboard'
 import GuestLogin from '@/pages/guest/GuestLogin'
 import GuestSignup from '@/pages/guest/GuestSignup'
 import GuestDashboard from '@/pages/guest/GuestDashboard'
+import MyBookings from '@/pages/guest/MyBookings'
+import GuestProfile from '@/pages/guest/GuestProfile'
 import PropertyList from '@/pages/properties/PropertyList'
 import PropertyDetail from '@/pages/properties/PropertyDetail'
 import RoomTypeList from '@/pages/properties/RoomTypeList'
@@ -16,6 +22,8 @@ import CalendarGrid from '@/pages/calendar/CalendarGrid'
 import PackageList from '@/pages/packages/PackageList'
 import PackageBuilder from '@/pages/packages/PackageBuilder'
 import OtaQueue from '@/pages/ota/OtaQueue'
+import OtaMappings from '@/pages/ota/OtaMappings'
+import MessageGuest from '@/pages/messages/MessageGuest'
 import ManualBookingForm from '@/pages/bookings/ManualBookingForm'
 import BookingDetail from '@/pages/bookings/BookingDetail'
 import BookingEdit from '@/pages/bookings/BookingEdit'
@@ -26,22 +34,60 @@ import BookingConfirmation from '@/pages/public/BookingConfirmation'
 import AdminPanel from '@/pages/admin/AdminPanel'
 import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
-const STAFF = ['Manager', 'Admin'] as const
-const STAFF_OR_OWNER = ['Manager', 'Admin', 'Owner'] as const
+function SetupRedirect() {
+  const navigate = useNavigate()
+  const [checked, setChecked] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    api
+      .get<{ setup_required: boolean }>('/auth/setup-status')
+      .then((res) => {
+        if (!cancelled) {
+          setChecked(true)
+          if (res.data.setup_required) {
+            navigate('/setup', { replace: true })
+          } else {
+            navigate('/dashboard', { replace: true })
+          }
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setChecked(true)
+          navigate('/dashboard', { replace: true })
+        }
+      })
+    return () => { cancelled = true }
+  }, [navigate])
+
+  if (!checked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse h-8 w-8 rounded-full bg-brand-600" />
+      </div>
+    )
+  }
+  return null
+}
 
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
+      { index: true, element: <SetupRedirect /> },
       {
         path: 'dashboard',
         element: (
-          <RequireRole allowed={STAFF_OR_OWNER}>
+          <AuthGuard>
             <ManagerDashboard />
-          </RequireRole>
+          </AuthGuard>
         ),
+      },
+      {
+        path: 'setup',
+        element: <Setup />,
       },
       {
         path: 'login',
@@ -62,65 +108,73 @@ export const routes: RouteObject[] = [
       {
         path: 'properties',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <PropertyList />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'properties/:id',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <PropertyDetail />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'properties/:id/room-types',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <RoomTypeList />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'properties/:id/room-types/:roomTypeId',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <RoomTypeForm />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'calendar',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <CalendarGrid />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'packages',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <PackageList />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'packages/:id',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <PackageBuilder />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'ota/queue',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <OtaQueue />
-          </RequireRole>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'ota/mappings',
+        element: (
+          <AuthGuard>
+            <OtaMappings />
+          </AuthGuard>
         ),
       },
       {
@@ -134,33 +188,57 @@ export const routes: RouteObject[] = [
       {
         path: 'guest',
         element: (
-          <RequireRole allowed={['Guest']} redirectTo="/guest/login">
+          <AuthGuard>
             <GuestDashboard />
-          </RequireRole>
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'guest/bookings',
+        element: (
+          <AuthGuard>
+            <MyBookings />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'guest/profile',
+        element: (
+          <AuthGuard>
+            <GuestProfile />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'messages',
+        element: (
+          <AuthGuard>
+            <MessageGuest />
+          </AuthGuard>
         ),
       },
       {
         path: 'bookings/manual',
         element: (
-          <RequireRole allowed={STAFF}>
+          <RoleGuard allowedRoles={['Admin', 'Manager', 'Owner', 'Partner']}>
             <ManualBookingForm />
-          </RequireRole>
+          </RoleGuard>
         ),
       },
       {
         path: 'bookings/:id',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <BookingDetail />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'bookings/:id/edit',
         element: (
-          <RequireRole allowed={STAFF}>
+          <AuthGuard>
             <BookingEdit />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
@@ -182,25 +260,25 @@ export const routes: RouteObject[] = [
       {
         path: 'owner',
         element: (
-          <RequireRole allowed={['Owner', 'Admin']}>
+          <AuthGuard>
             <OwnerDashboard />
-          </RequireRole>
+          </AuthGuard>
         ),
       },
       {
         path: 'admin',
         element: (
-          <RequireRole allowed={['Admin']}>
+          <RoleGuard allowedRoles={['Admin']}>
             <AdminPanel />
-          </RequireRole>
+          </RoleGuard>
         ),
       },
       {
         path: 'admin/*',
         element: (
-          <RequireRole allowed={['Admin']}>
+          <RoleGuard allowedRoles={['Admin']}>
             <AdminPanel />
-          </RequireRole>
+          </RoleGuard>
         ),
       },
       {

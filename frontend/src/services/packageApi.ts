@@ -98,7 +98,7 @@ export interface AddOn {
 }
 
 export async function getPackages(): Promise<Package[]> {
-  const { data } = await api.get<Package[]>('/packages')
+  const { data } = await api.get<Package[]>('/packages/')
   return data
 }
 
@@ -108,7 +108,7 @@ export async function getPackage(id: string): Promise<Package> {
 }
 
 export async function createPackage(input: PackageCreateInput): Promise<Package> {
-  const { data } = await api.post<Package>('/packages', input)
+  const { data } = await api.post<Package>('/packages/', input)
   return data
 }
 
@@ -156,6 +156,6 @@ export async function removePackageAddOn(packageAddOnId: string): Promise<void> 
 }
 
 export async function getAddOns(): Promise<AddOn[]> {
-  const { data } = await api.get<AddOn[]>('/add-ons')
+  const { data } = await api.get<AddOn[]>('/add-ons/')
   return data
 }

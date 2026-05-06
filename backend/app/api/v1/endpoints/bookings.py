@@ -11,8 +11,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
 from app.core.redis import get_redis_client
+from app.api.deps import get_current_user, require_role
 from app.db.session import get_db
 from app.models.booking import BookingStatus
+from app.models.user import User
 from app.repositories.booking import BookingRepository
 from app.repositories.property import PropertyRepository
 from app.repositories.user import UserRepository
@@ -76,85 +78,56 @@ def _validate_status_transition(current: str | None, new: str) -> None:
         )
 
 
-@router.get("/", response_model=List[BookingRead])
+@router.get(
+    "/",
+    response_model=List[BookingRead],
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def list_bookings(
     skip: int = 0,
-    limit: int = Query(200, le=500),
-    property_id: uuid.UUID | None = None,
-    status_filter: str | None = Query(default=None, alias="status"),
-    check_in_on: date | None = None,
-    check_out_on: date | None = None,
-    overlaps_from: date | None = None,
-    overlaps_to: date | None = None,
+    limit: int = 100,
+    status: str | None = None,
+    check_in_from: date | None = None,
+    check_in_to: date | None = None,
+    check_out_from: date | None = None,
+    check_out_to: date | None = None,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> List[BookingRead]:
     repo = BookingRepository(db, org_id)
-    if any([property_id, status_filter, check_in_on, check_out_on, overlaps_from, overlaps_to]):
-        return await repo.list_filtered(
-            property_id=property_id,
-            status=status_filter,
-            check_in_on=check_in_on,
-            check_out_on=check_out_on,
-            overlaps_from=overlaps_from,
-            overlaps_to=overlaps_to,
-            skip=skip,
-            limit=limit,
-        )
-    return await repo.get_multi(skip=skip, limit=limit)
+    return await repo.get_filtered(
+        skip=skip,
+        limit=limit,
+        status=status,
+        check_in_from=check_in_from,
+        check_in_to=check_in_to,
+        check_out_from=check_out_from,
+        check_out_to=check_out_to,
+    )
 
 
-class DashboardSummaryResponse(BaseModel):
-    arrivals: int
-    departures: int
-    in_house: int
-    pending_check_ins: int
-    payment_failures: int
-    pending_refunds: int
-
-
-@router.get("/summary", response_model=DashboardSummaryResponse)
+@router.get("/summary", response_model=dict)
 async def bookings_summary(
-    on_date: date | None = Query(default=None, alias="on_date"),
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
-) -> DashboardSummaryResponse:
-    today = on_date or date.today()
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    today = date.today()
     repo = BookingRepository(db, org_id)
-    # Pull a window we know covers the metrics we need (yesterday..tomorrow + status flags).
-    relevant = await repo.list_filtered(
-        overlaps_from=today - timedelta(days=1),
-        overlaps_to=today + timedelta(days=2),
-        limit=500,
-    )
-    arrivals = sum(1 for b in relevant if b.check_in == today and b.status != BookingStatus.cancelled.value)
-    departures = sum(1 for b in relevant if b.check_out == today and b.status != BookingStatus.cancelled.value)
-    in_house = sum(
-        1 for b in relevant
-        if b.check_in <= today < b.check_out and b.status not in (BookingStatus.cancelled.value, BookingStatus.pending_payment.value)
-    )
-    pending_check_ins = sum(
-        1 for b in relevant
-        if b.check_in == today and b.status == BookingStatus.confirmed.value
-    )
-
-    failed = await repo.list_filtered(status=BookingStatus.payment_failed.value, limit=500)
-    pending_refunds = await repo.list_filtered(status=BookingStatus.cancelled.value, limit=500)
-    pending_refund_count = sum(
-        1 for b in pending_refunds if (b.payment_state or '').lower() == 'refund_pending'
-    )
-
-    return DashboardSummaryResponse(
-        arrivals=arrivals,
-        departures=departures,
-        in_house=in_house,
-        pending_check_ins=pending_check_ins,
-        payment_failures=len(failed),
-        pending_refunds=pending_refund_count,
-    )
+    arrivals = await repo.count_by_check_in(today)
+    departures = await repo.count_by_check_out(today)
+    in_house = await repo.count_in_house(today)
+    pending = await repo.count_by_status("pending_payment")
+    return {
+        "arrivals": arrivals,
+        "departures": departures,
+        "inHouse": in_house,
+        "pendingCheckIns": pending,
+    }
 
 
-@router.post("/", response_model=BookingRead, status_code=201)
+@router.post("/", response_model=BookingRead, status_code=201, dependencies=[])
 async def create_booking(
     data: BookingCreate,
     db: AsyncSession = Depends(get_db),
@@ -177,6 +150,25 @@ async def create_booking(
     if "org_id" in obj_in and obj_in["org_id"] is None:
         del obj_in["org_id"]
 
+    if line_items_data:
+        for li in line_items_data:
+            if li.get("item_type") == "room":
+                inventory_svc = InventoryService(db)
+                available = await inventory_svc.check_availability(
+                    property_id=obj_in["property_id"],
+                    room_type_id=li["item_id"],
+                    check_in=obj_in["check_in"],
+                    check_out=obj_in["check_out"],
+                )
+                if available < li.get("quantity", 1):
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail={
+                            "message": "Insufficient inventory for the requested dates",
+                            "alternatives": [],
+                        },
+                    )
+
     try:
         booking = await repo.create_with_line_items(obj_in, line_items_data)
     except IntegrityError as exc:
@@ -194,7 +186,7 @@ async def create_booking(
     return booking
 
 
-@router.post("/init", response_model=BookingInitResponse, status_code=201)
+@router.post("/init", response_model=BookingInitResponse, status_code=201, dependencies=[])
 async def init_booking(
     data: BookingInitRequest,
     db: AsyncSession = Depends(get_db),
@@ -226,6 +218,7 @@ async def retry_payment(
     db: AsyncSession = Depends(get_db),
     redis_client: Redis = Depends(get_redis_client),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> BookingInitResponse:
     svc = BookingInitService(db, org_id, redis_client)
     try:
@@ -252,13 +245,18 @@ async def retry_payment(
         )
 
 
-@router.patch("/{booking_id}/modify", response_model=BookingModificationResponse)
+@router.patch(
+    "/{booking_id}/modify",
+    response_model=BookingModificationResponse,
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def modify_booking(
     booking_id: uuid.UUID,
     data: BookingModificationRequest,
     db: AsyncSession = Depends(get_db),
     redis_client: Redis = Depends(get_redis_client),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> BookingModificationResponse:
     svc = BookingModificationService(db, org_id, redis_client, actor_user_id=None)
     try:
@@ -288,31 +286,45 @@ async def modify_booking(
 
 
 # Static paths MUST be registered before the dynamic /{booking_id} path
-@router.get("/by-guest/{guest_id}", response_model=List[BookingRead])
+@router.get(
+    "/by-guest/{guest_id}",
+    response_model=List[BookingRead],
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def list_bookings_by_guest(
     guest_id: uuid.UUID,
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> List[BookingRead]:
     repo = BookingRepository(db, org_id)
     return await repo.get_by_guest(guest_id, skip=skip, limit=limit)
 
 
-@router.get("/by-property/{property_id}", response_model=List[BookingRead])
+@router.get(
+    "/by-property/{property_id}",
+    response_model=List[BookingRead],
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def list_bookings_by_property(
     property_id: uuid.UUID,
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> List[BookingRead]:
     repo = BookingRepository(db, org_id)
     return await repo.get_by_property(property_id, skip=skip, limit=limit)
 
 
-@router.get("/by-date-range", response_model=List[BookingRead])
+@router.get(
+    "/by-date-range",
+    response_model=List[BookingRead],
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def list_bookings_by_date_range(
     check_in_from: date,
     check_in_to: date,
@@ -320,6 +332,7 @@ async def list_bookings_by_date_range(
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> List[BookingRead]:
     repo = BookingRepository(db, org_id)
     return await repo.get_by_date_range(
@@ -332,6 +345,7 @@ async def get_booking(
     booking_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> BookingRead:
     repo = BookingRepository(db, org_id)
     booking = await repo.get(booking_id)
@@ -340,12 +354,17 @@ async def get_booking(
     return booking
 
 
-@router.patch("/{booking_id}", response_model=BookingRead)
+@router.patch(
+    "/{booking_id}",
+    response_model=BookingRead,
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def update_booking(
     booking_id: uuid.UUID,
     data: BookingUpdate,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> BookingRead:
     repo = BookingRepository(db, org_id)
     booking = await repo.get(booking_id)
@@ -413,7 +432,11 @@ async def update_booking(
     return updated
 
 
-@router.delete("/{booking_id}", status_code=204)
+@router.delete(
+    "/{booking_id}",
+    status_code=204,
+    dependencies=[Depends(require_role(["Admin", "Manager", "Owner", "Partner"]))],
+)
 async def delete_booking(
     booking_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),

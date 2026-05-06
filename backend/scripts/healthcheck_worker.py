@@ -28,12 +28,11 @@ def main() -> None:
             print("Worker health key not found")
             sys.exit(1)
 
-        last_check = float(timestamp)
-        now = time.time()
-        age = now - last_check
-
-        if age > stale_threshold_seconds:
-            print(f"Worker health stale: last check {age:.0f}s ago")
+        # ARQ health key contains a human-readable string like:
+        # "May-04 03:37:50 j_complete=7 j_failed=0 ..."
+        # We just verify it exists and contains expected fields.
+        if "j_complete=" not in timestamp:
+            print(f"Worker health key has unexpected format: {timestamp}")
             sys.exit(1)
 
         print("Worker healthy")

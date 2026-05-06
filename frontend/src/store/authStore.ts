@@ -6,6 +6,7 @@ export interface User {
   email: string
   role: string
   name?: string
+  org_id?: string
 }
 
 export interface AuthTokens {

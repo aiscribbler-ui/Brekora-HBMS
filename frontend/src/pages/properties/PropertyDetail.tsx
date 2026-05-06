@@ -27,6 +27,12 @@ import PhotoUploader, { type PhotoFile } from '@/components/properties/PhotoUplo
 const propertySchema = z.object({
   name: z.string().min(1, 'Name is required').max(200, 'Name is too long'),
   address: z.string().min(1, 'Address is required'),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+  postal_code: z.string().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
   gstin: z.string().optional(),
   pan: z.string().optional(),
   owner_contact: z.string().optional(),
@@ -62,6 +68,12 @@ export default function PropertyDetail() {
     defaultValues: {
       name: '',
       address: '',
+      city: '',
+      state: '',
+      country: '',
+      postal_code: '',
+      latitude: '',
+      longitude: '',
       gstin: '',
       pan: '',
       owner_contact: '',
@@ -86,6 +98,12 @@ export default function PropertyDetail() {
         reset({
           name: data.name,
           address: data.address,
+          city: data.city ?? '',
+          state: data.state ?? '',
+          country: data.country ?? '',
+          postal_code: data.postal_code ?? '',
+          latitude: data.latitude ?? '',
+          longitude: data.longitude ?? '',
           gstin: data.gstin ?? '',
           pan: data.pan ?? '',
           owner_contact: data.owner_contact ?? '',
@@ -115,6 +133,12 @@ export default function PropertyDetail() {
       const payload: PropertyCreateInput = {
         ...form,
         amenities,
+        city: form.city || undefined,
+        state: form.state || undefined,
+        country: form.country || undefined,
+        postal_code: form.postal_code || undefined,
+        latitude: form.latitude || undefined,
+        longitude: form.longitude || undefined,
         default_check_in_time: form.default_check_in_time || undefined,
         default_check_out_time: form.default_check_out_time || undefined,
       }
@@ -127,6 +151,12 @@ export default function PropertyDetail() {
         reset({
           name: updated.name,
           address: updated.address,
+          city: updated.city ?? '',
+          state: updated.state ?? '',
+          country: updated.country ?? '',
+          postal_code: updated.postal_code ?? '',
+          latitude: updated.latitude ?? '',
+          longitude: updated.longitude ?? '',
           gstin: updated.gstin ?? '',
           pan: updated.pan ?? '',
           owner_contact: updated.owner_contact ?? '',
@@ -315,6 +345,66 @@ export default function PropertyDetail() {
               {errors.address && (
                 <p className="mt-1 text-sm text-red-600" id="address-error" role="alert">{errors.address.message}</p>
               )}
+            </div>
+
+            <div>
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
+              <input
+                id="city"
+                type="text"
+                {...register('city')}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
+              <input
+                id="state"
+                type="text"
+                {...register('state')}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="country" className="block text-sm font-medium text-gray-700">Country</label>
+              <input
+                id="country"
+                type="text"
+                {...register('country')}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="postal_code" className="block text-sm font-medium text-gray-700">Postal Code</label>
+              <input
+                id="postal_code"
+                type="text"
+                {...register('postal_code')}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="latitude" className="block text-sm font-medium text-gray-700">Latitude</label>
+              <input
+                id="latitude"
+                type="text"
+                {...register('latitude')}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="longitude" className="block text-sm font-medium text-gray-700">Longitude</label>
+              <input
+                id="longitude"
+                type="text"
+                {...register('longitude')}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              />
             </div>
 
             <div>

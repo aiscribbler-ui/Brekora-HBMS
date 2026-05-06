@@ -4,6 +4,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import get_current_user, require_role
 from app.core.security import get_password_hash
 from app.db.session import get_db
 from app.models.user import User
@@ -22,7 +23,7 @@ def get_org_id(x_org_id: str | None = Header(default=None, alias="X-Org-ID")) ->
     return DEFAULT_ORG_ID
 
 
-@router.get("/", response_model=List[UserRead])
+@router.get("/", response_model=List[UserRead], dependencies=[Depends(require_role(["Admin"]))])
 async def list_users(
     skip: int = 0,
     limit: int = 100,
@@ -33,7 +34,7 @@ async def list_users(
     return await repo.get_multi(skip=skip, limit=limit)
 
 
-@router.post("/", response_model=UserRead, status_code=201)
+@router.post("/", response_model=UserRead, status_code=201, dependencies=[Depends(require_role(["Admin"]))])
 async def create_user(
     data: UserCreate,
     db: AsyncSession = Depends(get_db),
@@ -57,7 +58,7 @@ async def create_user(
     return await repo.create(obj_in)
 
 
-@router.get("/{user_id}", response_model=UserRead)
+@router.get("/{user_id}", response_model=UserRead, dependencies=[Depends(require_role(["Admin"]))])
 async def get_user(
     user_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -70,7 +71,7 @@ async def get_user(
     return user
 
 
-@router.patch("/{user_id}", response_model=UserRead)
+@router.patch("/{user_id}", response_model=UserRead, dependencies=[Depends(require_role(["Admin"]))])
 async def update_user(
     user_id: uuid.UUID,
     data: UserUpdate,
@@ -96,7 +97,7 @@ async def update_user(
     return await repo.update(user, obj_in)
 
 
-@router.delete("/{user_id}", status_code=204)
+@router.delete("/{user_id}", status_code=204, dependencies=[Depends(require_role(["Admin"]))])
 async def delete_user(
     user_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),

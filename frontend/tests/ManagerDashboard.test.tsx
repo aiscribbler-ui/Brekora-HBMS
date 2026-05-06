@@ -80,7 +80,7 @@ describe('ManagerDashboard', () => {
     await waitFor(() => {
       expect(screen.getByText(/Manager Dashboard/i)).toBeInTheDocument()
     })
-    expect(screen.getByText(/Today/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Today/i })).toBeInTheDocument()
     expect(screen.getByText(/This Week/i)).toBeInTheDocument()
     expect(screen.getByText(/Open Tasks/i)).toBeInTheDocument()
     expect(screen.getByText(/Quick Actions/i)).toBeInTheDocument()

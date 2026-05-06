@@ -9,6 +9,12 @@ export interface Property {
   id: string
   name: string
   address: string
+  city?: string
+  state?: string
+  country?: string
+  postal_code?: string
+  latitude?: string
+  longitude?: string
   gstin?: string
   pan?: string
   owner_contact?: string
@@ -23,6 +29,12 @@ export interface Property {
 export interface PropertyCreateInput {
   name: string
   address: string
+  city?: string
+  state?: string
+  country?: string
+  postal_code?: string
+  latitude?: string
+  longitude?: string
   gstin?: string
   pan?: string
   owner_contact?: string
@@ -34,6 +46,12 @@ export interface PropertyCreateInput {
 export interface PropertyUpdateInput {
   name?: string
   address?: string
+  city?: string
+  state?: string
+  country?: string
+  postal_code?: string
+  latitude?: string
+  longitude?: string
   gstin?: string
   pan?: string
   owner_contact?: string
@@ -90,7 +108,7 @@ export interface RoomTypeUpdateInput {
 }
 
 export async function getProperties(): Promise<Property[]> {
-  const { data } = await api.get<Property[]>('/properties')
+  const { data } = await api.get<Property[]>('/properties/')
   return data
 }
 
@@ -100,7 +118,7 @@ export async function getProperty(id: string): Promise<Property> {
 }
 
 export async function createProperty(input: PropertyCreateInput): Promise<Property> {
-  const { data } = await api.post<Property>('/properties', input)
+  const { data } = await api.post<Property>('/properties/', input)
   return data
 }
 
