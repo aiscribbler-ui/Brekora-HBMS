@@ -11,9 +11,12 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const { accessToken } = useAuthStore.getState()
+    const { accessToken, user } = useAuthStore.getState()
     if (accessToken) {
       config.headers.set('Authorization', `Bearer ${accessToken}`)
+    }
+    if (user?.org_id) {
+      config.headers.set('X-Org-ID', user.org_id)
     }
     return config
   },
@@ -31,6 +34,6 @@ api.interceptors.response.use(
   },
 )
 
-export function isAxiosError<T = unknown>(error: unknown): error is AxiosError<T> {
+export function isAxiosError<T = { detail?: string }>(error: unknown): error is AxiosError<T> {
   return axios.isAxiosError(error)
 }

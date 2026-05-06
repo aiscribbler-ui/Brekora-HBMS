@@ -1,5 +1,6 @@
 import uuid
 from datetime import time
+from decimal import Decimal
 
 from sqlalchemy import Boolean, ForeignKey, Numeric, String, Text, Time
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -22,6 +23,12 @@ class Property(Base, OrganizationMixin, TimestampMixin):
     gstin: Mapped[str | None] = mapped_column(String(50), nullable=True)
     pan: Mapped[str | None] = mapped_column(String(50), nullable=True)
     owner_contact: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    city: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    state: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    postal_code: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    latitude: Mapped[Decimal | None] = mapped_column(Numeric(10, 8), nullable=True)
+    longitude: Mapped[Decimal | None] = mapped_column(Numeric(11, 8), nullable=True)
     photos: Mapped[list[dict] | None] = mapped_column(JSONB, nullable=True, default=list)
     amenities: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True, default=list)
     default_check_in_time: Mapped[time | None] = mapped_column(Time, nullable=True)

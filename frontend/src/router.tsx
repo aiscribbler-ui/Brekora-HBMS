@@ -1,11 +1,18 @@
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom'
+import { createBrowserRouter, type RouteObject, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 import App from '@/App'
+import { AuthGuard } from '@/components/auth/AuthGuard'
+import { RoleGuard } from '@/components/auth/RoleGuard'
 import Login from '@/pages/auth/Login'
+import Setup from '@/pages/auth/Setup'
 import TwoFactor from '@/pages/auth/TwoFactor'
 import ManagerDashboard from '@/pages/dashboard/ManagerDashboard'
 import GuestLogin from '@/pages/guest/GuestLogin'
 import GuestSignup from '@/pages/guest/GuestSignup'
 import GuestDashboard from '@/pages/guest/GuestDashboard'
+import MyBookings from '@/pages/guest/MyBookings'
+import GuestProfile from '@/pages/guest/GuestProfile'
 import PropertyList from '@/pages/properties/PropertyList'
 import PropertyDetail from '@/pages/properties/PropertyDetail'
 import RoomTypeList from '@/pages/properties/RoomTypeList'
@@ -14,6 +21,8 @@ import CalendarGrid from '@/pages/calendar/CalendarGrid'
 import PackageList from '@/pages/packages/PackageList'
 import PackageBuilder from '@/pages/packages/PackageBuilder'
 import OtaQueue from '@/pages/ota/OtaQueue'
+import OtaMappings from '@/pages/ota/OtaMappings'
+import MessageGuest from '@/pages/messages/MessageGuest'
 import ManualBookingForm from '@/pages/bookings/ManualBookingForm'
 import BookingDetail from '@/pages/bookings/BookingDetail'
 import BookingEdit from '@/pages/bookings/BookingEdit'
@@ -24,15 +33,60 @@ import BookingConfirmation from '@/pages/public/BookingConfirmation'
 import AdminPanel from '@/pages/admin/AdminPanel'
 import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
+function SetupRedirect() {
+  const navigate = useNavigate()
+  const [checked, setChecked] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    api
+      .get<{ setup_required: boolean }>('/auth/setup-status')
+      .then((res) => {
+        if (!cancelled) {
+          setChecked(true)
+          if (res.data.setup_required) {
+            navigate('/setup', { replace: true })
+          } else {
+            navigate('/dashboard', { replace: true })
+          }
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setChecked(true)
+          navigate('/dashboard', { replace: true })
+        }
+      })
+    return () => { cancelled = true }
+  }, [navigate])
+
+  if (!checked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse h-8 w-8 rounded-full bg-brand-600" />
+      </div>
+    )
+  }
+  return null
+}
+
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
+      { index: true, element: <SetupRedirect /> },
       {
         path: 'dashboard',
-        element: <ManagerDashboard />,
+        element: (
+          <AuthGuard>
+            <ManagerDashboard />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'setup',
+        element: <Setup />,
       },
       {
         path: 'login',
@@ -44,35 +98,75 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'properties',
-        element: <PropertyList />,
+        element: (
+          <AuthGuard>
+            <PropertyList />
+          </AuthGuard>
+        ),
       },
       {
         path: 'properties/:id',
-        element: <PropertyDetail />,
+        element: (
+          <AuthGuard>
+            <PropertyDetail />
+          </AuthGuard>
+        ),
       },
       {
         path: 'properties/:id/room-types',
-        element: <RoomTypeList />,
+        element: (
+          <AuthGuard>
+            <RoomTypeList />
+          </AuthGuard>
+        ),
       },
       {
         path: 'properties/:id/room-types/:roomTypeId',
-        element: <RoomTypeForm />,
+        element: (
+          <AuthGuard>
+            <RoomTypeForm />
+          </AuthGuard>
+        ),
       },
       {
         path: 'calendar',
-        element: <CalendarGrid />,
+        element: (
+          <AuthGuard>
+            <CalendarGrid />
+          </AuthGuard>
+        ),
       },
       {
         path: 'packages',
-        element: <PackageList />,
+        element: (
+          <AuthGuard>
+            <PackageList />
+          </AuthGuard>
+        ),
       },
       {
         path: 'packages/:id',
-        element: <PackageBuilder />,
+        element: (
+          <AuthGuard>
+            <PackageBuilder />
+          </AuthGuard>
+        ),
       },
       {
         path: 'ota/queue',
-        element: <OtaQueue />,
+        element: (
+          <AuthGuard>
+            <OtaQueue />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'ota/mappings',
+        element: (
+          <AuthGuard>
+            <OtaMappings />
+          </AuthGuard>
+        ),
       },
       {
         path: 'guest/login',
@@ -84,19 +178,59 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'guest',
-        element: <GuestDashboard />,
+        element: (
+          <AuthGuard>
+            <GuestDashboard />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'guest/bookings',
+        element: (
+          <AuthGuard>
+            <MyBookings />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'guest/profile',
+        element: (
+          <AuthGuard>
+            <GuestProfile />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: 'messages',
+        element: (
+          <AuthGuard>
+            <MessageGuest />
+          </AuthGuard>
+        ),
       },
       {
         path: 'bookings/manual',
-        element: <ManualBookingForm />,
+        element: (
+          <RoleGuard allowedRoles={['Admin', 'Manager', 'Owner', 'Partner']}>
+            <ManualBookingForm />
+          </RoleGuard>
+        ),
       },
       {
         path: 'bookings/:id',
-        element: <BookingDetail />,
+        element: (
+          <AuthGuard>
+            <BookingDetail />
+          </AuthGuard>
+        ),
       },
       {
         path: 'bookings/:id/edit',
-        element: <BookingEdit />,
+        element: (
+          <AuthGuard>
+            <BookingEdit />
+          </AuthGuard>
+        ),
       },
       {
         path: 'book',
@@ -116,15 +250,27 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'owner',
-        element: <OwnerDashboard />,
+        element: (
+          <AuthGuard>
+            <OwnerDashboard />
+          </AuthGuard>
+        ),
       },
       {
         path: 'admin',
-        element: <AdminPanel />,
+        element: (
+          <RoleGuard allowedRoles={['Admin']}>
+            <AdminPanel />
+          </RoleGuard>
+        ),
       },
       {
         path: 'admin/*',
-        element: <AdminPanel />,
+        element: (
+          <RoleGuard allowedRoles={['Admin']}>
+            <AdminPanel />
+          </RoleGuard>
+        ),
       },
       {
         path: '*',

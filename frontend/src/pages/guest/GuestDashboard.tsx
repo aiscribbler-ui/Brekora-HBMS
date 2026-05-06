@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import { useGuestAuth } from '@/hooks/useGuestAuth'
 
 export default function GuestDashboard() {
   const { user, logout } = useGuestAuth()
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-teal-50">
@@ -27,8 +29,8 @@ export default function GuestDashboard() {
               <h2 className="text-lg font-semibold text-gray-800">My Bookings</h2>
               <p className="text-sm text-gray-500 mt-1">You have no upcoming bookings.</p>
               <button
-                disabled
-                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => navigate('/guest/bookings')}
+                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 View all bookings
               </button>
@@ -38,8 +40,8 @@ export default function GuestDashboard() {
               <h2 className="text-lg font-semibold text-gray-800">Profile</h2>
               <p className="text-sm text-gray-500 mt-1">Manage your personal details.</p>
               <button
-                disabled
-                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => navigate('/guest/profile')}
+                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 Edit profile
               </button>

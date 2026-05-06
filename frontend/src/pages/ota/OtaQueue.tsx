@@ -13,6 +13,7 @@ import {
   type QueueFilters,
   type OtaSource,
   type QueueStatus,
+  type QueueItemDetail,
 } from '@/services/otaApi'
 import { isAxiosError } from '@/lib/api'
 import ParsedBookingCard from '@/components/ota/ParsedBookingCard'
@@ -95,7 +96,7 @@ export default function OtaQueue() {
   const [toast, setToast] = useState<Toast | null>(null)
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [selectedBooking, setSelectedBooking] = useState<ParsedBooking | null>(null)
+  const [selectedDetail, setSelectedDetail] = useState<QueueItemDetail | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [rejectId, setRejectId] = useState<string | null>(null)
@@ -155,6 +156,8 @@ export default function OtaQueue() {
     return () => clearTimeout(timer)
   }, [toast])
 
+  const selectedBooking = selectedDetail?.parsed_booking ?? null
+
   const confirmBooking = useMemo(
     () => items.find((b) => b.id === confirmId) || null,
     [items, confirmId],
@@ -165,17 +168,12 @@ export default function OtaQueue() {
     [items, rejectId],
   )
 
-  const editBooking = useMemo(
-    () => items.find((b) => b.id === editId) || null,
-    [items, editId],
-  )
-
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PAGE_SIZE)), [total])
 
   const handleSelect = async (id: string | null) => {
     if (!id) {
       setSelectedId(null)
-      setSelectedBooking(null)
+      setSelectedDetail(null)
       setEditId(null)
       return
     }
@@ -183,11 +181,11 @@ export default function OtaQueue() {
     setEditId(null)
     setDetailLoading(true)
     try {
-      const booking = await getOtaQueueItem(id)
-      setSelectedBooking(booking)
+      const detail = await getOtaQueueItem(id)
+      setSelectedDetail(detail)
     } catch {
       const fallback = items.find((b) => b.id === id) || null
-      setSelectedBooking(fallback)
+      setSelectedDetail(fallback ? { parsed_booking: fallback, raw_email: null, email_link: null } : null)
     } finally {
       setDetailLoading(false)
     }
@@ -198,7 +196,9 @@ export default function OtaQueue() {
     setConfirmId(null)
     setRejectId(null)
     setEditId(null)
-    setSelectedBooking(updated)
+    setSelectedDetail((prev) =>
+      prev ? { ...prev, parsed_booking: updated } : null
+    )
     setToast({ type: 'success', message: `Booking ${updated.guest_name || updated.id} updated successfully.` })
   }
 
@@ -501,7 +501,7 @@ export default function OtaQueue() {
                     onConfirm={() => setConfirmId(selectedBooking.id)}
                     onEdit={() => setEditId(selectedBooking.id)}
                     onReject={() => setRejectId(selectedBooking.id)}
-                    rawEmailUrl={selectedBooking.raw_email_id ? `/api/v1/ota/queue/${selectedBooking.id}/raw-email` : null}
+                    rawEmailUrl={selectedDetail?.email_link || null}
                   />
                 )
               ) : null}

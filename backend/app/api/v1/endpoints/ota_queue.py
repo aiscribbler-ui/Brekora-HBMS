@@ -5,6 +5,7 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import require_role
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.schemas.parsed_booking_queue import (
@@ -46,7 +47,11 @@ def _serialize_raw_email(raw_email) -> dict | None:
     }
 
 
-@router.get("/", response_model=List[ParsedBookingQueueRead])
+@router.get(
+    "/",
+    response_model=List[ParsedBookingQueueRead],
+    dependencies=[Depends(require_role(["Admin", "Manager", "ListingManager"]))],
+)
 async def list_ota_queue(
     source_type: str | None = Query(default=None),
     status: str | None = Query(default=None),
@@ -68,7 +73,10 @@ async def list_ota_queue(
     )
 
 
-@router.get("/{queue_id}")
+@router.get(
+    "/{queue_id}",
+    dependencies=[Depends(require_role(["Admin", "Manager", "ListingManager"]))],
+)
 async def get_ota_queue_item(
     queue_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -89,7 +97,11 @@ async def get_ota_queue_item(
     }
 
 
-@router.post("/{queue_id}/confirm", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/{queue_id}/confirm",
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_role(["Admin", "Manager", "ListingManager"]))],
+)
 async def confirm_ota_queue_item(
     queue_id: uuid.UUID,
     data: ParsedBookingQueueConfirmRequest,
@@ -106,7 +118,11 @@ async def confirm_ota_queue_item(
     return {"booking_id": booking.id, "status": "confirmed"}
 
 
-@router.post("/{queue_id}/edit", response_model=ParsedBookingQueueRead)
+@router.post(
+    "/{queue_id}/edit",
+    response_model=ParsedBookingQueueRead,
+    dependencies=[Depends(require_role(["Admin", "Manager", "ListingManager"]))],
+)
 async def edit_ota_queue_item(
     queue_id: uuid.UUID,
     data: ParsedBookingQueueEditRequest,
@@ -121,7 +137,11 @@ async def edit_ota_queue_item(
     return updated
 
 
-@router.post("/{queue_id}/reject", response_model=ParsedBookingQueueRead)
+@router.post(
+    "/{queue_id}/reject",
+    response_model=ParsedBookingQueueRead,
+    dependencies=[Depends(require_role(["Admin", "Manager", "ListingManager"]))],
+)
 async def reject_ota_queue_item(
     queue_id: uuid.UUID,
     data: ParsedBookingQueueRejectRequest,

@@ -70,7 +70,7 @@ describe('ManagerDashboard', () => {
     await waitFor(() => {
       expect(screen.getByText(/Manager Dashboard/i)).toBeInTheDocument()
     })
-    expect(screen.getByText(/Today/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /Today/i })).toBeInTheDocument()
     expect(screen.getByText(/This Week/i)).toBeInTheDocument()
     expect(screen.getByText(/Open Tasks/i)).toBeInTheDocument()
     expect(screen.getByText(/Quick Actions/i)).toBeInTheDocument()
@@ -110,7 +110,7 @@ describe('ManagerDashboard', () => {
     const user = userEvent.setup()
     await user.click(screen.getByTestId('action-create-booking'))
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/bookings/new')
+      expect(mockNavigate).toHaveBeenCalledWith('/bookings/manual')
     })
   })
 

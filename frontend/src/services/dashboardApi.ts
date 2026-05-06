@@ -48,7 +48,7 @@ export interface OpenTasksData {
 }
 
 export async function fetchProperties(): Promise<Property[]> {
-  const { data } = await api.get<Property[]>('/properties')
+  const { data } = await api.get<Property[]>('/properties/')
   return data
 }
 
@@ -63,36 +63,89 @@ export async function fetchAvailability(params: AvailabilityParams): Promise<Ava
 }
 
 export async function fetchRawEmailQueue(): Promise<{ count: number }> {
-  // Stub: raw email/OTA endpoints exist but parsers are still being built
-  // Return mock data until the queue API is ready (C-006)
-  return { count: 0 }
+  try {
+    const { data } = await api.get<{ items: unknown[] }>('/ota/queue')
+    return { count: data.items?.length ?? 0 }
+  } catch {
+    return { count: 0 }
+  }
 }
 
 export async function fetchDashboardSummary(): Promise<DashboardSummary> {
-  // Stub: Booking API does not exist yet (B-007 working on it)
-  // Return mock data until booking endpoints are available
-  return {
-    arrivals: 0,
-    departures: 0,
-    inHouse: 0,
-    pendingCheckIns: 0,
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const { data } = await api.get<Array<{
+      check_in: string
+      check_out: string
+      status: string
+    }>>('/bookings')
+
+    let arrivals = 0
+    let departures = 0
+    let inHouse = 0
+    let pendingCheckIns = 0
+
+    for (const b of data) {
+      if (b.check_in === today) {
+        arrivals++
+        if (b.status === 'confirmed') pendingCheckIns++
+      }
+      if (b.check_out === today) departures++
+      if (b.check_in <= today && b.check_out > today) inHouse++
+    }
+
+    return { arrivals, departures, inHouse, pendingCheckIns }
+  } catch {
+    return { arrivals: 0, departures: 0, inHouse: 0, pendingCheckIns: 0 }
   }
 }
 
 export async function fetchWeekSummary(): Promise<WeekSummaryData> {
-  // Stub: calculate from availability API when possible
-  // For now return mock data
-  return {
-    occupancyPercent: 0,
-    adrByProperty: [],
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+    const properties = await fetchProperties()
+    if (properties.length === 0) {
+      return { occupancyPercent: 0, adrByProperty: [] }
+    }
+
+    const availabilityData = await fetchAvailability({
+      property_id: properties[0].id,
+      check_in: today,
+      check_out: weekFromNow,
+    })
+
+    const totalRooms = availabilityData.reduce((sum, d) => sum + d.total_count, 0)
+    const availableRooms = availabilityData.reduce((sum, d) => sum + d.available_count, 0)
+    const occupancyPercent = totalRooms > 0 ? Math.round(((totalRooms - availableRooms) / totalRooms) * 100) : 0
+
+    return {
+      occupancyPercent,
+      adrByProperty: properties.map((p) => ({
+        propertyId: p.id,
+        propertyName: p.name,
+        adr: 0,
+      })),
+    }
+  } catch {
+    return { occupancyPercent: 0, adrByProperty: [] }
   }
 }
 
 export async function fetchOpenTasks(): Promise<OpenTasksData> {
-  // Stub: payment and refund APIs not ready yet
-  return {
-    otaQueueReview: 0,
-    paymentFailures: 0,
-    pendingRefunds: 0,
+  try {
+    // OTA queue review count from alerts
+    const { data: alertCounts } = await api.get<Array<{ source_type: string; count: number }>>('/ota/alerts/count')
+    const otaQueueReview = alertCounts.reduce((sum, entry) => sum + (entry.count ?? 0), 0)
+
+    // Payment failures and pending refunds from bookings
+    const { data: bookings } = await api.get<Array<{ status: string }>>('/bookings/')
+    const paymentFailures = bookings.filter((b) => b.status === 'payment_failed').length
+    const pendingRefunds = bookings.filter((b) => b.status === 'refund_pending').length
+
+    return { otaQueueReview, paymentFailures, pendingRefunds }
+  } catch {
+    return { otaQueueReview: 0, paymentFailures: 0, pendingRefunds: 0 }
   }
 }

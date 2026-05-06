@@ -35,4 +35,22 @@ export async function logout(): Promise<void> {
   await api.post('/auth/logout')
 }
 
+export interface RegisterGuestInput {
+  email: string
+  password: string
+  first_name?: string
+  last_name?: string
+  phone?: string
+}
+
+export interface RegisterGuestResponse {
+  id: string
+  email: string
+}
+
+export async function registerGuest(data: RegisterGuestInput): Promise<RegisterGuestResponse> {
+  const { data: responseData } = await api.post<RegisterGuestResponse>('/auth/register', data)
+  return responseData
+}
+
 export { isAxiosError, AxiosError }

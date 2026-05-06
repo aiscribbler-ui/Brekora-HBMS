@@ -30,7 +30,7 @@ def get_org_id(x_org_id: str | None = Header(default=None, alias="X-Org-ID")) ->
 @router.get("/rooms", response_model=list[RoomAvailabilityNight])
 async def get_room_availability(
     property_id: uuid.UUID = Query(...),
-    room_type_id: uuid.UUID = Query(...),
+    room_type_id: uuid.UUID | None = Query(default=None),
     check_in: date = Query(...),
     check_out: date = Query(...),
     db: AsyncSession = Depends(get_db),

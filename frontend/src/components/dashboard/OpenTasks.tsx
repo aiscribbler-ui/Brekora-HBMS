@@ -1,4 +1,10 @@
 import { useNavigate } from 'react-router-dom'
+import {
+  InboxArrowDownIcon,
+  CreditCardIcon,
+  BanknotesIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline'
 
 export interface OpenTasksProps {
   otaQueueReview: number
@@ -10,47 +16,63 @@ export default function OpenTasks({ otaQueueReview, paymentFailures, pendingRefu
   const navigate = useNavigate()
   const total = otaQueueReview + paymentFailures + pendingRefunds
 
+  const tasks = [
+    {
+      label: 'OTA Queue Review',
+      count: otaQueueReview,
+      icon: InboxArrowDownIcon,
+      onClick: () => navigate('/ota/queue'),
+    },
+    {
+      label: 'Payment Failures',
+      count: paymentFailures,
+      icon: CreditCardIcon,
+      onClick: undefined,
+    },
+    {
+      label: 'Pending Refunds',
+      count: pendingRefunds,
+      icon: BanknotesIcon,
+      onClick: undefined,
+    },
+  ]
+
   return (
-    <div className="bg-white rounded-lg shadow p-5">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Open Tasks</h3>
-      <div className="space-y-3">
-        <button
-          onClick={() => navigate('/ota/queue')}
-          className="w-full flex items-center justify-between hover:bg-gray-50 rounded px-2 py-1 -mx-2 -my-1 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
-          aria-label={`OTA Queue Review, ${otaQueueReview} pending`}
-        >
-          <span className="text-sm text-gray-700">OTA Queue Review</span>
-          <span
-            className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-sm font-bold ${
-              otaQueueReview > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {otaQueueReview}
-          </span>
-        </button>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-700">Payment Failures</span>
-          <span
-            className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-sm font-bold ${
-              paymentFailures > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {paymentFailures}
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-700">Pending Refunds</span>
-          <span
-            className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-sm font-bold ${
-              pendingRefunds > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {pendingRefunds}
-          </span>
-        </div>
+      <div className="space-y-2">
+        {tasks.map((task) => {
+          const Icon = task.icon
+          const clickable = !!task.onClick
+          const Wrapper = clickable ? 'button' : 'div'
+          return (
+            <Wrapper
+              key={task.label}
+              {...(clickable ? { onClick: task.onClick } : {})}
+              className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-left transition-colors ${
+                clickable
+                  ? 'hover:bg-gray-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2'
+                  : ''
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Icon className="h-4 w-4 text-gray-500" aria-hidden="true" />
+                <span className="text-sm text-gray-700">{task.label}</span>
+              </div>
+              <span
+                className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-sm font-bold ${
+                  task.count > 0 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {task.count}
+              </span>
+            </Wrapper>
+          )
+        })}
       </div>
       {total > 0 && (
-        <div className="mt-4 p-2 bg-red-50 rounded text-sm text-red-700">
+        <div className="mt-4 p-3 bg-red-50 rounded-lg text-sm text-red-700 flex items-center gap-2 animate-pulse">
+          <ExclamationTriangleIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
           {total} task{total !== 1 ? 's' : ''} require attention
         </div>
       )}

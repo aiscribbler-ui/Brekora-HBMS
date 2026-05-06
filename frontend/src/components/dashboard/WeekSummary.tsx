@@ -11,25 +11,28 @@ export interface WeekSummaryProps {
 
 export default function WeekSummary({ occupancyPercent, adrByProperty }: WeekSummaryProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-5">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week</h3>
-      <div className="mb-4">
-        <p className="text-sm text-gray-600">Occupancy</p>
+      <div className="mb-5">
+        <p className="text-sm text-gray-600 mb-1">Occupancy</p>
         <div className="flex items-center gap-3 mt-1">
-          <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-brand-600 rounded-full transition-all duration-500"
+              className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-brand-500 to-brand-700"
               style={{ width: `${occupancyPercent}%` }}
               data-testid="occupancy-bar"
             />
           </div>
-          <span className="text-lg font-bold text-gray-900">{occupancyPercent}%</span>
+          <span className="text-lg font-bold text-gray-900 w-12 text-right">{occupancyPercent}%</span>
         </div>
       </div>
       <div>
         <p className="text-sm text-gray-600 mb-2">ADR by Property</p>
         {adrByProperty.length === 0 ? (
-          <p className="text-sm text-gray-400 italic">No data available</p>
+          <div className="py-4 text-center">
+            <p className="text-sm text-gray-400">No pricing data yet</p>
+            <p className="text-xs text-gray-300 mt-1">Bookings will populate this section</p>
+          </div>
         ) : (
           <ul className="space-y-2">
             {adrByProperty.map((item) => (

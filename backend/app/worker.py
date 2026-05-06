@@ -34,14 +34,14 @@ class WorkerSettings:
     cron_jobs = [
         cron(
             hold_cleaner,
-            hour=range(24),
-            minute=range(0, 60, 1),
+            hour={i for i in range(24)},
+            minute={i for i in range(0, 60, 1)},
             name="hold_cleaner_every_minute",
         ),
         cron(
             gmail_poller,
-            hour=range(24),
-            minute=range(0, 60, 5),
+            hour={i for i in range(24)},
+            minute={i for i in range(0, 60, 5)},
             name="gmail_poller_every_5_min",
         ),
     ]

@@ -6,7 +6,9 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import get_password_hash
 from app.models.property import Property
+from app.models.role import Role
 from app.models.room_type import RoomType
 from app.models.package import Package
 from app.models.rate_plan import RatePlan
@@ -16,9 +18,35 @@ from app.repositories.property import PropertyRepository
 from app.repositories.room_type import RoomTypeRepository
 from app.repositories.package import PackageRepository
 from app.repositories.pricing import RatePlanRepository, SeasonalCalendarRepository, PromoCodeRepository
+from app.repositories.user import UserRepository
 from app.services.pricing_service import PricingService
+from sqlalchemy import select
 
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
+
+
+async def _create_user_with_role(db_session: AsyncSession, email: str, password: str, role_name: str):
+    result = await db_session.execute(
+        select(Role).where(Role.name == role_name, Role.org_id == DEFAULT_ORG_ID)
+    )
+    role = result.scalar_one_or_none()
+    repo = UserRepository(db_session, DEFAULT_ORG_ID)
+    return await repo.create({
+        "email": email,
+        "password_hash": get_password_hash(password),
+        "first_name": "Test",
+        "last_name": "User",
+        "role_id": role.id if role else None,
+    })
+
+
+async def _login(client: AsyncClient, email: str, password: str) -> str:
+    response = await client.post(
+        "/api/v1/auth/login",
+        json={"email": email, "password": password},
+    )
+    assert response.status_code == 200
+    return response.json()["access_token"]
 
 
 async def _create_property(db_session: AsyncSession) -> Property:
@@ -373,8 +401,12 @@ async def test_package_early_bird_discount(db_session: AsyncSession):
 # ---------------------------------------------------------------------------
 
 @pytest.mark.asyncio
-async def test_api_calculate_room_price(client: AsyncClient):
-    prop_resp = await client.post("/api/v1/properties/", json={"name": "API Pricing Hotel"})
+async def test_api_calculate_room_price(client: AsyncClient, db_session: AsyncSession):
+    await _create_user_with_role(db_session, "admin@example.com", "AdminPass123!", "Admin")
+    token = await _login(client, "admin@example.com", "AdminPass123!")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    prop_resp = await client.post("/api/v1/properties/", json={"name": "API Pricing Hotel"}, headers=headers)
     assert prop_resp.status_code == 201
     prop_id = prop_resp.json()["id"]
 
@@ -382,7 +414,7 @@ async def test_api_calculate_room_price(client: AsyncClient):
         "name": "Standard",
         "count": 5,
         "default_rate": "4000.00",
-    })
+    }, headers=headers)
     assert rt_resp.status_code == 201
     rt_id = rt_resp.json()["id"]
 
@@ -390,7 +422,8 @@ async def test_api_calculate_room_price(client: AsyncClient):
     check_out = check_in + timedelta(days=2)
     resp = await client.get(
         f"/api/v1/pricing/calculate-room?room_type_id={rt_id}"
-        f"&check_in={check_in}&check_out={check_out}"
+        f"&check_in={check_in}&check_out={check_out}",
+        headers=headers,
     )
     assert resp.status_code == 200
     data = resp.json()
@@ -400,38 +433,46 @@ async def test_api_calculate_room_price(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_api_rate_plan_crud(client: AsyncClient):
+async def test_api_rate_plan_crud(client: AsyncClient, db_session: AsyncSession):
+    await _create_user_with_role(db_session, "admin@example.com", "AdminPass123!", "Admin")
+    token = await _login(client, "admin@example.com", "AdminPass123!")
+    headers = {"Authorization": f"Bearer {token}"}
+
     resp = await client.post("/api/v1/pricing/rate-plans", json={
         "name": "Test BAR",
         "code": "TESTBAR",
         "discount_type": "percentage",
         "discount_value": "0.00",
-    })
+    }, headers=headers)
     assert resp.status_code == 201
     data = resp.json()
     rp_id = data["id"]
     assert data["code"] == "TESTBAR"
 
-    resp = await client.get(f"/api/v1/pricing/rate-plans/{rp_id}")
+    resp = await client.get(f"/api/v1/pricing/rate-plans/{rp_id}", headers=headers)
     assert resp.status_code == 200
     assert resp.json()["code"] == "TESTBAR"
 
     resp = await client.patch(f"/api/v1/pricing/rate-plans/{rp_id}", json={
         "discount_value": "10.00",
-    })
+    }, headers=headers)
     assert resp.status_code == 200
     assert Decimal(resp.json()["discount_value"]) == Decimal("10.00")
 
-    resp = await client.delete(f"/api/v1/pricing/rate-plans/{rp_id}")
+    resp = await client.delete(f"/api/v1/pricing/rate-plans/{rp_id}", headers=headers)
     assert resp.status_code == 204
 
-    resp = await client.get(f"/api/v1/pricing/rate-plans/{rp_id}")
+    resp = await client.get(f"/api/v1/pricing/rate-plans/{rp_id}", headers=headers)
     assert resp.status_code == 200
     assert resp.json()["is_active"] is False
 
 
 @pytest.mark.asyncio
-async def test_api_seasonal_calendar_crud(client: AsyncClient):
+async def test_api_seasonal_calendar_crud(client: AsyncClient, db_session: AsyncSession):
+    await _create_user_with_role(db_session, "admin@example.com", "AdminPass123!", "Admin")
+    token = await _login(client, "admin@example.com", "AdminPass123!")
+    headers = {"Authorization": f"Bearer {token}"}
+
     start = date.today() + timedelta(days=5)
     end = start + timedelta(days=5)
     resp = await client.post("/api/v1/pricing/seasonal-calendars", json={
@@ -439,27 +480,31 @@ async def test_api_seasonal_calendar_crud(client: AsyncClient):
         "start_date": str(start),
         "end_date": str(end),
         "multiplier": "1.25",
-    })
+    }, headers=headers)
     assert resp.status_code == 201
     data = resp.json()
     sc_id = data["id"]
     assert Decimal(data["multiplier"]) == Decimal("1.25")
 
-    resp = await client.get(f"/api/v1/pricing/seasonal-calendars/{sc_id}")
+    resp = await client.get(f"/api/v1/pricing/seasonal-calendars/{sc_id}", headers=headers)
     assert resp.status_code == 200
 
     resp = await client.patch(f"/api/v1/pricing/seasonal-calendars/{sc_id}", json={
         "multiplier": "1.30",
-    })
+    }, headers=headers)
     assert resp.status_code == 200
     assert Decimal(resp.json()["multiplier"]) == Decimal("1.30")
 
-    resp = await client.delete(f"/api/v1/pricing/seasonal-calendars/{sc_id}")
+    resp = await client.delete(f"/api/v1/pricing/seasonal-calendars/{sc_id}", headers=headers)
     assert resp.status_code == 204
 
 
 @pytest.mark.asyncio
-async def test_api_promo_code_crud(client: AsyncClient):
+async def test_api_promo_code_crud(client: AsyncClient, db_session: AsyncSession):
+    await _create_user_with_role(db_session, "admin@example.com", "AdminPass123!", "Admin")
+    token = await _login(client, "admin@example.com", "AdminPass123!")
+    headers = {"Authorization": f"Bearer {token}"}
+
     valid_from = date.today()
     valid_to = valid_from + timedelta(days=30)
     resp = await client.post("/api/v1/pricing/promo-codes", json={
@@ -470,20 +515,20 @@ async def test_api_promo_code_crud(client: AsyncClient):
         "valid_from": str(valid_from),
         "valid_to": str(valid_to),
         "applicable_booking_types": ["room", "package"],
-    })
+    }, headers=headers)
     assert resp.status_code == 201
     data = resp.json()
     pc_id = data["id"]
     assert data["code"] == "WELCOME20"
 
-    resp = await client.get(f"/api/v1/pricing/promo-codes/{pc_id}")
+    resp = await client.get(f"/api/v1/pricing/promo-codes/{pc_id}", headers=headers)
     assert resp.status_code == 200
 
     resp = await client.patch(f"/api/v1/pricing/promo-codes/{pc_id}", json={
         "used_count": 5,
-    })
+    }, headers=headers)
     assert resp.status_code == 200
     assert resp.json()["used_count"] == 5
 
-    resp = await client.delete(f"/api/v1/pricing/promo-codes/{pc_id}")
+    resp = await client.delete(f"/api/v1/pricing/promo-codes/{pc_id}", headers=headers)
     assert resp.status_code == 204

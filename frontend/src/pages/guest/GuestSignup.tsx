@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { guestSignupSchema, type GuestSignupInput } from '@/lib/validation'
+import { registerGuest } from '@/services/authApi'
+import { isAxiosError } from '@/lib/api'
 
 export default function GuestSignup() {
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -12,10 +15,37 @@ export default function GuestSignup() {
   } = useForm<GuestSignupInput>({
     resolver: zodResolver(guestSignupSchema),
   })
-  const [infoMsg, setInfoMsg] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [successMsg, setSuccessMsg] = useState<string | null>(null)
 
-  const onSubmit = async () => {
-    setInfoMsg('Registration will be available soon. Please contact us to book.')
+  const onSubmit = async (data: GuestSignupInput) => {
+    setErrorMsg(null)
+    setSuccessMsg(null)
+    try {
+      await registerGuest({
+        email: data.email,
+        password: data.password,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        phone: data.phone,
+      })
+      setSuccessMsg('Account created successfully! Redirecting to login...')
+      setTimeout(() => navigate('/guest/login'), 2000)
+    } catch (err) {
+      if (isAxiosError<{ detail?: string }>(err)) {
+        const status = err.response?.status
+        const detail = err.response?.data?.detail
+        if (status === 409) {
+          setErrorMsg('Email is already registered.')
+        } else if (detail) {
+          setErrorMsg(detail)
+        } else {
+          setErrorMsg('Registration failed. Please try again.')
+        }
+      } else {
+        setErrorMsg('An unexpected error occurred. Please try again.')
+      }
+    }
   }
 
   return (
@@ -26,9 +56,14 @@ export default function GuestSignup() {
           <p className="text-sm text-teal-600 mt-1">Join us for a seamless booking experience</p>
         </div>
 
-        {infoMsg && (
-          <div className="mb-4 p-3 bg-amber-50 text-amber-800 rounded-lg border border-amber-200" role="status">
-            {infoMsg}
+        {errorMsg && (
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
+            {errorMsg}
+          </div>
+        )}
+        {successMsg && (
+          <div className="mb-4 p-3 bg-green-50 text-green-800 rounded-lg border border-green-200" role="status">
+            {successMsg}
           </div>
         )}
 

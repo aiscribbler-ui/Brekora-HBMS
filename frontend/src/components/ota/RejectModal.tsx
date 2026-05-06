@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
-import { ExclamationTriangleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { XCircleIcon } from '@heroicons/react/24/outline'
 import { isAxiosError } from '@/lib/api'
 import { rejectOtaQueueItem, type ParsedBooking } from '@/services/otaApi'
 

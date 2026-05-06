@@ -20,12 +20,13 @@ class AvailabilityService:
     @staticmethod
     def _cache_key(
         property_id: uuid.UUID,
-        room_type_id: uuid.UUID,
+        room_type_id: uuid.UUID | None,
         check_in: date,
         check_out: date,
     ) -> str:
+        rt = str(room_type_id) if room_type_id else "all"
         return (
-            f"avail:rooms:{property_id}:{room_type_id}"
+            f"avail:rooms:{property_id}:{rt}"
             f":{check_in.isoformat()}:{check_out.isoformat()}"
         )
 
@@ -49,7 +50,7 @@ class AvailabilityService:
             f":{start_date.isoformat()}:{end_date.isoformat()}"
         )
 
-    async def get_room_availability(
+    async def _get_single_room_availability(
         self,
         property_id: uuid.UUID,
         room_type_id: uuid.UUID,
@@ -57,38 +58,7 @@ class AvailabilityService:
         check_out: date,
         org_id: uuid.UUID | None = None,
     ) -> list[dict]:
-        """Return availability per night for the requested date range.
-
-        Parameters
-        ----------
-        property_id : uuid.UUID
-            Property UUID.
-        room_type_id : uuid.UUID
-            Room type UUID.
-        check_in : datetime.date
-            Arrival date (inclusive).
-        check_out : datetime.date
-            Departure date (exclusive).
-        org_id : uuid.UUID | None
-            Optional organization UUID for scoping.
-
-        Returns
-        -------
-        list[dict]
-            One dict per night with keys: date, available_count, total_count,
-            booked_count, held_count.
-        """
-        if check_in >= check_out:
-            return []
-
-        cache_key = self._cache_key(property_id, room_type_id, check_in, check_out)
-
-        if self.redis is not None:
-            cached = await self.redis.get(cache_key)
-            if cached:
-                return json.loads(cached)
-
-        # Verify room type exists and is active.
+        """Return availability per night for a single room type."""
         rt_stmt = select(RoomType).where(
             RoomType.id == room_type_id,
             RoomType.property_id == property_id,
@@ -105,7 +75,6 @@ class AvailabilityService:
 
         total_count = room_type.count
 
-        # Single efficient CTE query for per-night availability.
         sql = text(
             """
             WITH date_series AS (
@@ -166,8 +135,9 @@ class AvailabilityService:
             },
         )
 
-        rows = [
+        return [
             {
+                "room_type_id": str(room_type_id),
                 "date": row.date,
                 "total_count": row.total_count,
                 "booked_count": row.booked_count,
@@ -177,6 +147,69 @@ class AvailabilityService:
             }
             for row in result.mappings().all()
         ]
+
+    async def get_room_availability(
+        self,
+        property_id: uuid.UUID,
+        check_in: date,
+        check_out: date,
+        room_type_id: uuid.UUID | None = None,
+        org_id: uuid.UUID | None = None,
+    ) -> list[dict]:
+        """Return availability per night for the requested date range.
+
+        Parameters
+        ----------
+        property_id : uuid.UUID
+            Property UUID.
+        room_type_id : uuid.UUID | None
+            Room type UUID. If omitted, availability for all room types is returned.
+        check_in : datetime.date
+            Arrival date (inclusive).
+        check_out : datetime.date
+            Departure date (exclusive).
+        org_id : uuid.UUID | None
+            Optional organization UUID for scoping.
+
+        Returns
+        -------
+        list[dict]
+            One dict per night per room type with keys: room_type_id, date,
+            available_count, total_count, booked_count, held_count.
+        """
+        if check_in >= check_out:
+            return []
+
+        cache_key = self._cache_key(property_id, room_type_id, check_in, check_out)
+
+        if self.redis is not None:
+            cached = await self.redis.get(cache_key)
+            if cached:
+                return json.loads(cached)
+
+        if room_type_id is not None:
+            rows = await self._get_single_room_availability(
+                property_id, room_type_id, check_in, check_out, org_id
+            )
+        else:
+            rt_stmt = select(RoomType).where(
+                RoomType.property_id == property_id,
+                RoomType.is_active.is_(True),
+                RoomType.is_archived.is_(False),
+            )
+            if org_id is not None:
+                rt_stmt = rt_stmt.where(RoomType.org_id == org_id)
+
+            result = await self.session.execute(rt_stmt)
+            room_types = result.scalars().all()
+
+            rows: list[dict] = []
+            for rt in room_types:
+                rows.extend(
+                    await self._get_single_room_availability(
+                        property_id, rt.id, check_in, check_out, org_id
+                    )
+                )
 
         if self.redis is not None:
             await self.redis.setex(cache_key, 30, json.dumps(rows, default=str))

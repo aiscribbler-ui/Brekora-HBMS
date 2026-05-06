@@ -30,7 +30,7 @@ export interface OtaSettings {
 }
 
 export async function fetchFeatureFlags(): Promise<FeatureFlag[]> {
-  const { data } = await api.get<FeatureFlag[]>('/feature-flags')
+  const { data } = await api.get<FeatureFlag[]>('/feature-flags/')
   return data
 }
 
@@ -50,7 +50,7 @@ export async function updateSystemConfig(config: Partial<SystemConfig>): Promise
 }
 
 export async function fetchUsers(): Promise<User[]> {
-  const { data } = await api.get<User[]>('/users')
+  const { data } = await api.get<User[]>('/users/')
   return data
 }
 
