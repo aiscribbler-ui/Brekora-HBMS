@@ -51,3 +51,9 @@ class Property(Base, OrganizationMixin, TimestampMixin):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+    users: Mapped[list["User"]] = relationship(
+        "User",
+        secondary="user_property",
+        back_populates="properties",
+        lazy="selectin",
+    )

@@ -44,6 +44,12 @@ class User(Base, OrganizationMixin, TimestampMixin):
     )
 
     role: Mapped["Role"] = relationship("Role", back_populates="users", lazy="selectin")
+    properties: Mapped[list["Property"]] = relationship(
+        "Property",
+        secondary="user_property",
+        back_populates="users",
+        lazy="selectin",
+    )
 
     __table_args__ = (
         UniqueConstraint("org_id", "email", name="uq_user_org_email"),

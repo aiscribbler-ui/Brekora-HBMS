@@ -77,6 +77,12 @@ class SetupStatusResponse(BaseModel):
     setup_required: bool
 
 
+class UserPropertyResponse(BaseModel):
+    property_id: uuid.UUID
+    name: str
+    role_at_property: str
+
+
 class SetupRequest(BaseModel):
     org_name: str
     admin_email: str

@@ -2,6 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from redis.asyncio import Redis
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
@@ -9,7 +10,9 @@ from app.core.config import get_settings
 from app.core.redis import get_redis_client
 from app.core.security import create_access_token, create_refresh_token, get_password_hash
 from app.db.session import get_db
+from app.models.property import Property
 from app.models.user import User
+from app.repositories.user_property import UserPropertyRepository
 from app.schemas.auth import (
     LoginResponse,
     MeResponse,
@@ -21,6 +24,7 @@ from app.schemas.auth import (
     TwoFALoginVerifyRequest,
     TwoFASetupResponse,
     TwoFAVerifyRequest,
+    UserPropertyResponse,
 )
 from app.schemas.user import UserCreate, UserLogin
 from app.services.auth_service import AuthService
@@ -65,6 +69,30 @@ async def me(current_user: User = Depends(get_current_user)) -> MeResponse:
         is_active=bool(current_user.is_active),
         last_login=current_user.last_login,
     )
+
+
+@router.get("/me/properties", response_model=list[UserPropertyResponse])
+async def me_properties(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> list[UserPropertyResponse]:
+    repo = UserPropertyRepository(db)
+    rows = await repo.get_by_user(current_user.id)
+    # Eager-load property names
+    property_ids = [r.property_id for r in rows]
+
+    stmt = select(Property.id, Property.name).where(Property.id.in_(property_ids))
+    result = await db.execute(stmt)
+    names = {row.id: row.name for row in result.all()}
+
+    return [
+        UserPropertyResponse(
+            property_id=r.property_id,
+            name=names.get(r.property_id, "Unknown"),
+            role_at_property=r.role_at_property,
+        )
+        for r in rows
+    ]
 
 
 @router.post("/login", response_model=LoginResponse)

@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 from typing import List
 
 from fastapi import Depends, Header, HTTPException, Security, status
@@ -11,9 +12,17 @@ from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.user import User
 from app.repositories.user import UserRepository
+from app.repositories.user_property import UserPropertyRepository
 from app.services.session_service import SessionService
 
 security = HTTPBearer(auto_error=False)
+
+
+@dataclass
+class UserWithProperties:
+    user: User
+    property_ids: list[uuid.UUID]
+    property_roles: dict[uuid.UUID, str]
 
 
 async def get_current_session(
@@ -84,6 +93,21 @@ async def get_current_user(
     return user
 
 
+async def get_current_user_with_properties(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> UserWithProperties:
+    repo = UserPropertyRepository(db)
+    rows = await repo.get_by_user(current_user.id)
+    property_ids = [r.property_id for r in rows]
+    property_roles = {r.property_id: r.role_at_property for r in rows}
+    return UserWithProperties(
+        user=current_user,
+        property_ids=property_ids,
+        property_roles=property_roles,
+    )
+
+
 def require_role(allowed_roles: List[str]):
     async def role_checker(
         current_user: User = Depends(get_current_user),
@@ -101,3 +125,31 @@ def require_role(allowed_roles: List[str]):
         return current_user
 
     return role_checker
+
+
+# Global roles that bypass property-level access checks
+_ORG_LEVEL_PROPERTY_ACCESS_ROLES = ("Admin", "Owner", "Manager")
+
+
+def require_property_role(required_role: str):
+    async def property_role_checker(
+        current: UserWithProperties = Depends(get_current_user_with_properties),
+    ) -> UserWithProperties:
+        global_role = current.user.role.name if current.user.role else None
+        if global_role in _ORG_LEVEL_PROPERTY_ACCESS_ROLES:
+            return current
+
+        if not current.property_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No property access",
+            )
+
+        if required_role not in current.property_roles.values():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient property-level permissions",
+            )
+        return current
+
+    return property_role_checker

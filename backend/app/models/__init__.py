@@ -27,6 +27,7 @@ from app.models.inventory_buffer import InventoryBuffer
 from app.models.failed_payment import FailedPayment
 from app.models.feature_flag import FeatureFlag
 from app.models.parse_metric import ParseMetric
+from app.models.user_property import UserProperty
 
 __all__ = [
     "Base",
@@ -63,4 +64,5 @@ __all__ = [
     "FeatureFlag",
     "FailedPayment",
     "ParseMetric",
+    "UserProperty",
 ]

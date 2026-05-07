@@ -3,9 +3,15 @@ import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user
+from app.api.deps import (
+    get_current_user,
+    get_current_user_with_properties,
+    UserWithProperties,
+    _ORG_LEVEL_PROPERTY_ACCESS_ROLES,
+)
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.property import Property
@@ -32,15 +38,37 @@ def get_org_id(x_org_id: str | None = Header(default=None, alias="X-Org-ID")) ->
     return DEFAULT_ORG_ID
 
 
-@router.get("/", response_model=List[PropertyRead], dependencies=[])
+@router.get("/", response_model=List[PropertyRead])
 async def list_properties(
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current: UserWithProperties = Depends(get_current_user_with_properties),
 ) -> List[Property]:
     repo = PropertyRepository(db, org_id)
-    return await repo.get_multi(skip=skip, limit=limit)
+    # Admin/Owner/Manager see all non-archived properties in org; others see only assigned
+    global_role = current.user.role.name if current.user.role else None
+    if global_role in _ORG_LEVEL_PROPERTY_ACCESS_ROLES:
+        stmt = select(Property).where(
+            Property.org_id == org_id,
+            Property.is_active == True,
+            Property.is_archived == False,
+        ).offset(skip).limit(limit)
+        result = await db.execute(stmt)
+        return result.scalars().all()
+
+    if not current.property_ids:
+        return []
+
+    stmt = select(Property).where(
+        Property.org_id == org_id,
+        Property.id.in_(current.property_ids),
+        Property.is_active == True,
+        Property.is_archived == False,
+    ).offset(skip).limit(limit)
+    result = await db.execute(stmt)
+    return result.scalars().all()
 
 
 @router.post("/", response_model=PropertyRead, status_code=201)

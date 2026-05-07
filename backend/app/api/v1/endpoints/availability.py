@@ -1,10 +1,16 @@
 import uuid
 from datetime import date, time
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import (
+    get_current_user,
+    get_current_user_with_properties,
+    UserWithProperties,
+    _ORG_LEVEL_PROPERTY_ACCESS_ROLES,
+)
 from app.core.config import get_settings
 from app.core.redis import get_redis_client
 from app.db.session import get_db
@@ -36,7 +42,16 @@ async def get_room_availability(
     db: AsyncSession = Depends(get_db),
     redis: Redis = Depends(get_redis_client),
     org_id: uuid.UUID = Depends(get_org_id),
+    current: UserWithProperties = Depends(get_current_user_with_properties),
 ) -> list[RoomAvailabilityNight]:
+    global_role = current.user.role.name if current.user.role else None
+    if global_role not in _ORG_LEVEL_PROPERTY_ACCESS_ROLES:
+        if property_id not in current.property_ids:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this property",
+            )
+
     if check_in >= check_out:
         raise HTTPException(
             status_code=422,
