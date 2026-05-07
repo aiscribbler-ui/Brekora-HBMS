@@ -173,12 +173,8 @@ export default function Landing() {
                 </button>
               </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">{title}</h3>
-              <p className="text-sm text-gray-500 mt-0.5">{desc}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
       {/* Footer */}
