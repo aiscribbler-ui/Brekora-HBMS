@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { MapPin } from 'lucide-react'
 import { useGuestAuth } from '@/hooks/useGuestAuth'
 import {
   fetchGuestBookings,
@@ -31,6 +33,33 @@ export default function GuestDashboard() {
   const { user, logout } = useGuestAuth()
   const navigate = useNavigate()
 
+  const [bookings, setBookings] = useState<GuestBooking[]>([])
+  const [profile, setProfile] = useState<GuestProfile | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const [b, p] = await Promise.all([fetchGuestBookings(), fetchGuestProfile()])
+        if (!cancelled) {
+          setBookings(b)
+          setProfile(p)
+        }
+      } catch {
+        // ignore
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const greetingName = user?.name || [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || profile?.email
+
   return (
     <div className="min-h-screen bg-teal-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
@@ -51,19 +80,22 @@ export default function GuestDashboard() {
           </div>
         </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-800">My Bookings</h2>
-              <p className="text-sm text-gray-500 mt-1">You have no upcoming bookings.</p>
+        <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
+          <h2 className="text-lg font-semibold text-gray-800">My Bookings</h2>
+          {loading ? (
+            <p className="text-sm text-gray-500 mt-2">Loading…</p>
+          ) : bookings.length === 0 ? (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500">You have no upcoming bookings.</p>
               <button
                 onClick={() => navigate('/guest/bookings')}
                 className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 Find a stay →
-              </a>
+              </button>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 mt-2">
               {bookings.map((b) => (
                 <li key={b.id} className="py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -93,9 +125,13 @@ export default function GuestDashboard() {
           )}
         </section>
 
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-800">Profile</h2>
-              <p className="text-sm text-gray-500 mt-1">Manage your personal details.</p>
+        <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+          <h2 className="text-lg font-semibold text-gray-800">Profile</h2>
+          {loading ? (
+            <p className="text-sm text-gray-500 mt-2">Loading…</p>
+          ) : !profile ? (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500">Manage your personal details.</p>
               <button
                 onClick={() => navigate('/guest/profile')}
                 className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
@@ -103,8 +139,8 @@ export default function GuestDashboard() {
                 Edit profile
               </button>
             </div>
-          ) : profile ? (
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          ) : (
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mt-3">
               <div>
                 <dt className="text-xs text-gray-500">Name</dt>
                 <dd className="font-medium text-gray-900">
@@ -120,7 +156,7 @@ export default function GuestDashboard() {
                 <dd className="font-medium text-gray-900">{profile.phone || '—'}</dd>
               </div>
             </dl>
-          ) : null}
+          )}
         </section>
       </div>
     </div>
