@@ -250,7 +250,7 @@ export default function Setup() {
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-400 mt-4">
+        <p className="text-center text-xs text-gray-500 mt-4">
           This is a one-time setup. Once complete, this page will no longer be accessible.
         </p>
       </div>

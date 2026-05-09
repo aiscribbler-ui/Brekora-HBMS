@@ -126,7 +126,7 @@ export default function GuestSignup() {
 
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-              Phone <span className="text-gray-400 font-normal">(optional)</span>
+              Phone <span className="text-gray-500 font-normal">(optional)</span>
             </label>
             <input
               id="phone"
