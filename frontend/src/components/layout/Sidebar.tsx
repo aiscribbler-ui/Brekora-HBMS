@@ -23,7 +23,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', icon: HomeIcon },
+  { to: '/dashboard', label: 'Dashboard', icon: HomeIcon, roles: ['Admin', 'Manager', 'Owner', 'Partner', 'ListingManager'] },
   { to: '/properties', label: 'Properties', icon: BuildingOfficeIcon, roles: ['Admin', 'Manager', 'ListingManager'] },
   { to: '/calendar', label: 'Calendar', icon: CalendarIcon, roles: ['Admin', 'Manager', 'ListingManager'] },
   { to: '/packages', label: 'Packages', icon: CubeIcon, roles: ['Admin', 'Manager'] },

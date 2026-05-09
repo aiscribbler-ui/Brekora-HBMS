@@ -93,10 +93,21 @@ class SessionService:
             removed += 1
         return removed
 
+    async def evict_oldest_session(self, user_id: str) -> bool:
+        session_ids = await self.redis.zrange(f"sessions:{user_id}", 0, 0)
+        if not session_ids:
+            return False
+        oldest = session_ids[0]
+        return await self.terminate_session(oldest)
+
     async def check_concurrent_limit(
         self, user_id: str, role: str, max_sessions: int = 3
     ) -> bool:
         if role == "Guest":
             return True
         sessions = await self.list_sessions(user_id)
-        return len(sessions) < max_sessions
+        if len(sessions) < max_sessions:
+            return True
+        # At limit: evict the oldest session to make room
+        await self.evict_oldest_session(user_id)
+        return True

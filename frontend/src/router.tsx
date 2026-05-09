@@ -36,6 +36,7 @@ import AdminPanel from '@/pages/admin/AdminPanel'
 import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
 const STAFF_OR_OWNER = ['Admin', 'Manager', 'Owner'] as const
+const ALL_STAFF = ['Admin', 'Manager', 'Owner', 'Partner', 'ListingManager'] as const
 
 function SetupRedirect() {
   const navigate = useNavigate()
@@ -83,9 +84,9 @@ export const routes: RouteObject[] = [
       {
         path: 'dashboard',
         element: (
-          <AuthGuard>
+          <RequireRole allowed={ALL_STAFF}>
             <ManagerDashboard />
-          </AuthGuard>
+          </RequireRole>
         ),
       },
       {
