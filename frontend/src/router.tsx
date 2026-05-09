@@ -35,6 +35,8 @@ import BookingConfirmation from '@/pages/public/BookingConfirmation'
 import AdminPanel from '@/pages/admin/AdminPanel'
 import OwnerDashboard from '@/pages/owner/OwnerDashboard'
 
+const STAFF_OR_OWNER = ['Admin', 'Manager', 'Owner'] as const
+
 function SetupRedirect() {
   const navigate = useNavigate()
   const [checked, setChecked] = useState(false)
