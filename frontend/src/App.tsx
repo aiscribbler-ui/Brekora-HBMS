@@ -10,8 +10,7 @@ function App() {
   const { logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
-  const sidebar = useSidebarState()
-  const isStandalonePage =
+  const isAuthPage =
     location.pathname === '/login' ||
     location.pathname === '/2fa' ||
     location.pathname.startsWith('/guest') ||
