@@ -8,6 +8,7 @@ import {
   isToday,
 } from 'date-fns'
 import { useCalendar } from '@/hooks/useCalendar'
+import { useAuthStore } from '@/store/authStore'
 import CalendarCell from '@/components/calendar/CalendarCell'
 import BlockDateModal from '@/components/calendar/BlockDateModal'
 import {
@@ -31,6 +32,14 @@ export default function CalendarGrid() {
     setSelectedPropertyId,
     blockDates,
   } = useCalendar()
+  const user = useAuthStore((s) => s.user)
+  const globalRole = user?.role || ''
+  const orgLevelRoles = ['Admin', 'Owner', 'Manager']
+  const canBlockDates =
+    orgLevelRoles.includes(globalRole) ||
+    user?.properties?.some(
+      (p) => p.id === selectedPropertyId && p.role_at_property === 'manager',
+    ) === true
 
   const [showBlockModal, setShowBlockModal] = useState(false)
 
@@ -102,16 +111,18 @@ export default function CalendarGrid() {
         </div>
       )}
 
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => setShowBlockModal(true)}
-          className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded hover:bg-brand-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
-          data-testid="block-dates-btn"
-        >
-          Block Dates
-        </button>
-      </div>
+      {canBlockDates && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => setShowBlockModal(true)}
+            className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded hover:bg-brand-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            data-testid="block-dates-btn"
+          >
+            Block Dates
+          </button>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="space-y-2">

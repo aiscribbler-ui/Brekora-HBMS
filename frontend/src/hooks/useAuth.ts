@@ -7,6 +7,7 @@ import {
   refreshToken,
   verifyTwoFactorLogin,
   getMe,
+  getMyProperties,
 } from '@/services/authApi'
 import type { User } from '@/store/authStore'
 import { defaultRouteForRole, normaliseRole } from '@/lib/roles'
@@ -122,13 +123,18 @@ export function useAuth() {
           })
           token = refreshed.access_token
         }
-        const me = await getMe()
+        const [me, props] = await Promise.all([getMe(), getMyProperties()])
         if (cancelled) return
         const next: User = {
           id: me.id,
           email: me.email,
           role: me.role || getUserFromToken(token)?.role || '',
           name: me.name || undefined,
+          properties: props.map((p) => ({
+            id: p.property_id,
+            name: p.name,
+            role_at_property: p.role_at_property,
+          })),
         }
         useAuthStore.setState({ user: next })
       } catch {
@@ -145,14 +151,25 @@ export function useAuth() {
   }, [])
 
   const finaliseLogin = useCallback(
-    (data: { access_token: string; refresh_token: string; token_type: string; session_id?: string | null }) => {
+    async (data: { access_token: string; refresh_token: string; token_type: string; session_id?: string | null }) => {
       const decodedUser = getUserFromToken(data.access_token)
       const userRecord = decodedUser || { id: '', email: '', role: '' }
+      let properties: { id: string; name: string; role_at_property: string }[] = []
+      try {
+        const props = await getMyProperties()
+        properties = props.map((p) => ({
+          id: p.property_id,
+          name: p.name,
+          role_at_property: p.role_at_property,
+        }))
+      } catch {
+        // non-fatal — proceed without property roles
+      }
       setAuth({
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
         tokenType: data.token_type,
-        user: decodedUser || { id: '', email: '', role: '', org_id: '' },
+        user: { ...decodedUser, properties } || { id: '', email: '', role: '', org_id: '', properties },
       })
       scheduleRefresh(data.access_token, data.refresh_token)
       const target = defaultRouteForRole(normaliseRole(userRecord.role))

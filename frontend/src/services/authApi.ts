@@ -85,8 +85,19 @@ export interface MeResponse {
   is_active?: boolean
 }
 
+export interface UserPropertyResponse {
+  property_id: string
+  name: string
+  role_at_property: string
+}
+
 export async function getMe(): Promise<MeResponse> {
   const { data } = await api.get<MeResponse>('/auth/me')
+  return data
+}
+
+export async function getMyProperties(): Promise<UserPropertyResponse[]> {
+  const { data } = await api.get<UserPropertyResponse[]>('/auth/me/properties')
   return data
 }
 

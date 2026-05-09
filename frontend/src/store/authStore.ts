@@ -7,6 +7,7 @@ export interface User {
   role: string
   name?: string
   org_id?: string
+  properties?: { id: string; name: string; role_at_property: string }[]
 }
 
 export interface AuthTokens {
