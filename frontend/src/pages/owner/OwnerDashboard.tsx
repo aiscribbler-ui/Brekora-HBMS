@@ -18,6 +18,15 @@ export default function OwnerDashboard() {
   const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
 
+  const globalRole = user?.role || ''
+  const isGlobalOwnerOrAdmin = hasRole(globalRole, ['Owner', 'Admin'])
+  const ownerPropertyIds = new Set(
+    user?.properties
+      ?.filter((p) => p.role_at_property === 'owner_viewer')
+      .map((p) => p.id) || [],
+  )
+  const canAccessOwnerDashboard = isGlobalOwnerOrAdmin || ownerPropertyIds.size > 0
+
   const [properties, setProperties] = useState<Property[]>([])
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>('')
   const [month, setMonth] = useState<string>(getDefaultMonth())
@@ -33,9 +42,12 @@ export default function OwnerDashboard() {
     getProperties()
       .then((data) => {
         if (cancelled) return
-        setProperties(data)
-        if (data.length > 0) {
-          setSelectedPropertyId((prev) => prev || data[0].id)
+        const visible = isGlobalOwnerOrAdmin
+          ? data
+          : data.filter((p) => ownerPropertyIds.has(p.id))
+        setProperties(visible)
+        if (visible.length > 0) {
+          setSelectedPropertyId((prev) => (prev && visible.some((v) => v.id === prev) ? prev : visible[0].id))
         }
       })
       .catch(() => {
@@ -44,7 +56,7 @@ export default function OwnerDashboard() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [isGlobalOwnerOrAdmin])
 
   const generateReport = useCallback(async () => {
     if (!selectedPropertyId) {
@@ -72,13 +84,13 @@ export default function OwnerDashboard() {
   }, [selectedPropertyId, month])
 
   useEffect(() => {
-    if (!hasRole(user?.role, ['Owner', 'Admin'])) {
+    if (!canAccessOwnerDashboard) {
       const timer = setTimeout(() => navigate('/', { replace: true }), 3000)
       return () => clearTimeout(timer)
     }
-  }, [user, navigate])
+  }, [canAccessOwnerDashboard, navigate])
 
-  if (!hasRole(user?.role, ['Owner', 'Admin'])) {
+  if (!canAccessOwnerDashboard) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
