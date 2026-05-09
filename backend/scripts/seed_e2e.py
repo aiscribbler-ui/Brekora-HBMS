@@ -15,6 +15,7 @@ from app.models.room_type import RoomType
 from app.models.ota_mapping import OTAMapping
 from app.models.raw_email import RawEmail
 from app.models.parsed_booking import ParsedBookingQueue
+from app.models.user_property import UserProperty
 
 DEFAULT_ORG_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 MANAGER_EMAIL = "e2e-manager@brekora.test"
@@ -71,7 +72,15 @@ async def seed():
         session.add(prop)
         await session.flush()
 
-        room = RoomType(
+        user_property = UserProperty(
+            user_id=user.id,
+            property_id=prop.id,
+            role_at_property="manager",
+            is_active=True,
+        )
+        session.add(user_property)
+
+        room = RoomType (
             org_id=DEFAULT_ORG_ID,
             property_id=prop.id,
             name="Standard Room",
