@@ -186,7 +186,7 @@ export default function Landing() {
             </div>
             <span className="text-sm font-semibold text-gray-700">Brekora</span>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} Brekora Hospitality. All rights reserved.
           </p>
         </div>

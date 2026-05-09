@@ -143,7 +143,7 @@ export default function Login() {
 
         <div className="mt-5 mb-3 flex items-center gap-3">
           <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-xs uppercase tracking-wider text-gray-400">or</span>
+          <span className="text-xs uppercase tracking-wider text-gray-500">or</span>
           <div className="h-px flex-1 bg-gray-200" />
         </div>
         <GoogleSignInButton
