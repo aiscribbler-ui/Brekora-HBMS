@@ -108,7 +108,7 @@ export default function Landing() {
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold text-gray-900">Featured Properties</h2>
           <span className="text-sm text-gray-500">
-            {properties.length} property{properties.length !== 1 ? 'ies' : 'y'}
+            {properties.length} property{properties.length === 1 ? 'y' : 'ies'}
           </span>
         </div>
 
