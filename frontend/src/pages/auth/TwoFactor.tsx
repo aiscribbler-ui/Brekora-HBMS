@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { twoFactorSchema, type TwoFactorInput } from '@/lib/validation'
 import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function TwoFactor() {
   const navigate = useNavigate()
