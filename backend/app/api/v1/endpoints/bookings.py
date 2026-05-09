@@ -27,7 +27,7 @@ from app.schemas.booking import (
     BookingRead,
     BookingUpdate,
 )
-from app.exceptions import BookingConflictError
+from app.exceptions import BookingConflictError, ConflictError, InventoryError
 from app.schemas.conflict import BookingConflictResponse
 from app.services.booking_service import BookingInitService
 from app.services.booking_modification_service import BookingModificationService
@@ -182,6 +182,34 @@ async def create_booking(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Database integrity error",
         )
+
+    # Atomically reserve inventory so concurrent staff bookings cannot overbook
+    if line_items_data:
+        inventory_svc = InventoryService(db)
+        for li in line_items_data:
+            if li.get("item_type") == "room":
+                dates = [
+                    booking.check_in + timedelta(days=i)
+                    for i in range((booking.check_out - booking.check_in).days)
+                ]
+                try:
+                    hold_id = await inventory_svc.hold_inventory(
+                        booking_id=booking.id,
+                        property_id=booking.property_id,
+                        room_type_id=li["item_id"],
+                        dates=dates,
+                    )
+                    await inventory_svc.commit_inventory(hold_id)
+                except (ValueError, InventoryError, ConflictError) as exc:
+                    await db.delete(booking)
+                    await db.commit()
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail={
+                            "message": f"Insufficient inventory: {exc}",
+                            "alternatives": [],
+                        },
+                    )
 
     return booking
 

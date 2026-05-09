@@ -315,7 +315,7 @@ Files changed:
 - Scenario: A-043
 - Severity: P0
 - Date Found: 2026-05-05
-- Date Fixed: NOT FIXED
+- Date Fixed: 2026-05-09
 
 #### Steps to Reproduce
 1. Create property with 1 room type (count=1)
@@ -330,15 +330,18 @@ Second booking should return 409 CONFLICT with alternative suggestions (as per A
 Second booking is created successfully, resulting in overbooking.
 
 #### Root Cause
-The `create_booking` endpoint in `backend/app/api/v1/endpoints/bookings.py` creates a booking directly via `BookingRepository.create_with_line_items()` without calling `InventoryService.check_availability()` or creating inventory holds. The `init_booking` endpoint (for guest direct bookings) uses `BookingInitService` which does check availability, but the staff manual booking endpoint bypasses this.
+The `create_booking` endpoint performed a plain `InventoryService.check_availability()` call but never created an inventory hold. Since `check_availability` counts `InventoryHold` records (not `Booking` records), subsequent requests could not see the newly created booking and would also pass the availability check, leading to overbooking.
 
 #### Fix
-Add inventory availability check to `create_booking` endpoint before calling `repo.create_with_line_items()`. If availability is insufficient, return 409 with alternative dates/properties.
+After creating the booking, the endpoint now calls `InventoryService.hold_inventory()` followed by `InventoryService.commit_inventory()` within the same request flow. `hold_inventory` uses `SERIALIZABLE` isolation with `SELECT FOR UPDATE`, which serializes concurrent requests. If the hold fails (insufficient inventory, serialization failure, or conflict), the booking is deleted and a 409 is returned.
+
+Files changed:
+- `backend/app/api/v1/endpoints/bookings.py` - added hold + commit after booking creation, with rollback on failure
 
 #### Verification
-After fix, second booking on same dates should return 409.
+After fix, second concurrent staff booking on same dates returns 409 CONFLICT.
 
-#### Status: OPEN
+#### Status: FIXED
 
 
 ---
