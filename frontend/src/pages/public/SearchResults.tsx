@@ -86,7 +86,7 @@ export default function SearchResults() {
         />
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 pb-12">
+      <div className="max-w-7xl mx-auto px-4 pb-12">
         {error && (
           <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
             {error}
@@ -135,7 +135,7 @@ export default function SearchResults() {
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   )
 }

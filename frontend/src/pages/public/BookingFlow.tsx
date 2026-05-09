@@ -203,7 +203,7 @@ export default function BookingFlow() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6">
           <div className="flex items-center justify-between">
             {steps.map((label, idx) => {
@@ -464,7 +464,7 @@ export default function BookingFlow() {
             )}
           </div>
         </form>
-      </main>
+      </div>
     </div>
   )
 }
