@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass
 from typing import List
 
-from fastapi import Depends, Header, HTTPException, Security, status
+from fastapi import Depends, Header, HTTPException, Request, Security, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -133,22 +133,32 @@ _ORG_LEVEL_PROPERTY_ACCESS_ROLES = ("Admin", "Owner", "Manager")
 
 def require_property_role(required_role: str):
     async def property_role_checker(
+        request: Request,
         current: UserWithProperties = Depends(get_current_user_with_properties),
     ) -> UserWithProperties:
         global_role = current.user.role.name if current.user.role else None
         if global_role in _ORG_LEVEL_PROPERTY_ACCESS_ROLES:
             return current
 
-        if not current.property_roles:
+        property_id_str = request.path_params.get("property_id") or request.query_params.get("property_id")
+        if not property_id_str:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="No property access",
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="property_id is required to verify property-level permissions",
+            )
+        try:
+            property_id = uuid.UUID(property_id_str)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid property_id format",
             )
 
-        if required_role not in current.property_roles.values():
+        user_role = current.property_roles.get(property_id)
+        if user_role != required_role:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient property-level permissions",
+                detail="Insufficient property-level permissions for this property",
             )
         return current
 
