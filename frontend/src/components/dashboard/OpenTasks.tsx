@@ -39,7 +39,7 @@ export default function OpenTasks({ otaQueueReview, paymentFailures, pendingRefu
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Open Tasks</h3>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">Open Tasks</h2>
       <div className="space-y-2">
         {tasks.map((task) => {
           const Icon = task.icon

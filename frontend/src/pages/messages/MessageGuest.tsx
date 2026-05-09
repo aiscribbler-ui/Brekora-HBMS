@@ -154,7 +154,7 @@ export default function MessageGuest() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-2">
         <ChatBubbleLeftRightIcon className="h-6 w-6 text-brand-600" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Message Guest</h2>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Message Guest</h1>
       </div>
 
       {error && (
@@ -166,7 +166,7 @@ export default function MessageGuest() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column — bookings list */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 lg:col-span-1">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Recent Bookings</h3>
+          <h2 className="text-sm font-semibold text-gray-900 mb-3">Recent Bookings</h2>
           {isLoading ? (
             <div className="space-y-3 animate-pulse">
               {[...Array(4)].map((_, i) => (

@@ -51,7 +51,7 @@ export default function PropertyList() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
-          <p className="text-sm text-gray-500 mt-1">{activeCount} active property{activeCount !== 1 ? 'ies' : 'y'}</p>
+          <p className="text-sm text-gray-500 mt-1">{activeCount} active propert{activeCount === 1 ? 'y' : 'ies'}</p>
         </div>
         <button
           onClick={() => navigate('/properties/new')}

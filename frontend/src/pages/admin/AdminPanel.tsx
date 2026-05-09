@@ -67,7 +67,7 @@ export default function AdminPanel() {
         <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
         <div className="mt-6 flex flex-col gap-6 md:flex-row">
           {/* Mobile: horizontal scrollable top tabs; Desktop: sidebar */}
-          <nav className="shrink-0 overflow-x-auto border-b border-gray-200 pb-2 md:w-64 md:border-b-0 md:border-r md:pr-4 md:pb-0">
+          <nav aria-label="Admin tabs" className="shrink-0 overflow-x-auto border-b border-gray-200 pb-2 md:w-64 md:border-b-0 md:border-r md:pr-4 md:pb-0">
             <div className="flex gap-1 md:flex-col">
               {tabs.map((tab) => (
                 <button

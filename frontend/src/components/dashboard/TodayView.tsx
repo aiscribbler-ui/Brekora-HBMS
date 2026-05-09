@@ -52,7 +52,7 @@ export default function TodayView({ arrivals, departures, inHouse, pendingCheckI
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Today</h3>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">Today</h2>
       <div className="grid grid-cols-2 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon

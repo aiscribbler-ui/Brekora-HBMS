@@ -128,7 +128,7 @@ export default function OtaMappings() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">OTA Mappings</h2>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">OTA Mappings</h1>
           <p className="text-sm text-gray-500 mt-1">Link your properties and room types to external OTA listings</p>
         </div>
         {canManage && (
@@ -156,7 +156,7 @@ export default function OtaMappings() {
           onSubmit={handleSubmit}
           className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4"
         >
-          <h3 className="text-lg font-semibold text-gray-900">{editingId ? 'Edit Mapping' : 'New Mapping'}</h3>
+          <h2 className="text-lg font-semibold text-gray-900">{editingId ? 'Edit Mapping' : 'New Mapping'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Property</label>

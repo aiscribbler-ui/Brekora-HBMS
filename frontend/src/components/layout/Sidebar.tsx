@@ -53,7 +53,7 @@ export default function Sidebar() {
   })
 
   const sidebarContent = (
-    <nav className="flex-1 px-3 py-4 space-y-1">
+    <nav aria-label="Main navigation" className="flex-1 px-3 py-4 space-y-1">
       {filtered.map((item) => {
         const Icon = item.icon
         return (
@@ -101,6 +101,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
+        aria-label="Sidebar"
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}

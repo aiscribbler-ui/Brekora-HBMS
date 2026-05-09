@@ -110,7 +110,7 @@ export default function OwnerDashboard() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Owner Reports</h2>
+      <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Owner Reports</h1>
 
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
         <div className="flex flex-col gap-1 w-full md:w-auto">

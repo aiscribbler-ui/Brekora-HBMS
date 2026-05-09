@@ -15,7 +15,7 @@ export default function ManagerDashboard() {
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Manager Dashboard</h2>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Manager Dashboard</h1>
           <p className="text-sm text-gray-500 mt-1">Overview of today's operations and pending tasks</p>
         </div>
         <button
@@ -79,7 +79,7 @@ export default function ManagerDashboard() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2 lg:col-span-2 hover:shadow-md transition-shadow" aria-label="Properties list">
             <div className="flex items-center gap-2 mb-4">
               <BuildingOfficeIcon className="h-5 w-5 text-brand-600" aria-hidden="true" />
-              <h3 className="text-lg font-semibold text-gray-900">Properties</h3>
+              <h2 className="text-lg font-semibold text-gray-900">Properties</h2>
             </div>
             {properties.length === 0 ? (
               <div className="py-6 text-center">

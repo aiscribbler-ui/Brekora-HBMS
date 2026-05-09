@@ -50,9 +50,9 @@ export default function CalendarGrid() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
           Calendar
-        </h2>
+        </h1>
         <div className="flex items-center gap-2">
           <button
             type="button"

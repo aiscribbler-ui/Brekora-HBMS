@@ -87,6 +87,8 @@ export default function SearchResults() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 pb-12">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Search Results</h1>
+
         {error && (
           <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
             {error}

@@ -289,7 +289,7 @@ export const routes: RouteObject[] = [
         path: '*',
         element: (
           <div className="text-gray-700 dark:text-gray-200">
-            <h2 className="text-xl font-bold">404</h2>
+            <h1 className="text-xl font-bold">404</h1>
             <p className="mt-2">Page not found.</p>
           </div>
         ),

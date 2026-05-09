@@ -23,7 +23,7 @@ function App() {
       <div className={`flex-1 flex flex-col min-h-screen transition-all ${!isAuthPage && isAuthenticated ? 'lg:ml-64' : ''}`}>
         {!isAuthPage && isAuthenticated && (
           <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
-            <h1 className="text-lg font-semibold text-gray-900 lg:hidden">Brekora BMS</h1>
+            <span className="text-lg font-semibold text-gray-900 lg:hidden">Brekora BMS</span>
             <div className="flex-1" />
             <button
               onClick={logout}
