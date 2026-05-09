@@ -69,11 +69,11 @@ export default function GuestProfilePage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-bold text-teal-800">My Profile</h1>
-              <p className="text-sm text-teal-600 mt-1">Manage your personal details</p>
+              <p className="text-sm text-teal-700 mt-1">Manage your personal details</p>
             </div>
             <button
               onClick={() => navigate('/guest')}
-              className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+              className="text-sm text-teal-700 hover:text-teal-700 font-medium"
             >
               Back to Dashboard
             </button>
@@ -147,7 +147,7 @@ export default function GuestProfilePage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                  className="px-4 py-2 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>

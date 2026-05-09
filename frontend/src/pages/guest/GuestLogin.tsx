@@ -76,7 +76,7 @@ export default function GuestLogin() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-teal-800">Welcome Back</h1>
-          <p className="text-sm text-teal-600 mt-1">Sign in to your guest account</p>
+          <p className="text-sm text-teal-700 mt-1">Sign in to your guest account</p>
         </div>
 
         {errorMsg && (
@@ -125,7 +125,7 @@ export default function GuestLogin() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2.5 px-4 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-2.5 px-4 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Signing in...' : 'Sign In'}
           </button>
@@ -155,7 +155,7 @@ export default function GuestLogin() {
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
-            <Link to="/guest/signup" className="text-teal-600 hover:text-teal-700 hover:underline font-medium">
+            <Link to="/guest/signup" className="text-teal-700 hover:text-teal-700 hover:underline font-medium">
               Sign up
             </Link>
           </p>

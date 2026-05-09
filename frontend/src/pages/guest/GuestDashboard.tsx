@@ -69,7 +69,7 @@ export default function GuestDashboard() {
               <h1 className="text-2xl font-bold text-teal-800">
                 Welcome{greetingName ? `, ${greetingName}` : ''}
               </h1>
-              <p className="text-sm text-teal-600 mt-1">Your guest portal</p>
+              <p className="text-sm text-teal-700 mt-1">Your guest portal</p>
             </div>
             <button
               onClick={logout}
@@ -89,7 +89,7 @@ export default function GuestDashboard() {
               <p className="text-sm text-gray-500">You have no upcoming bookings.</p>
               <button
                 onClick={() => navigate('/guest/bookings')}
-                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
+                className="mt-3 text-sm text-teal-700 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 Find a stay →
               </button>
@@ -134,7 +134,7 @@ export default function GuestDashboard() {
               <p className="text-sm text-gray-500">Manage your personal details.</p>
               <button
                 onClick={() => navigate('/guest/profile')}
-                className="mt-3 text-sm text-teal-600 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
+                className="mt-3 text-sm text-teal-700 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
               >
                 Edit profile
               </button>
