@@ -5,7 +5,8 @@ from typing import Any, List
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import require_role
+from app.api.deps import get_current_user, require_role
+from app.models.user import User
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.schemas.parsed_booking_queue import (
@@ -107,10 +108,10 @@ async def confirm_ota_queue_item(
     data: ParsedBookingQueueConfirmRequest,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> Any:
     svc = OTAQueueService(db, org_id)
-    # TODO: use real manager_id from auth when B-6 RBAC is wired
-    manager_id = None
+    manager_id = str(current_user.id)
     try:
         booking = await svc.confirm(queue_id, data, manager_id)
     except ValueError as exc:
@@ -147,10 +148,10 @@ async def reject_ota_queue_item(
     data: ParsedBookingQueueRejectRequest,
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
+    current_user: User = Depends(get_current_user),
 ) -> Any:
     svc = OTAQueueService(db, org_id)
-    # TODO: use real manager_id from auth when B-6 RBAC is wired
-    manager_id = None
+    manager_id = str(current_user.id)
     try:
         updated = await svc.reject(queue_id, data, manager_id)
     except ValueError as exc:
