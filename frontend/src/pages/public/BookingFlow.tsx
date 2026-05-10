@@ -169,7 +169,7 @@ export default function BookingFlow() {
           contact: data.guestPhone,
         },
         theme: {
-          color: '#2563eb',
+          color: '#026ba0',
         },
       }
       const rzp = new window.Razorpay(options)
@@ -204,7 +204,7 @@ export default function BookingFlow() {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Complete Your Booking</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4 font-display">Complete Your Booking</h1>
         <div className="mb-6">
           <div className="flex items-center justify-between">
             {steps.map((label, idx) => {

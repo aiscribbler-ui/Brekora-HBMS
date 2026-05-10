@@ -70,7 +70,7 @@ export default function Landing() {
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight font-display">
             Book your perfect stay
           </h1>
           <p className="text-brand-100 text-lg mb-10 max-w-xl mx-auto">
