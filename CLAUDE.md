@@ -16,3 +16,16 @@ Key routing rules:
 - Ship/deploy/PR → invoke /ship or /land-and-deploy
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
+
+## Design system
+
+See `DESIGN.md` for the full specification. Quick reference:
+
+- **Display font**: Playfair Display (editorial headlines, marketing)
+- **UI font**: Manrope (navigation, buttons, tables, dashboards)
+- **Primary color**: `brand-600` (#026ba0) — teal/ocean
+- **Accent**: `secondary` (#c27d3a) — warm gold
+- **Gray text floor**: `gray-400` (#6b7280) for WCAG AA on white
+- **Dark mode**: `class`-based toggle, lighter brand tones in dark
+- **Radius**: 8px default (md), 12px for cards (lg)
+- **Shadows**: warm-tinted, low-opacity for subtle depth

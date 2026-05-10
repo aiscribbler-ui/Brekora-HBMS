@@ -33,6 +33,10 @@ export default {
           900: '#030712',
         },
       },
+      fontFamily: {
+        display: ["'Playfair Display'", 'Georgia', 'serif'],
+        body: ["'Manrope'", '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      },
       keyframes: {
         'float-slow': {
           '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
