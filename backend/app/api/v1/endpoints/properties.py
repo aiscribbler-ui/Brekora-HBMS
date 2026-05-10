@@ -43,9 +43,9 @@ async def list_properties(
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current: UserWithProperties = Depends(get_current_user_with_properties),
 ) -> List[Property]:
+    org_id = current.user.org_id
     repo = PropertyRepository(db, org_id)
     # Admin/Owner/Manager see all non-archived properties in org; others see only assigned
     global_role = current.user.role.name if current.user.role else None
@@ -75,10 +75,9 @@ async def list_properties(
 async def create_property(
     data: PropertyCreate,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> Property:
-    repo = PropertyRepository(db, org_id)
+    repo = PropertyRepository(db, current_user.org_id)
     obj_in = data.model_dump(exclude_unset=True)
     if "org_id" in obj_in and obj_in["org_id"] is None:
         del obj_in["org_id"]
@@ -103,10 +102,9 @@ async def update_property(
     property_id: uuid.UUID,
     data: PropertyUpdate,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> Property:
-    repo = PropertyRepository(db, org_id)
+    repo = PropertyRepository(db, current_user.org_id)
     prop = await repo.get(property_id)
     if not prop or prop.is_archived:
         raise HTTPException(status_code=404, detail="Property not found")
@@ -118,10 +116,9 @@ async def update_property(
 async def delete_property(
     property_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> None:
-    repo = PropertyRepository(db, org_id)
+    repo = PropertyRepository(db, current_user.org_id)
     prop = await repo.get(property_id)
     if not prop:
         raise HTTPException(status_code=404, detail="Property not found")
@@ -134,10 +131,9 @@ async def list_room_types(
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> List[RoomType]:
-    repo = RoomTypeRepository(db, org_id)
+    repo = RoomTypeRepository(db, current_user.org_id)
     return await repo.get_multi_by_property(property_id, skip=skip, limit=limit)
 
 
@@ -146,15 +142,14 @@ async def create_room_type(
     property_id: uuid.UUID,
     data: RoomTypeCreate,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> RoomType:
-    prop_repo = PropertyRepository(db, org_id)
+    prop_repo = PropertyRepository(db, current_user.org_id)
     prop = await prop_repo.get(property_id)
     if not prop or prop.is_archived:
         raise HTTPException(status_code=404, detail="Property not found")
 
-    repo = RoomTypeRepository(db, org_id)
+    repo = RoomTypeRepository(db, current_user.org_id)
     obj_in = data.model_dump(exclude_unset=True)
     obj_in["property_id"] = property_id
     if "org_id" in obj_in and obj_in["org_id"] is None:
@@ -167,10 +162,9 @@ async def upload_property_photos(
     property_id: uuid.UUID,
     files: List[UploadFile] = File(...),
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> dict:
-    repo = PropertyRepository(db, org_id)
+    repo = PropertyRepository(db, current_user.org_id)
     prop = await repo.get(property_id)
     if not prop or prop.is_archived:
         raise HTTPException(status_code=404, detail="Property not found")
@@ -199,15 +193,14 @@ async def list_property_packages(
     skip: int = 0,
     limit: int = 100,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> List[PackageRead]:
-    prop_repo = PropertyRepository(db, org_id)
+    prop_repo = PropertyRepository(db, current_user.org_id)
     prop = await prop_repo.get(property_id)
     if not prop or prop.is_archived:
         raise HTTPException(status_code=404, detail="Property not found")
 
-    repo = PackageRepository(db, org_id)
+    repo = PackageRepository(db, current_user.org_id)
     return await repo.get_multi_by_property(property_id, skip=skip, limit=limit)
 
 
@@ -216,15 +209,14 @@ async def create_property_package(
     property_id: uuid.UUID,
     data: PackageBase,
     db: AsyncSession = Depends(get_db),
-    org_id: uuid.UUID = Depends(get_org_id),
     current_user: User = Depends(get_current_user),
 ) -> PackageRead:
-    prop_repo = PropertyRepository(db, org_id)
+    prop_repo = PropertyRepository(db, current_user.org_id)
     prop = await prop_repo.get(property_id)
     if not prop or prop.is_archived:
         raise HTTPException(status_code=404, detail="Property not found")
 
-    repo = PackageRepository(db, org_id)
+    repo = PackageRepository(db, current_user.org_id)
     obj_in = data.model_dump(exclude_unset=True)
     obj_in["property_id"] = property_id
     if "org_id" in obj_in and obj_in["org_id"] is None:
