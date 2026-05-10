@@ -32,6 +32,31 @@ export default {
           800: '#111827',
           900: '#030712',
         },
+        success: {
+          light: '#ecfdf5',
+          DEFAULT: '#047857',
+          dark: '#065f46',
+        },
+        warning: {
+          light: '#fffbeb',
+          DEFAULT: '#b45309',
+          dark: '#92400e',
+        },
+        info: {
+          light: '#eff6ff',
+          DEFAULT: '#0369a1',
+          dark: '#075985',
+        },
+        secondary: {
+          light: '#fef3e2',
+          DEFAULT: '#c27d3a',
+          dark: '#9a5e2a',
+        },
+        error: {
+          light: '#fef2f2',
+          DEFAULT: '#dc2626',
+          dark: '#b91c1c',
+        },
       },
       fontFamily: {
         display: ["'Playfair Display'", 'Georgia', 'serif'],

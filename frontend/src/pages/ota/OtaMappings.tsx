@@ -154,7 +154,7 @@ export default function OtaMappings() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4"
+          className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-4"
         >
           <h2 className="text-lg font-semibold text-gray-900">{editingId ? 'Edit Mapping' : 'New Mapping'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,13 +253,13 @@ export default function OtaMappings() {
           ))}
         </div>
       ) : mappings.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">
           <LinkIcon className="h-10 w-10 text-gray-300 mx-auto mb-2" />
           <p className="text-sm text-gray-500">No OTA mappings found.</p>
           <p className="text-xs text-gray-400 mt-1">Add your first mapping to link external listings</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-100">
               <thead className="bg-gray-50">

@@ -44,7 +44,7 @@ export default function QuickActions() {
   ]
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 gap-3">
         {actions.map((action) => {

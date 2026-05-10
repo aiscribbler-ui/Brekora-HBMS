@@ -61,15 +61,15 @@ export default function GuestDashboard() {
   const greetingName = user?.name || [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || profile?.email
 
   return (
-    <div className="min-h-screen bg-teal-50">
+    <div className="min-h-screen bg-brand-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-teal-800">
+              <h1 className="text-2xl font-bold text-brand-700 font-display">
                 Welcome{greetingName ? `, ${greetingName}` : ''}
               </h1>
-              <p className="text-sm text-teal-700 mt-1">Your guest portal</p>
+              <p className="text-sm text-brand-700 mt-1">Your guest portal</p>
             </div>
             <button
               onClick={logout}
@@ -80,7 +80,7 @@ export default function GuestDashboard() {
           </div>
         </div>
 
-        <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6">
+        <section className="bg-white rounded-xl shadow-lg p-6 sm:p-8 mb-6">
           <h2 className="text-lg font-semibold text-gray-800">My Bookings</h2>
           {loading ? (
             <p className="text-sm text-gray-500 mt-2">Loading…</p>
@@ -89,7 +89,7 @@ export default function GuestDashboard() {
               <p className="text-sm text-gray-500">You have no upcoming bookings.</p>
               <button
                 onClick={() => navigate('/guest/bookings')}
-                className="mt-3 text-sm text-teal-700 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
+                className="mt-3 text-sm text-brand-600 font-medium hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
               >
                 Find a stay →
               </button>
@@ -125,7 +125,7 @@ export default function GuestDashboard() {
           )}
         </section>
 
-        <section className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <section className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
           <h2 className="text-lg font-semibold text-gray-800">Profile</h2>
           {loading ? (
             <p className="text-sm text-gray-500 mt-2">Loading…</p>
@@ -134,7 +134,7 @@ export default function GuestDashboard() {
               <p className="text-sm text-gray-500">Manage your personal details.</p>
               <button
                 onClick={() => navigate('/guest/profile')}
-                className="mt-3 text-sm text-teal-700 font-medium hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded"
+                className="mt-3 text-sm text-brand-600 font-medium hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
               >
                 Edit profile
               </button>

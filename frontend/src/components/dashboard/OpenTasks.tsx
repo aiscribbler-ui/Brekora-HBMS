@@ -38,7 +38,7 @@ export default function OpenTasks({ otaQueueReview, paymentFailures, pendingRefu
   ]
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Open Tasks</h2>
       <div className="space-y-2">
         {tasks.map((task) => {

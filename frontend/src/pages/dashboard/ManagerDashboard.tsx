@@ -39,7 +39,7 @@ export default function ManagerDashboard() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-pulse">
+            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 animate-pulse">
               <div className="h-5 bg-gray-200 rounded w-1/3 mb-4" />
               <div className="grid grid-cols-2 gap-4">
                 <div className="h-16 bg-gray-200 rounded-xl" />
@@ -76,7 +76,7 @@ export default function ManagerDashboard() {
           <div aria-label="Quick actions" className="md:col-span-2 lg:col-span-1">
             <QuickActions />
           </div>
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:col-span-2 lg:col-span-2 hover:shadow-md transition-shadow" aria-label="Properties list">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:col-span-2 lg:col-span-2 hover:shadow-md transition-shadow" aria-label="Properties list">
             <div className="flex items-center gap-2 mb-4">
               <BuildingOfficeIcon className="h-5 w-5 text-brand-600" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-gray-900">Properties</h2>

@@ -49,17 +49,17 @@ export default function MyBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-teal-50">
+    <div className="min-h-screen bg-brand-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-teal-800">My Bookings</h1>
-              <p className="text-sm text-teal-700 mt-1">View your reservation history</p>
+              <h1 className="text-2xl font-bold text-brand-700 font-display">My Bookings</h1>
+              <p className="text-sm text-brand-700 mt-1">View your reservation history</p>
             </div>
             <button
               onClick={() => navigate('/guest')}
-              className="text-sm text-teal-700 hover:text-teal-700 font-medium"
+              className="text-sm text-brand-600 hover:text-brand-700 font-medium"
             >
               Back to Dashboard
             </button>
@@ -82,7 +82,7 @@ export default function MyBookings() {
               <p className="text-gray-500 text-sm">You have no bookings yet.</p>
               <button
                 onClick={() => navigate('/book')}
-                className="mt-4 text-sm text-teal-700 font-medium hover:text-teal-700"
+                className="mt-4 text-sm text-brand-600 font-medium hover:text-brand-700"
               >
                 Book a stay
               </button>

@@ -108,7 +108,7 @@ export default function TwoFactorEnrol() {
         </div>
       )}
 
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
           <Smartphone className="w-5 h-5 text-brand-600" />
           Step 1 — Scan with your authenticator
@@ -134,7 +134,7 @@ export default function TwoFactorEnrol() {
         ) : null}
       </section>
 
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+      <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">
           Step 2 — Enter the 6-digit code
         </h2>
@@ -169,7 +169,7 @@ export default function TwoFactorEnrol() {
         </div>
       </section>
 
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+      <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Already enrolled? Disable 2FA</h2>
         <p className="text-sm text-gray-500 mb-4">
           Enter a current code to remove 2FA from your account.

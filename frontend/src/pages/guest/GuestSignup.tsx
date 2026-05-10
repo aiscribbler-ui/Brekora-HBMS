@@ -49,11 +49,11 @@ export default function GuestSignup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-teal-50 px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-brand-50 px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-teal-800">Create Account</h1>
-          <p className="text-sm text-teal-700 mt-1">Join us for a seamless booking experience</p>
+          <h1 className="text-2xl font-bold text-brand-700 font-display">Create Account</h1>
+          <p className="text-sm text-brand-700 mt-1">Join us for a seamless booking experience</p>
         </div>
 
         {errorMsg && (
@@ -78,7 +78,7 @@ export default function GuestSignup() {
                 type="text"
                 autoComplete="given-name"
                 {...register('firstName')}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-600" id="firstName-error">
@@ -96,7 +96,7 @@ export default function GuestSignup() {
                 type="text"
                 autoComplete="family-name"
                 {...register('lastName')}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
               {errors.lastName && (
                 <p className="mt-1 text-sm text-red-600" id="lastName-error">
@@ -115,7 +115,7 @@ export default function GuestSignup() {
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600" id="signup-email-error">
@@ -133,7 +133,7 @@ export default function GuestSignup() {
               type="tel"
               autoComplete="tel"
               {...register('phone')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.phone && (
               <p className="mt-1 text-sm text-red-600" id="phone-error">
@@ -151,7 +151,7 @@ export default function GuestSignup() {
               type="password"
               autoComplete="new-password"
               {...register('password')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600" id="signup-password-error">
@@ -169,7 +169,7 @@ export default function GuestSignup() {
               type="password"
               autoComplete="new-password"
               {...register('confirmPassword')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.confirmPassword && (
               <p className="mt-1 text-sm text-red-600" id="confirmPassword-error">
@@ -181,7 +181,7 @@ export default function GuestSignup() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2.5 px-4 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-2.5 px-4 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Creating account...' : 'Create Account'}
           </button>
@@ -190,7 +190,7 @@ export default function GuestSignup() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <Link to="/guest/login" className="text-teal-700 hover:text-teal-700 hover:underline font-medium">
+            <Link to="/guest/login" className="text-brand-600 hover:text-brand-700 hover:underline font-medium">
               Log in
             </Link>
           </p>

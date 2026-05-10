@@ -165,7 +165,7 @@ export default function MessageGuest() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column — bookings list */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 lg:col-span-1">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:col-span-1">
           <h2 className="text-sm font-semibold text-gray-900 mb-3">Recent Bookings</h2>
           {isLoading ? (
             <div className="space-y-3 animate-pulse">
@@ -202,7 +202,7 @@ export default function MessageGuest() {
         </div>
 
         {/* Right column — composer */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 lg:col-span-2 space-y-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:col-span-2 space-y-4">
           <h3 className="text-sm font-semibold text-gray-900 mb-1">Compose Message</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

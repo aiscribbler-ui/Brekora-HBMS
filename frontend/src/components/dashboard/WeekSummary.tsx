@@ -13,7 +13,7 @@ export interface WeekSummaryProps {
 
 export default function WeekSummary({ occupancyPercent, adrByProperty }: WeekSummaryProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">This Week</h2>
       <div className="mb-5">
         <p className="text-sm text-gray-600 mb-1">Occupancy</p>

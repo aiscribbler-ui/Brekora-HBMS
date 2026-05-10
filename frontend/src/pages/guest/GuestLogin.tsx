@@ -72,11 +72,11 @@ export default function GuestLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-teal-50 px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-brand-50 px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-teal-800">Welcome Back</h1>
-          <p className="text-sm text-teal-700 mt-1">Sign in to your guest account</p>
+          <h1 className="text-2xl font-bold text-brand-700 font-display">Welcome Back</h1>
+          <p className="text-sm text-brand-700 mt-1">Sign in to your guest account</p>
         </div>
 
         {errorMsg && (
@@ -95,7 +95,7 @@ export default function GuestLogin() {
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600" id="guest-email-error">
@@ -113,7 +113,7 @@ export default function GuestLogin() {
               type="password"
               autoComplete="current-password"
               {...register('password')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600" id="guest-password-error">
@@ -125,7 +125,7 @@ export default function GuestLogin() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-2.5 px-4 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-2.5 px-4 bg-brand-600 text-white font-medium rounded-lg hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Signing in...' : 'Sign In'}
           </button>
@@ -140,7 +140,7 @@ export default function GuestLogin() {
           <button
             type="button"
             onClick={() => { window.location.href = 'http://localhost:8000/api/v1/auth/google' }}
-            className="w-full py-2.5 px-4 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -155,7 +155,7 @@ export default function GuestLogin() {
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
-            <Link to="/guest/signup" className="text-teal-700 hover:text-teal-700 hover:underline font-medium">
+            <Link to="/guest/signup" className="text-brand-600 hover:text-brand-700 hover:underline font-medium">
               Sign up
             </Link>
           </p>

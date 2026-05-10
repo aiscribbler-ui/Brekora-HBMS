@@ -28,7 +28,7 @@ export default function BookingConfirmation() {
           </svg>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2 font-display">Booking Confirmed!</h1>
         <p className="text-gray-500 text-sm mb-6">
           Your payment was successful and your booking is confirmed.
         </p>

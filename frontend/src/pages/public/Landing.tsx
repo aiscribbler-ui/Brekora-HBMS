@@ -78,7 +78,7 @@ export default function Landing() {
           </p>
 
           {/* Floating search card */}
-          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6 transform hover:scale-[1.01] transition-transform">
+          <div className="bg-white rounded-xl shadow-xl p-4 md:p-6 transform hover:scale-[1.01] transition-transform">
             <SearchBar onSearch={handleSearch} loading={loading} />
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function Landing() {
           {properties.slice(0, 6).map((property) => (
             <div
               key={property.id}
-              className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
               <div className="aspect-[16/10] bg-gray-100 relative overflow-hidden">
                 {property.photos && property.photos[0] ? (

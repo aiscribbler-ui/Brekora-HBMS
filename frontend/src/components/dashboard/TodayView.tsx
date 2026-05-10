@@ -17,33 +17,33 @@ const stats = [
     label: 'Arrivals',
     key: 'arrivals' as const,
     icon: UserPlusIcon,
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    number: 'text-emerald-800',
+    bg: 'bg-success-light',
+    text: 'text-success',
+    number: 'text-success-dark',
   },
   {
     label: 'Departures',
     key: 'departures' as const,
     icon: ArrowRightOnRectangleIcon,
-    bg: 'bg-orange-50',
-    text: 'text-orange-700',
-    number: 'text-orange-800',
+    bg: 'bg-secondary-light',
+    text: 'text-secondary',
+    number: 'text-secondary-dark',
   },
   {
     label: 'In-House',
     key: 'inHouse' as const,
     icon: HomeIcon,
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    number: 'text-blue-800',
+    bg: 'bg-info-light',
+    text: 'text-info',
+    number: 'text-info-dark',
   },
   {
     label: 'Pending Check-ins',
     key: 'pendingCheckIns' as const,
     icon: ClockIcon,
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    number: 'text-amber-800',
+    bg: 'bg-warning-light',
+    text: 'text-warning',
+    number: 'text-warning-dark',
   },
 ]
 
@@ -51,7 +51,7 @@ export default function TodayView({ arrivals, departures, inHouse, pendingCheckI
   const values = { arrivals, departures, inHouse, pendingCheckIns }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
       <h2 className="text-lg font-semibold text-gray-900 mb-4">Today</h2>
       <div className="grid grid-cols-2 gap-4">
         {stats.map((stat) => {
