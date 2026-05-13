@@ -193,18 +193,18 @@ export default function BookingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <a href="/book" className="text-xl font-bold text-brand-600">
             Brekora
           </a>
-          <span className="text-sm text-gray-500">Book your stay</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Book your stay</span>
         </div>
       </header>
 
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4 font-display">Complete Your Booking</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 font-display">Complete Your Booking</h1>
         <div className="mb-6">
           <div className="flex items-center justify-between">
             {steps.map((label, idx) => {
@@ -216,7 +216,7 @@ export default function BookingFlow() {
                   {idx > 0 && (
                     <div
                       className={`absolute left-0 top-4 -translate-x-1/2 w-full h-0.5 ${
-                        done || active ? 'bg-brand-600' : 'bg-gray-200'
+                        done || active ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-700'
                       }`}
                       style={{ width: 'calc(100% - 2rem)', left: '-50%' }}
                     />
@@ -227,8 +227,8 @@ export default function BookingFlow() {
                       done
                         ? 'bg-brand-600 border-brand-600 text-white'
                         : active
-                          ? 'bg-white border-brand-600 text-brand-600'
-                          : 'bg-white border-gray-300 text-gray-400'
+                          ? 'bg-white dark:bg-gray-800 border-brand-600 text-brand-600'
+                          : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
                     }`}
                   >
                     {done ? (
@@ -241,7 +241,7 @@ export default function BookingFlow() {
                   </div>
                   <span
                     className={`mt-2 text-xs font-medium ${
-                      active ? 'text-brand-600' : done ? 'text-gray-700' : 'text-gray-400'
+                      active ? 'text-brand-600' : done ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'
                     }`}
                     aria-current={active ? 'step' : undefined}
                   >
@@ -271,7 +271,7 @@ export default function BookingFlow() {
                 }}
               />
             ) : (
-              <div className="p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm">
                 {errorMsg}
               </div>
             )}
@@ -280,10 +280,10 @@ export default function BookingFlow() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {step === 1 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Guest Details</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Guest Details</h2>
               <div>
-                <label htmlFor="guestName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Full Name
                 </label>
                 <input
@@ -293,7 +293,7 @@ export default function BookingFlow() {
                   aria-invalid={errors.guestName ? 'true' : 'false'}
                   aria-describedby={errors.guestName ? 'guestName-error' : undefined}
                   {...register('guestName')}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 {errors.guestName && (
                   <p className="mt-1 text-sm text-red-600" id="guestName-error" role="alert">{errors.guestName.message}</p>
@@ -301,7 +301,7 @@ export default function BookingFlow() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="guestEmail" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="guestEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Email
                   </label>
                   <input
@@ -311,14 +311,14 @@ export default function BookingFlow() {
                     aria-invalid={errors.guestEmail ? 'true' : 'false'}
                     aria-describedby={errors.guestEmail ? 'guestEmail-error' : undefined}
                     {...register('guestEmail')}
-                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   {errors.guestEmail && (
                     <p className="mt-1 text-sm text-red-600" id="guestEmail-error" role="alert">{errors.guestEmail.message}</p>
                   )}
                 </div>
                 <div>
-                  <label htmlFor="guestPhone" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="guestPhone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Phone
                   </label>
                   <input
@@ -328,7 +328,7 @@ export default function BookingFlow() {
                     aria-invalid={errors.guestPhone ? 'true' : 'false'}
                     aria-describedby={errors.guestPhone ? 'guestPhone-error' : undefined}
                     {...register('guestPhone')}
-                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   {errors.guestPhone && (
                     <p className="mt-1 text-sm text-red-600" id="guestPhone-error" role="alert">{errors.guestPhone.message}</p>
@@ -336,47 +336,47 @@ export default function BookingFlow() {
                 </div>
               </div>
               <div>
-                <label htmlFor="promoCode" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="promoCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Promo Code (optional)
                 </label>
                 <input
                   id="promoCode"
                   type="text"
                   {...register('promoCode')}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Review Booking</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Review Booking</h2>
               <div className="text-sm space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Dates</span>
+                  <span className="text-gray-600 dark:text-gray-300">Dates</span>
                   <span className="font-medium">
                     {checkIn} → {checkOut}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Guests</span>
+                  <span className="text-gray-600 dark:text-gray-300">Guests</span>
                   <span className="font-medium">{guests}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Guest</span>
+                  <span className="text-gray-600 dark:text-gray-300">Guest</span>
                   <span className="font-medium">{watch('guestName')}</span>
                 </div>
                 {watch('promoCode') && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Promo Code</span>
+                    <span className="text-gray-600 dark:text-gray-300">Promo Code</span>
                     <span className="font-medium">{watch('promoCode')}</span>
                   </div>
                 )}
               </div>
 
               {bookingResult ? (
-                <div className="border-t pt-3 space-y-2">
+                <div className="border-t dark:border-gray-700 pt-3 space-y-2">
                   <div className="flex justify-between text-base font-semibold">
                     <span>Total</span>
                     <span>
@@ -384,7 +384,7 @@ export default function BookingFlow() {
                       {bookingResult.amountBreakdown.currency}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-600">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Subtotal</span>
                     <span>₹{bookingResult.amountBreakdown.subtotal.toFixed(2)}</span>
                   </div>
@@ -394,16 +394,16 @@ export default function BookingFlow() {
                       <span>-₹{bookingResult.amountBreakdown.discount_amount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm text-gray-600">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Tax</span>
                     <span>₹{bookingResult.amountBreakdown.tax_amount.toFixed(2)}</span>
                   </div>
-                  <div className="text-xs text-gray-500 pt-1">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 pt-1">
                     Hold expires at {new Date(bookingResult.holdExpiresAt).toLocaleString()}
                   </div>
                 </div>
               ) : (
-                <div className="border-t pt-3 text-sm text-gray-500 italic">
+                <div className="border-t dark:border-gray-700 pt-3 text-sm text-gray-500 dark:text-gray-400 italic">
                   Click next to calculate pricing and hold your selection.
                 </div>
               )}
@@ -411,8 +411,8 @@ export default function BookingFlow() {
           )}
 
           {step === 3 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4" aria-label="Razorpay payment region">
-              <h2 className="text-lg font-semibold text-gray-900">Payment</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4" aria-label="Razorpay payment region">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Payment</h2>
               {bookingResult && (
                 <div className="text-sm space-y-2">
                   <div className="flex justify-between text-base font-semibold">
@@ -425,7 +425,7 @@ export default function BookingFlow() {
                 </div>
               )}
               {!razorpayLoaded && (
-                <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning text-sm">
+                <div className="p-3 bg-warning-light dark:bg-warning-dark/20 text-warning-dark dark:text-warning-light rounded border border-warning dark:border-warning-dark text-sm">
                   Loading payment gateway...
                 </div>
               )}
@@ -438,7 +438,7 @@ export default function BookingFlow() {
                 type="button"
                 onClick={onBack}
                 disabled={isSubmitting}
-                className="py-2 px-4 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                className="py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               >
                 Back
               </button>

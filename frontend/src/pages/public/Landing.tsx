@@ -39,9 +39,9 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-sm">
@@ -53,7 +53,7 @@ export default function Landing() {
           </div>
           <a
             href="/guest/login"
-            className="text-sm text-gray-600 hover:text-brand-600 font-medium transition-colors"
+            className="text-sm text-gray-600 dark:text-gray-400 hover:text-brand-600 font-medium transition-colors"
           >
             Guest Login
           </a>
@@ -85,7 +85,7 @@ export default function Landing() {
       </section>
 
       {/* Trust badges */}
-      <section className="border-b border-gray-100">
+      <section className="border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
             {[
@@ -94,7 +94,7 @@ export default function Landing() {
               { icon: MapPinIcon, label: 'Prime Locations' },
               { icon: WifiIcon, label: 'Modern Amenities' },
             ].map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-2 text-gray-500">
+              <div key={label} className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
                 <Icon className="h-5 w-5 text-brand-500" aria-hidden="true" />
                 <span className="text-sm font-medium">{label}</span>
               </div>
@@ -106,8 +106,8 @@ export default function Landing() {
       {/* Properties */}
       <section className="max-w-7xl mx-auto px-4 py-14">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Properties</h2>
-          <span className="text-sm text-gray-500">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Featured Properties</h2>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
             {properties.length} propert{properties.length === 1 ? 'y' : 'ies'}
           </span>
         </div>
@@ -116,9 +116,9 @@ export default function Landing() {
           {properties.slice(0, 6).map((property) => (
             <div
               key={property.id}
-              className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="aspect-[16/10] bg-gray-100 relative overflow-hidden">
+              <div className="aspect-[16/10] bg-gray-100 dark:bg-gray-700 relative overflow-hidden">
                 {property.photos && property.photos[0] ? (
                   <img
                     src={property.photos[0].url}
@@ -127,22 +127,22 @@ export default function Landing() {
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">
                     <MapPinIcon className="h-8 w-8 mb-1" />
                     <span>No photo</span>
                   </div>
                 )}
                 <div className="absolute top-3 left-3">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-800 backdrop-blur-sm shadow-sm">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200 backdrop-blur-sm shadow-sm">
                     {property.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
               </div>
               <div className="p-5">
-                <h3 className="text-base font-semibold text-gray-900 group-hover:text-brand-700 transition-colors">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 group-hover:text-brand-700 transition-colors">
                   {property.name}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{property.address}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{property.address}</p>
                 {property.amenities && property.amenities.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {property.amenities.slice(0, 4).map((a) => (
@@ -178,15 +178,15 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 bg-gray-50">
+      <footer className="border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
               <span className="text-white font-bold text-xs">B</span>
             </div>
-            <span className="text-sm font-semibold text-gray-700">Brekora</span>
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Brekora</span>
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             © {new Date().getFullYear()} Brekora Hospitality. All rights reserved.
           </p>
         </div>

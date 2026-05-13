@@ -1,15 +1,16 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { LogOut, ShieldCheck } from 'lucide-react'
+import { Outlet, useLocation } from 'react-router-dom'
+import { Moon, Sun } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import { useAuth } from '@/hooks/useAuth'
+import { useThemeStore } from '@/store/themeStore'
 import SkipLink from '@/components/a11y/SkipLink'
 import Sidebar from '@/components/layout/Sidebar'
 
 function App() {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const { logout } = useAuth()
+  const { resolvedTheme, toggleTheme } = useThemeStore()
   const location = useLocation()
-  const navigate = useNavigate()
   const isAuthPage =
     location.pathname === '/login' ||
     location.pathname === '/2fa' ||
@@ -25,6 +26,17 @@ function App() {
           <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
             <span className="text-lg font-semibold text-gray-900 lg:hidden">Brekora BMS</span>
             <div className="flex-1" />
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {resolvedTheme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+            </button>
             <button
               onClick={logout}
               className="text-sm bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"

@@ -72,22 +72,22 @@ export default function GuestLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-50 px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-brand-50 dark:bg-gray-900 px-4 py-8">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-brand-700 font-display">Welcome Back</h1>
-          <p className="text-sm text-brand-700 mt-1">Sign in to your guest account</p>
+          <h1 className="text-2xl font-bold text-brand-700 dark:text-brand-300 font-display">Welcome Back</h1>
+          <p className="text-sm text-brand-700 dark:text-brand-300 mt-1">Sign in to your guest account</p>
         </div>
 
         {errorMsg && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800" role="alert">
             {errorMsg}
           </div>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="guest-email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="guest-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email
             </label>
             <input
@@ -95,7 +95,7 @@ export default function GuestLogin() {
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600" id="guest-email-error">
@@ -105,7 +105,7 @@ export default function GuestLogin() {
           </div>
 
           <div>
-            <label htmlFor="guest-password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="guest-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <input
@@ -113,7 +113,7 @@ export default function GuestLogin() {
               type="password"
               autoComplete="current-password"
               {...register('password')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600" id="guest-password-error">
@@ -132,15 +132,15 @@ export default function GuestLogin() {
         </form>
 
         <div className="mt-5 mb-1 flex items-center gap-3">
-          <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-xs uppercase tracking-wider text-gray-500">or</span>
-          <div className="h-px flex-1 bg-gray-200" />
+          <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+          <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">or</span>
+          <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
         </div>
         <div className="mt-4">
           <button
             type="button"
             onClick={() => { window.location.href = 'http://localhost:8000/api/v1/auth/google' }}
-            className="w-full py-2.5 px-4 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -153,7 +153,7 @@ export default function GuestLogin() {
         </div>
 
         <div className="mt-6 text-center space-y-2">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Don&apos;t have an account?{' '}
             <Link to="/guest/signup" className="text-brand-600 hover:text-brand-700 hover:underline font-medium">
               Sign up

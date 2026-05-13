@@ -49,20 +49,20 @@ export default function GuestSignup() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-50 px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-brand-50 dark:bg-gray-900 px-4 py-8">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-brand-700 font-display">Create Account</h1>
-          <p className="text-sm text-brand-700 mt-1">Join us for a seamless booking experience</p>
+          <h1 className="text-2xl font-bold text-brand-700 dark:text-brand-300 font-display">Create Account</h1>
+          <p className="text-sm text-brand-700 dark:text-brand-300 mt-1">Join us for a seamless booking experience</p>
         </div>
 
         {errorMsg && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800" role="alert">
             {errorMsg}
           </div>
         )}
         {successMsg && (
-          <div className="mb-4 p-3 bg-success-light text-success-dark rounded-lg border border-success" role="status">
+          <div className="mb-4 p-3 bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success-light rounded-lg border border-success" role="status">
             {successMsg}
           </div>
         )}
@@ -70,7 +70,7 @@ export default function GuestSignup() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 First name
               </label>
               <input
@@ -78,7 +78,7 @@ export default function GuestSignup() {
                 type="text"
                 autoComplete="given-name"
                 {...register('firstName')}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-600" id="firstName-error">
@@ -88,7 +88,7 @@ export default function GuestSignup() {
             </div>
 
             <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Last name
               </label>
               <input
@@ -96,7 +96,7 @@ export default function GuestSignup() {
                 type="text"
                 autoComplete="family-name"
                 {...register('lastName')}
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
               {errors.lastName && (
                 <p className="mt-1 text-sm text-red-600" id="lastName-error">
@@ -107,7 +107,7 @@ export default function GuestSignup() {
           </div>
 
           <div>
-            <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="signup-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email
             </label>
             <input
@@ -115,7 +115,7 @@ export default function GuestSignup() {
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600" id="signup-email-error">
@@ -125,15 +125,15 @@ export default function GuestSignup() {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-              Phone <span className="text-gray-500 font-normal">(optional)</span>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Phone <span className="text-gray-500 dark:text-gray-400 font-normal">(optional)</span>
             </label>
             <input
               id="phone"
               type="tel"
               autoComplete="tel"
               {...register('phone')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.phone && (
               <p className="mt-1 text-sm text-red-600" id="phone-error">
@@ -143,7 +143,7 @@ export default function GuestSignup() {
           </div>
 
           <div>
-            <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="signup-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <input
@@ -151,7 +151,7 @@ export default function GuestSignup() {
               type="password"
               autoComplete="new-password"
               {...register('password')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600" id="signup-password-error">
@@ -161,7 +161,7 @@ export default function GuestSignup() {
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Confirm password
             </label>
             <input
@@ -169,7 +169,7 @@ export default function GuestSignup() {
               type="password"
               autoComplete="new-password"
               {...register('confirmPassword')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.confirmPassword && (
               <p className="mt-1 text-sm text-red-600" id="confirmPassword-error">
@@ -188,7 +188,7 @@ export default function GuestSignup() {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Already have an account?{' '}
             <Link to="/guest/login" className="text-brand-600 hover:text-brand-700 hover:underline font-medium">
               Log in

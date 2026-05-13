@@ -83,12 +83,12 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Manager Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">Manager Login</h1>
 
         {errorMsg && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200" role="alert" aria-live="assertive">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800" role="alert" aria-live="assertive">
             {errorMsg}
           </div>
         )}
@@ -96,7 +96,7 @@ export default function Login() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email
             </label>
             <input
@@ -106,7 +106,7 @@ export default function Login() {
               aria-invalid={errors.email ? 'true' : 'false'}
               aria-describedby={errors.email ? 'email-error' : undefined}
               {...register('email')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600" id="email-error" role="alert">{errors.email.message}</p>
@@ -114,7 +114,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Password
             </label>
             <input
@@ -124,7 +124,7 @@ export default function Login() {
               aria-invalid={errors.password ? 'true' : 'false'}
               aria-describedby={errors.password ? 'password-error' : undefined}
               {...register('password')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             {errors.password && (
               <p className="mt-1 text-sm text-red-600" id="password-error" role="alert">{errors.password.message}</p>
@@ -142,9 +142,9 @@ export default function Login() {
         </form>
 
         <div className="mt-5 mb-3 flex items-center gap-3">
-          <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-xs uppercase tracking-wider text-gray-500">or</span>
-          <div className="h-px flex-1 bg-gray-200" />
+          <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+          <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">or</span>
+          <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
         </div>
         <GoogleSignInButton
           onIdToken={handleGoogleIdToken}
@@ -152,7 +152,7 @@ export default function Login() {
         />
 
         <div className="mt-4 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             Forgot your password? Contact your administrator to reset it.
           </p>
         </div>

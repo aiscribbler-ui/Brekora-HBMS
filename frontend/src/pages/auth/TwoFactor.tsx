@@ -55,10 +55,10 @@ export default function TwoFactor() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">Two-Factor Authentication</h1>
-        <p className="text-sm text-gray-600 mb-1 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 text-center">Two-Factor Authentication</h1>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-1 text-center">
           Enter the 6-digit code from your authenticator app.
         </p>
         {email && (
@@ -66,14 +66,14 @@ export default function TwoFactor() {
         )}
 
         {errorMsg && (
-          <div className="mb-4 p-3 bg-amber-50 text-amber-800 rounded border border-amber-200" role="alert">
+          <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-400 rounded border border-amber-200 dark:border-amber-800" role="alert">
             {errorMsg}
           </div>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="code" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="code" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Authenticator Code
             </label>
             <input
@@ -84,7 +84,7 @@ export default function TwoFactor() {
               autoComplete="one-time-code"
               placeholder="000000"
               {...register('code')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.code && (
               <p className="mt-1 text-sm text-red-600" id="code-error">{errors.code.message}</p>

@@ -92,41 +92,41 @@ export default function TwoFactorEnrol() {
           <ShieldCheck className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Two-Factor Authentication</h1>
-          <p className="text-sm text-gray-500">Add an extra layer of security to your account.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Two-Factor Authentication</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Add an extra layer of security to your account.</p>
         </div>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200" role="alert">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800" role="alert">
           {error}
         </div>
       )}
       {success && (
-        <div className="mb-4 p-3 bg-success-light text-success-dark rounded-lg border border-success" role="status">
+        <div className="mb-4 p-3 bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success-light rounded-lg border border-success" role="status">
           {success}
         </div>
       )}
 
-      <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
           <Smartphone className="w-5 h-5 text-brand-600" />
           Step 1 — Scan with your authenticator
         </h2>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Use Google Authenticator, 1Password, Authy, or any compatible app to scan the QR code below.
         </p>
         {loading ? (
-          <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
             <Loader2 className="w-4 h-4 animate-spin" />
             Generating secret…
           </div>
         ) : qrSrc ? (
           <div className="flex flex-col md:flex-row gap-6 items-start">
-            <img src={qrSrc} alt="2FA QR code" className="rounded-lg border border-gray-200 bg-white p-2" width={200} height={200} />
+            <img src={qrSrc} alt="2FA QR code" className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 p-2" width={200} height={200} />
             <div className="flex-1">
-              <p className="text-xs text-gray-500 mb-1">Or enter this secret manually:</p>
-              <code className="block break-all bg-gray-50 border border-gray-200 rounded-md px-2.5 py-2 text-sm font-mono text-gray-800">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Or enter this secret manually:</p>
+              <code className="block break-all bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md px-2.5 py-2 text-sm font-mono text-gray-800 dark:text-gray-200">
                 {secret}
               </code>
             </div>
@@ -134,16 +134,16 @@ export default function TwoFactorEnrol() {
         ) : null}
       </section>
 
-      <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
           Step 2 — Enter the 6-digit code
         </h2>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Confirm the setup by entering the current code from your authenticator app.
         </p>
         <div className="flex gap-3 items-end">
           <div className="flex-1 max-w-xs">
-            <label htmlFor="enrol-code" className="block text-xs font-medium text-gray-500 mb-1">
+            <label htmlFor="enrol-code" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
               Code
             </label>
             <input
@@ -154,7 +154,7 @@ export default function TwoFactorEnrol() {
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
               placeholder="000000"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
           <button
@@ -169,14 +169,14 @@ export default function TwoFactorEnrol() {
         </div>
       </section>
 
-      <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Already enrolled? Disable 2FA</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Already enrolled? Disable 2FA</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Enter a current code to remove 2FA from your account.
         </p>
         <div className="flex gap-3 items-end">
           <div className="flex-1 max-w-xs">
-            <label htmlFor="disable-code" className="block text-xs font-medium text-gray-500 mb-1">
+            <label htmlFor="disable-code" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
               Code
             </label>
             <input
@@ -187,14 +187,14 @@ export default function TwoFactorEnrol() {
               value={disableCode}
               onChange={(e) => setDisableCode(e.target.value.replace(/\D/g, ''))}
               placeholder="000000"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
             />
           </div>
           <button
             type="button"
             onClick={disable}
             disabled={disabling || disableCode.length !== 6}
-            className="py-2 px-4 bg-white text-red-700 font-medium rounded-md border border-red-200 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+            className="py-2 px-4 bg-white dark:bg-gray-800 text-red-700 font-medium rounded-md border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
           >
             {disabling ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             Disable
@@ -206,7 +206,7 @@ export default function TwoFactorEnrol() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="text-sm text-gray-600 hover:text-gray-900 underline"
+          className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 underline"
         >
           ← Back
         </button>

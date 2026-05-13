@@ -71,8 +71,8 @@ export default function SearchResults() {
   const packages = results.filter((r) => r.type === 'package')
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <a href="/book" className="text-xl font-bold text-brand-600">Brekora</a>
         </div>
@@ -87,10 +87,10 @@ export default function SearchResults() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 pb-12">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4 font-display">Search Results</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 font-display">Search Results</h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm">
             {error}
           </div>
         )}
@@ -98,12 +98,12 @@ export default function SearchResults() {
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="aspect-[16/10] bg-gray-100 animate-pulse" />
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="aspect-[16/10] bg-gray-100 dark:bg-gray-700 animate-pulse" />
                 <div className="p-4 space-y-3">
-                  <div className="h-4 bg-gray-100 rounded w-3/4 animate-pulse" />
-                  <div className="h-3 bg-gray-100 rounded w-1/2 animate-pulse" />
-                  <div className="h-8 bg-gray-100 rounded w-1/3 animate-pulse" />
+                  <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-3/4 animate-pulse" />
+                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/2 animate-pulse" />
+                  <div className="h-8 bg-gray-100 dark:bg-gray-700 rounded w-1/3 animate-pulse" />
                 </div>
               </div>
             ))}
@@ -112,13 +112,13 @@ export default function SearchResults() {
 
         {!loading && results.length === 0 && !error && (
           <div className="text-center py-16">
-            <p className="text-gray-500">No results found. Try different dates or location.</p>
+            <p className="text-gray-500 dark:text-gray-400">No results found. Try different dates or location.</p>
           </div>
         )}
 
         {!loading && rooms.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Rooms</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Rooms</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {rooms.map((item) => (
                 <RoomCard key={item.id} item={item} onSelect={() => handleSelect(item)} />
@@ -129,7 +129,7 @@ export default function SearchResults() {
 
         {!loading && packages.length > 0 && (
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Packages</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Packages</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {packages.map((item) => (
                 <PackageCard key={item.id} item={item} onSelect={() => handleSelect(item)} />
