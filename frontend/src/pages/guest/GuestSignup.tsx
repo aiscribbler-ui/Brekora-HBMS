@@ -62,7 +62,7 @@ export default function GuestSignup() {
           </div>
         )}
         {successMsg && (
-          <div className="mb-4 p-3 bg-green-50 text-green-800 rounded-lg border border-green-200" role="status">
+          <div className="mb-4 p-3 bg-success-light text-success-dark rounded-lg border border-success" role="status">
             {successMsg}
           </div>
         )}

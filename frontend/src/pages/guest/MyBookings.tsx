@@ -34,9 +34,9 @@ export default function MyBookings() {
   const statusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return 'bg-green-100 text-green-800'
+        return 'bg-success-light text-success-dark'
       case 'pending_payment':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-warning-light text-warning-dark'
       case 'payment_failed':
         return 'bg-red-100 text-red-800'
       case 'cancelled':

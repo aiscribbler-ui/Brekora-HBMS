@@ -94,7 +94,7 @@ export default function InvoiceViewer({ booking, isOpen, onClose }: InvoiceViewe
             {booking.discount_amount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Discount</span>
-                <span className="font-medium text-green-600">-₹{booking.discount_amount.toFixed(2)}</span>
+                <span className="font-medium text-success">-₹{booking.discount_amount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm">

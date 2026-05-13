@@ -58,7 +58,7 @@ export default function OtaSettings() {
       {toast && (
         <div
           className={`rounded-md p-3 text-sm font-medium ${
-            toast.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+            toast.type === 'success' ? 'bg-success-light text-success-dark' : 'bg-red-50 text-red-800'
           }`}
         >
           {toast.message}

@@ -85,7 +85,7 @@ export default function GuestProfilePage() {
             </div>
           )}
           {success && (
-            <div className="mb-4 p-3 bg-green-50 text-green-800 rounded-lg border border-green-200 text-sm" role="status">
+            <div className="mb-4 p-3 bg-success-light text-success-dark rounded-lg border border-success text-sm" role="status">
               {success}
             </div>
           )}

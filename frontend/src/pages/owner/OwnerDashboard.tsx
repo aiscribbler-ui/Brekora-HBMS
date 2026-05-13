@@ -166,11 +166,11 @@ export default function OwnerDashboard() {
         <div className="space-y-4 animate-pulse">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl" />
             ))}
           </div>
-          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded" />
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-xl" />
         </div>
       )}
 

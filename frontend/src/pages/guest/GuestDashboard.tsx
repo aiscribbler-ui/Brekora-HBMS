@@ -23,7 +23,7 @@ function formatDate(value: string): string {
 
 function statusBadge(status: string): string {
   const s = status.toLowerCase()
-  if (s === 'confirmed' || s === 'checked_in') return 'bg-emerald-100 text-emerald-700'
+  if (s === 'confirmed' || s === 'checked_in') return 'bg-success-light text-success'
   if (s === 'cancelled') return 'bg-red-100 text-red-700'
   if (s === 'pending_payment' || s === 'payment_failed') return 'bg-amber-100 text-amber-700'
   return 'bg-gray-100 text-gray-700'

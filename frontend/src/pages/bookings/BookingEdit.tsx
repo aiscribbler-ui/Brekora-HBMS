@@ -330,11 +330,11 @@ export default function BookingEdit() {
       )}
 
       {needsOverride && (
-        <div className="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200">
-          <p className="text-sm text-yellow-800 mb-2">
+        <div className="mt-4 p-4 bg-warning-light rounded border border-warning">
+          <p className="text-sm text-warning-dark mb-2">
             This booking is within 24 hours of check-in. Manager override is required to proceed.
           </p>
-          <label className="flex items-center gap-2 text-sm text-yellow-900">
+          <label className="flex items-center gap-2 text-sm text-warning-dark">
             <input
               type="checkbox"
               checked={overrideChecked}
@@ -347,8 +347,8 @@ export default function BookingEdit() {
       )}
 
       {alternatives && alternatives.length > 0 && (
-        <div className="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200">
-          <p className="text-sm font-medium text-yellow-800 mb-2">Alternative options:</p>
+        <div className="mt-4 p-4 bg-warning-light rounded border border-warning">
+          <p className="text-sm font-medium text-warning-dark mb-2">Alternative options:</p>
           <div className="space-y-2">
             {alternatives.map((alt) => (
               <button
@@ -359,7 +359,7 @@ export default function BookingEdit() {
                   setErrorMsg(null)
                   setAlternatives(undefined)
                 }}
-                className="w-full text-left p-3 bg-white rounded border border-yellow-300 hover:bg-yellow-100 text-sm"
+                className="w-full text-left p-3 bg-white rounded border border-warning hover:bg-warning-light text-sm"
               >
                 <span className="font-medium">{alt.item_name}</span>
                 <span className="text-gray-500 ml-2">
@@ -593,7 +593,7 @@ export default function BookingEdit() {
                   >
                     <div className="font-medium text-gray-700">{c.field}</div>
                     <div className="text-red-600 line-through">{c.old}</div>
-                    <div className="text-green-700 font-medium">{c.new}</div>
+                    <div className="text-success font-medium">{c.new}</div>
                   </div>
                 ))}
               </div>
@@ -613,7 +613,7 @@ export default function BookingEdit() {
                   </span>
                 </div>
                 {modResult.payment_difference > 0 && (
-                  <div className="p-3 bg-yellow-50 text-yellow-800 rounded border border-yellow-200">
+                  <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning">
                     <p className="font-medium">
                       Additional payment required: ₹{modResult.payment_difference.toFixed(2)}
                     </p>
@@ -627,7 +627,7 @@ export default function BookingEdit() {
                   </div>
                 )}
                 {modResult.payment_difference < 0 && (
-                  <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
+                  <div className="p-3 bg-success-light text-success-dark rounded border border-success">
                     <p className="font-medium">
                       Refund pending: ₹
                       {(
@@ -640,7 +640,7 @@ export default function BookingEdit() {
                   </div>
                 )}
                 {modResult.payment_difference === 0 && (
-                  <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200">
+                  <div className="p-3 bg-success-light text-success-dark rounded border border-success">
                     <p className="font-medium">
                       No payment difference. Booking updated successfully.
                     </p>

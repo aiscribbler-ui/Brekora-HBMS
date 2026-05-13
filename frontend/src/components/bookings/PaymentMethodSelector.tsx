@@ -48,7 +48,7 @@ export default function PaymentMethodSelector() {
       )}
 
       {selected === 'pay_later' && (
-        <div className="p-3 bg-yellow-50 text-yellow-800 rounded border border-yellow-200 text-sm">
+        <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning text-sm">
           Booking will be created with "Pay Later" status. Payment must be collected before check-in.
         </div>
       )}

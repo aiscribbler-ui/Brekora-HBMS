@@ -303,7 +303,7 @@ export default function MessageGuest() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-success text-white text-sm font-medium rounded-lg hover:bg-success-dark transition-colors shadow-sm"
               >
                 <PhoneIcon className="h-4 w-4" />
                 Send via WhatsApp

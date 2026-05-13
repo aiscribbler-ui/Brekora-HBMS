@@ -300,8 +300,8 @@ export default function ManualBookingForm() {
       )}
 
       {alternatives && alternatives.length > 0 && (
-        <div className="mt-4 p-4 bg-yellow-50 rounded border border-yellow-200">
-          <p className="text-sm font-medium text-yellow-800 mb-2">Alternative options:</p>
+        <div className="mt-4 p-4 bg-warning-light rounded border border-warning">
+          <p className="text-sm font-medium text-warning-dark mb-2">Alternative options:</p>
           <div className="space-y-2">
             {alternatives.map((alt) => (
               <button
@@ -315,7 +315,7 @@ export default function ManualBookingForm() {
                   setErrorMsg(null)
                   setAlternatives(undefined)
                 }}
-                className="w-full text-left p-3 bg-white rounded border border-yellow-300 hover:bg-yellow-100 text-sm"
+                className="w-full text-left p-3 bg-white rounded border border-warning hover:bg-warning-light text-sm"
               >
                 <span className="font-medium">{alt.name}</span>
                 <span className="text-gray-500 ml-2">
@@ -450,13 +450,13 @@ export default function ManualBookingForm() {
               )}
 
               {availabilityWarning && (
-                <div className="p-3 bg-yellow-50 text-yellow-800 rounded border border-yellow-200 text-sm">
+                <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning text-sm">
                   {availabilityWarning}
                 </div>
               )}
 
               {availability.length > 0 && !availabilityWarning && (
-                <div className="p-3 bg-green-50 text-green-800 rounded border border-green-200 text-sm">
+                <div className="p-3 bg-success-light text-success-dark rounded border border-success text-sm">
                   All selected nights are available.
                 </div>
               )}
@@ -578,7 +578,7 @@ export default function ManualBookingForm() {
                     <span>₹{bookingResult.amountBreakdown.subtotal.toFixed(2)}</span>
                   </div>
                   {bookingResult.amountBreakdown.discount_amount > 0 && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-success">
                       <span>Discount</span>
                       <span>-₹{bookingResult.amountBreakdown.discount_amount.toFixed(2)}</span>
                     </div>

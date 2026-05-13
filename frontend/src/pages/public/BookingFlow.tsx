@@ -389,7 +389,7 @@ export default function BookingFlow() {
                     <span>₹{bookingResult.amountBreakdown.subtotal.toFixed(2)}</span>
                   </div>
                   {bookingResult.amountBreakdown.discount_amount > 0 && (
-                    <div className="flex justify-between text-sm text-green-600">
+                    <div className="flex justify-between text-sm text-success">
                       <span>Discount</span>
                       <span>-₹{bookingResult.amountBreakdown.discount_amount.toFixed(2)}</span>
                     </div>
@@ -425,7 +425,7 @@ export default function BookingFlow() {
                 </div>
               )}
               {!razorpayLoaded && (
-                <div className="p-3 bg-yellow-50 text-yellow-800 rounded border border-yellow-200 text-sm">
+                <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning text-sm">
                   Loading payment gateway...
                 </div>
               )}

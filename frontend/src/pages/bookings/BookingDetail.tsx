@@ -8,9 +8,9 @@ import InvoiceViewer from '@/components/bookings/InvoiceViewer'
 function statusBadgeClass(status: string) {
   switch (status) {
     case 'confirmed':
-      return 'bg-green-100 text-green-800'
+      return 'bg-success-light text-success-dark'
     case 'pending_payment':
-      return 'bg-yellow-100 text-yellow-800'
+      return 'bg-warning-light text-warning-dark'
     case 'payment_failed':
       return 'bg-red-100 text-red-800'
     case 'cancelled':
@@ -138,7 +138,7 @@ export default function BookingDetail() {
         <div
           className={`mb-4 p-3 rounded border text-sm ${
             toast.type === 'success'
-              ? 'bg-green-50 text-green-800 border-green-200'
+              ? 'bg-success-light text-success-dark border-success'
               : 'bg-red-50 text-red-800 border-red-200'
           }`}
           role="alert"
@@ -228,7 +228,7 @@ export default function BookingDetail() {
               {booking.discount_amount > 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Discount</span>
-                  <span className="font-medium text-green-600">-₹{booking.discount_amount.toFixed(2)}</span>
+                  <span className="font-medium text-success">-₹{booking.discount_amount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -353,7 +353,7 @@ export default function BookingDetail() {
             {canRetryPayment && (
               <button
                 onClick={handleRetryPayment}
-                className="w-full px-4 py-2 rounded-md bg-yellow-500 text-white font-medium hover:bg-yellow-600 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                className="w-full px-4 py-2 rounded-md bg-warning text-white font-medium hover:bg-warning-dark text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
               >
                 Retry Payment
               </button>

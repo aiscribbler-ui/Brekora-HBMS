@@ -14,7 +14,7 @@ export default function PayoutHistory({ data }: Props) {
   const brekoraPct = total > 0 ? 100 - ownerPct : 0
 
   return (
-    <div className="rounded-lg bg-white p-4 shadow-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-4 shadow-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Revenue Split</h3>
 
       <div className="w-full h-8 flex rounded overflow-hidden">

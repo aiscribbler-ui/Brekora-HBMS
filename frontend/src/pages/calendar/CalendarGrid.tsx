@@ -204,11 +204,11 @@ export default function CalendarGrid() {
       <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">
         <span className="font-medium">Legend:</span>
         <div className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded bg-green-100 border border-green-300" />
+          <span className="inline-block w-3 h-3 rounded bg-success-light border border-success" />
           <span>Available (&gt;50%)</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded bg-yellow-100 border border-yellow-300" />
+          <span className="inline-block w-3 h-3 rounded bg-warning-light border border-warning" />
           <span>Low Availability (&gt;0%)</span>
         </div>
         <div className="flex items-center gap-1">
@@ -220,7 +220,7 @@ export default function CalendarGrid() {
           <span>Blocked</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 rounded bg-yellow-200 border border-yellow-400" />
+          <span className="inline-block w-3 h-3 rounded bg-warning-light border border-warning-dark" />
           <span>Hold</span>
         </div>
       </div>

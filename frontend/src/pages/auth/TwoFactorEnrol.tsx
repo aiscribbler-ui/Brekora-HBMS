@@ -103,7 +103,7 @@ export default function TwoFactorEnrol() {
         </div>
       )}
       {success && (
-        <div className="mb-4 p-3 bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-200" role="status">
+        <div className="mb-4 p-3 bg-success-light text-success-dark rounded-lg border border-success" role="status">
           {success}
         </div>
       )}

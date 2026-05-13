@@ -20,7 +20,7 @@ export default function PnLSummary({ data }: Props) {
       {items.map((item) => (
         <div
           key={item.label}
-          className="rounded-lg bg-white p-4 shadow-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800"
+          className="rounded-xl bg-white p-4 shadow-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800"
         >
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             {item.label}

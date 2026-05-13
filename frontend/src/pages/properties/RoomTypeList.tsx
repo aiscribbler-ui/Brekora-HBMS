@@ -151,11 +151,11 @@ export default function RoomTypeList() {
                           Archived
                         </span>
                       ) : rt.is_active ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-light text-success-dark">
                           Active
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-light text-warning-dark">
                           Inactive
                         </span>
                       )}
@@ -175,7 +175,7 @@ export default function RoomTypeList() {
                           className={[
                             'inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1',
                             rt.is_archived
-                              ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100 focus:ring-green-500'
+                              ? 'bg-success-light text-success border-success hover:bg-success-light focus:ring-success'
                               : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 focus:ring-gray-500',
                           ].join(' ')}
                           aria-label={`${rt.is_archived ? 'Unarchive' : 'Archive'} ${rt.name}`}
@@ -205,11 +205,11 @@ export default function RoomTypeList() {
                       Archived
                     </span>
                   ) : rt.is_active ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-light text-success-dark">
                       Active
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-light text-warning-dark">
                       Inactive
                     </span>
                   )}
@@ -232,7 +232,7 @@ export default function RoomTypeList() {
                     className={[
                       'inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-md border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1',
                       rt.is_archived
-                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100 focus:ring-green-500'
+                        ? 'bg-success-light text-success border-success hover:bg-success-light focus:ring-success'
                         : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 focus:ring-gray-500',
                     ].join(' ')}
                     aria-label={`${rt.is_archived ? 'Unarchive' : 'Archive'} ${rt.name}`}

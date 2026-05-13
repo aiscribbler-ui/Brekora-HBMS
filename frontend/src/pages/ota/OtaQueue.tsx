@@ -61,8 +61,8 @@ function sourceBadge(source: OtaSource | string) {
 
 function statusBadge(status: QueueStatus | string) {
   const styles: Record<string, string> = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    confirmed: 'bg-green-100 text-green-800',
+    pending: 'bg-warning-light text-warning-dark',
+    confirmed: 'bg-success-light text-success-dark',
     rejected: 'bg-red-100 text-red-800',
     edited: 'bg-blue-100 text-blue-800',
   }
@@ -74,7 +74,7 @@ function statusBadge(status: QueueStatus | string) {
 }
 
 function confidenceDot(score: number) {
-  if (score >= 0.95) return 'bg-green-500'
+  if (score >= 0.95) return 'bg-success'
   if (score >= 0.8) return 'bg-amber-500'
   return 'bg-red-500'
 }
@@ -261,7 +261,7 @@ export default function OtaQueue() {
         <div
           className={`mb-4 p-3 rounded border text-sm ${
             toast.type === 'success'
-              ? 'bg-green-50 text-green-700 border-green-200'
+              ? 'bg-success-light text-success border-success'
               : 'bg-red-50 text-red-700 border-red-200'
           }`}
           role="alert"

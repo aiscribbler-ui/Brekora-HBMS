@@ -283,7 +283,7 @@ export default function OtaMappings() {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           m.is_active
-                            ? 'bg-emerald-100 text-emerald-800'
+                            ? 'bg-success-light text-success-dark'
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >

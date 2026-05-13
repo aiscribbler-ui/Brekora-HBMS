@@ -278,7 +278,7 @@ export default function PropertyDetail() {
             {property.is_archived ? (
               <button
                 onClick={() => setConfirmArchive(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-success-light text-success hover:bg-success-light border border-success transition-colors focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
                 aria-label="Unarchive property"
               >
                 <ArrowPathIcon className="h-4 w-4" aria-hidden="true" />

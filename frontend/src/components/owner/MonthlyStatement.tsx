@@ -59,7 +59,7 @@ export default function MonthlyStatement({ data }: Props) {
   ]
 
   return (
-    <div className="rounded-lg bg-white shadow-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
+    <div className="rounded-xl bg-white shadow-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Monthly Statement</h3>
         <button

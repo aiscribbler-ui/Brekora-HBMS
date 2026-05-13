@@ -98,13 +98,13 @@ export default function ManagerDashboard() {
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         p.status === 'active'
-                          ? 'bg-emerald-100 text-emerald-800'
+                          ? 'bg-success-light text-success-dark'
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                          p.status === 'active' ? 'bg-emerald-500' : 'bg-gray-400'
+                          p.status === 'active' ? 'bg-success' : 'bg-gray-400'
                         }`}
                         aria-hidden="true"
                       />

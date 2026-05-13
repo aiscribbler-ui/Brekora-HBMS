@@ -5,8 +5,19 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
+  safelist: ['font-display', 'font-body'],
   theme: {
     extend: {
+      borderRadius: {
+        md: '8px',
+      },
+      boxShadow: {
+        sm: '0 1px 2px 0 rgb(194 125 58 / 0.05)',
+        DEFAULT: '0 1px 3px 0 rgb(194 125 58 / 0.1), 0 1px 2px -1px rgb(194 125 58 / 0.1)',
+        md: '0 4px 6px -1px rgb(194 125 58 / 0.1), 0 2px 4px -2px rgb(194 125 58 / 0.1)',
+        lg: '0 10px 15px -3px rgb(194 125 58 / 0.1), 0 4px 6px -4px rgb(194 125 58 / 0.1)',
+        xl: '0 20px 25px -5px rgb(194 125 58 / 0.1), 0 8px 10px -6px rgb(194 125 58 / 0.1)',
+      },
       colors: {
         brand: {
           50: '#f0f9ff',

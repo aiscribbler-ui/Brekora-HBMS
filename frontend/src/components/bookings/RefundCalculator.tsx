@@ -53,8 +53,8 @@ export default function RefundCalculator({ totalAmount, policy, daysUntilCheckIn
       <div className="h-px bg-gray-200" />
 
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-green-700">Refundable</span>
-        <span className="text-sm font-bold text-green-700">₹{refundableAmount.toFixed(2)}</span>
+        <span className="text-sm font-medium text-success">Refundable</span>
+        <span className="text-sm font-bold text-success">₹{refundableAmount.toFixed(2)}</span>
       </div>
 
       <div className="flex items-center justify-between">
@@ -64,7 +64,7 @@ export default function RefundCalculator({ totalAmount, policy, daysUntilCheckIn
 
       <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
         <div
-          className="h-full bg-green-500"
+          className="h-full bg-success"
           style={{ width: `${totalAmount > 0 ? (refundableAmount / totalAmount) * 100 : 0}%` }}
         />
       </div>

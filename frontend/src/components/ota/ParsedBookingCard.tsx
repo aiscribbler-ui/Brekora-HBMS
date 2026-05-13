@@ -22,9 +22,9 @@ interface ParsedBookingCardProps {
 }
 
 function confidenceColor(score: number): string {
-  if (score >= 0.95) return 'text-green-700 bg-green-50 border-green-200'
-  if (score >= 0.8) return 'text-amber-700 bg-amber-50 border-amber-200'
-  return 'text-red-700 bg-red-50 border-red-200'
+  if (score >= 0.95) return 'text-success bg-success-light border-success'
+  if (score >= 0.8) return 'text-secondary bg-secondary-light border-secondary'
+  return 'text-error bg-error-light border-error'
 }
 
 function confidenceLabel(score: number): string {
@@ -55,10 +55,10 @@ function sourceBadge(source: string) {
 
 function statusBadge(status: string) {
   const styles: Record<string, string> = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    confirmed: 'bg-green-100 text-green-800',
-    rejected: 'bg-red-100 text-red-800',
-    edited: 'bg-blue-100 text-blue-800',
+    pending: 'bg-warning-light text-warning-dark',
+    confirmed: 'bg-success-light text-success-dark',
+    rejected: 'bg-error-light text-error-dark',
+    edited: 'bg-info-light text-info-dark',
   }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
@@ -180,7 +180,7 @@ export default function ParsedBookingCard({
           <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
             <button
               onClick={onConfirm}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-green-600 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-success text-white hover:bg-success-dark transition-colors focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
               aria-label={`Confirm booking for ${booking.guest_name || 'unknown guest'}`}
             >
               <CheckCircleIcon className="h-4 w-4" />

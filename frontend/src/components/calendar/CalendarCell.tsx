@@ -26,10 +26,10 @@ export default function CalendarCell({ dateStr, roomType, availability }: Calend
     bgClass = 'bg-red-100 text-red-800'
     statusLabel = 'Fully booked'
   } else if (ratio <= 0.5) {
-    bgClass = 'bg-yellow-100 text-yellow-800'
+    bgClass = 'bg-warning-light text-warning-dark'
     statusLabel = 'Low availability'
   } else {
-    bgClass = 'bg-green-100 text-green-800'
+    bgClass = 'bg-success-light text-success-dark'
     statusLabel = 'Available'
   }
 

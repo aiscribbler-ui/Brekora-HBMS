@@ -86,7 +86,7 @@ export default function AdminPanel() {
             </div>
           </nav>
           <div className="flex-1">
-            <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="rounded-xl bg-white p-6 shadow-sm">
               <ActiveComponent />
             </div>
           </div>
