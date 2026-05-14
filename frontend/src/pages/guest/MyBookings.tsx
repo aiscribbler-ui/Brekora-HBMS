@@ -38,35 +38,35 @@ export default function MyBookings() {
       case 'pending_payment':
         return 'bg-warning-light text-warning-dark'
       case 'payment_failed':
-        return 'bg-red-100 text-red-800'
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
       case 'cancelled':
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
       case 'completed':
-        return 'bg-blue-100 text-blue-800'
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
     }
   }
 
   return (
-    <div className="min-h-screen bg-brand-50">
+    <div className="min-h-screen bg-brand-50 dark:bg-gray-900">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-brand-700 font-display">My Bookings</h1>
-              <p className="text-sm text-brand-700 mt-1">View your reservation history</p>
+              <h1 className="text-2xl font-bold text-brand-700 dark:text-brand-300 font-display">My Bookings</h1>
+              <p className="text-sm text-brand-700 dark:text-brand-400 mt-1">View your reservation history</p>
             </div>
             <button
               onClick={() => navigate('/guest')}
-              className="text-sm text-brand-600 hover:text-brand-700 font-medium"
+              className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium"
             >
               Back to Dashboard
             </button>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm" role="alert">
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800 text-sm" role="alert">
               {error}
             </div>
           )}
@@ -74,15 +74,15 @@ export default function MyBookings() {
           {loading ? (
             <div className="space-y-4">
               {[1, 2].map((i) => (
-                <div key={i} className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+                <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse" />
               ))}
             </div>
           ) : bookings.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-sm">You have no bookings yet.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">You have no bookings yet.</p>
               <button
                 onClick={() => navigate('/book')}
-                className="mt-4 text-sm text-brand-600 font-medium hover:text-brand-700"
+                className="mt-4 text-sm text-brand-600 dark:text-brand-400 font-medium hover:text-brand-700 dark:hover:text-brand-300"
               >
                 Book a stay
               </button>
@@ -92,15 +92,15 @@ export default function MyBookings() {
               {bookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+                  className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-shadow dark:hover:shadow-none bg-white dark:bg-gray-800"
                 >
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
-                      <p className="font-semibold text-gray-900">Property {booking.property_id.slice(0, 8)}</p>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">Property {booking.property_id.slice(0, 8)}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {new Date(booking.check_in).toLocaleDateString()} — {new Date(booking.check_out).toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-gray-700 mt-1 font-medium">
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mt-1 font-medium">
                         {booking.currency} {Number(booking.total_amount).toFixed(2)}
                       </p>
                     </div>

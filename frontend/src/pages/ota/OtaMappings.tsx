@@ -129,7 +129,7 @@ export default function OtaMappings() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">OTA Mappings</h1>
-          <p className="text-sm text-gray-500 mt-1">Link your properties and room types to external OTA listings</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Link your properties and room types to external OTA listings</p>
         </div>
         {canManage && (
           <button
@@ -146,7 +146,7 @@ export default function OtaMappings() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 flex items-center gap-2" role="alert">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800 flex items-center gap-2" role="alert">
           <span className="font-medium">Error:</span> {error}
         </div>
       )}
@@ -154,17 +154,17 @@ export default function OtaMappings() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-4"
+          className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 space-y-4"
         >
-          <h2 className="text-lg font-semibold text-gray-900">{editingId ? 'Edit Mapping' : 'New Mapping'}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{editingId ? 'Edit Mapping' : 'New Mapping'}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Property</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property</label>
               <select
                 required
                 value={form.property_id}
                 onChange={(e) => setForm((f) => ({ ...f, property_id: e.target.value, room_type_id: '' }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               >
                 <option value="" disabled>Select property</option>
                 {properties.map((p) => (
@@ -174,12 +174,12 @@ export default function OtaMappings() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Room Type</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Room Type</label>
               <select
                 required
                 value={form.room_type_id}
                 onChange={(e) => setForm((f) => ({ ...f, room_type_id: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 disabled={!form.property_id}
               >
                 <option value="" disabled>Select room type</option>
@@ -191,12 +191,12 @@ export default function OtaMappings() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">OTA Source</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">OTA Source</label>
               <select
                 required
                 value={form.ota_source}
                 onChange={(e) => setForm((f) => ({ ...f, ota_source: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               >
                 {SOURCE_OPTIONS.map((s) => (
                   <option key={s} value={s}>{s.toUpperCase()}</option>
@@ -205,13 +205,13 @@ export default function OtaMappings() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">External Listing ID</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">External Listing ID</label>
               <input
                 type="text"
                 required
                 value={form.listing_id}
                 onChange={(e) => setForm((f) => ({ ...f, listing_id: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 placeholder="e.g., 12345678"
               />
             </div>
@@ -222,9 +222,9 @@ export default function OtaMappings() {
                 type="checkbox"
                 checked={form.is_active}
                 onChange={(e) => setForm((f) => ({ ...f, is_active: e.target.checked }))}
-                className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+                className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 rounded focus:ring-brand-500"
               />
-              <label htmlFor="is_active" className="text-sm text-gray-700">Active</label>
+              <label htmlFor="is_active" className="text-sm text-gray-700 dark:text-gray-300">Active</label>
             </div>
           </div>
 
@@ -238,7 +238,7 @@ export default function OtaMappings() {
             <button
               type="button"
               onClick={resetForm}
-              className="px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel
             </button>
@@ -249,42 +249,42 @@ export default function OtaMappings() {
       {isLoading ? (
         <div className="space-y-3 animate-pulse">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-200 rounded-xl" />
+            <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded-xl" />
           ))}
         </div>
       ) : mappings.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">
-          <LinkIcon className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-          <p className="text-sm text-gray-500">No OTA mappings found.</p>
-          <p className="text-xs text-gray-400 mt-1">Add your first mapping to link external listings</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-10 text-center">
+          <LinkIcon className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">No OTA mappings found.</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Add your first mapping to link external listings</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Listing ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Property</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Room Type</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Source</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Listing ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {mappings.map((m) => (
-                  <tr key={m.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm text-gray-900">{m.property?.name || m.property_id}</td>
-                    <td className="px-4 py-3 text-sm text-gray-900">{m.room_type?.name || m.room_type_id}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700 capitalize">{m.ota_source}</td>
-                    <td className="px-4 py-3 text-sm text-gray-700 font-mono">{m.listing_id}</td>
+                  <tr key={m.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{m.property?.name || m.property_id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{m.room_type?.name || m.room_type_id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 capitalize">{m.ota_source}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 font-mono">{m.listing_id}</td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           m.is_active
                             ? 'bg-success-light text-success-dark'
-                            : 'bg-gray-100 text-gray-800'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                         }`}
                       >
                         {m.is_active ? 'Active' : 'Inactive'}
@@ -296,14 +296,14 @@ export default function OtaMappings() {
                           <>
                             <button
                               onClick={() => handleEdit(m)}
-                              className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
+                              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                               aria-label="Edit mapping"
                             >
                               <PencilIcon className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(m.id)}
-                              className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                               aria-label="Delete mapping"
                             >
                               <TrashIcon className="h-4 w-4" />

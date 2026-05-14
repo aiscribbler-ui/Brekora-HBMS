@@ -158,23 +158,23 @@ export default function MessageGuest() {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 rounded-xl border border-red-200" role="alert">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800" role="alert">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column — bookings list */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:col-span-1">
-          <h2 className="text-sm font-semibold text-gray-900 mb-3">Recent Bookings</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 lg:col-span-1">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Recent Bookings</h2>
           {isLoading ? (
             <div className="space-y-3 animate-pulse">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-14 bg-gray-200 rounded-xl" />
+                <div key={i} className="h-14 bg-gray-200 dark:bg-gray-700 rounded-xl" />
               ))}
             </div>
           ) : bookings.length === 0 ? (
-            <p className="text-sm text-gray-500">No bookings found.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">No bookings found.</p>
           ) : (
             <ul className="space-y-2 max-h-96 overflow-y-auto pr-1">
               {bookings.slice(0, 20).map((b) => (
@@ -183,16 +183,16 @@ export default function MessageGuest() {
                     onClick={() => handleSelectBooking(b.id)}
                     className={`w-full text-left p-3 rounded-xl border transition-colors ${
                       selectedBookingId === b.id
-                        ? 'border-brand-300 bg-brand-50'
-                        : 'border-gray-100 hover:bg-gray-50'
+                        ? 'border-brand-300 dark:border-brand-700 bg-brand-50 dark:bg-brand-900/20'
+                        : 'border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                     }`}
                   >
-                    <p className="text-sm font-medium text-gray-900">{b.guest_name || 'Guest'}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{b.guest_name || 'Guest'}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                       {b.check_in} → {b.check_out}
                     </p>
                     {b.guest_phone && (
-                      <p className="text-xs text-gray-400 mt-0.5">{b.guest_phone}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{b.guest_phone}</p>
                     )}
                   </button>
                 </li>
@@ -202,44 +202,44 @@ export default function MessageGuest() {
         </div>
 
         {/* Right column — composer */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 lg:col-span-2 space-y-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-1">Compose Message</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 lg:col-span-2 space-y-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Compose Message</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Guest Name</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Guest Name</label>
               <input
                 type="text"
                 value={recipientName}
                 onChange={(e) => setRecipientName(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 placeholder="e.g., Rahul Sharma"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Phone (with country code)</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Phone (with country code)</label>
               <input
                 type="tel"
                 value={recipientPhone}
                 onChange={(e) => setRecipientPhone(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 placeholder="e.g., 919876543210"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
               <input
                 type="email"
                 value={recipientEmail}
                 onChange={(e) => setRecipientEmail(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 placeholder="guest@example.com"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Template</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Template</label>
             <div className="flex flex-wrap gap-2">
               {TEMPLATES.map((t) => (
                 <button
@@ -249,7 +249,7 @@ export default function MessageGuest() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                     selectedTemplate === t.id
                       ? 'bg-brand-600 text-white border-brand-600'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   {t.label}
@@ -259,30 +259,30 @@ export default function MessageGuest() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Message</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
             <textarea
               rows={6}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               placeholder="Type your message here..."
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Variables: {'{{name}}, {{ref}}, {{check_in}}, {{check_out}}, {{property}}, {{address}}, {{phone}}, {{email}}, {{due_date}}, {{link}}'}
             </p>
           </div>
 
           {/* Preview */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Preview</p>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{finalMessage}</p>
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Preview</p>
+            <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{finalMessage}</p>
           </div>
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               <DocumentDuplicateIcon className="h-4 w-4" />
               {copied ? 'Copied!' : 'Copy Text'}
@@ -291,7 +291,7 @@ export default function MessageGuest() {
             {recipientEmail && (
               <a
                 href={mailtoUrl}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <EnvelopeIcon className="h-4 w-4" />
                 Open Email
@@ -311,7 +311,7 @@ export default function MessageGuest() {
             )}
 
             {!recipientPhone && !recipientEmail && (
-              <p className="text-xs text-gray-400">Enter a phone number or email to send</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Enter a phone number or email to send</p>
             )}
           </div>
         </div>
