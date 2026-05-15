@@ -62,6 +62,5 @@ export async function fetchCalendarData(
 }
 
 export async function blockDates(input: BlockDatesInput): Promise<void> {
-  console.warn('blockDates not implemented yet', input)
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  await api.post('/availability/block', input)
 }

@@ -16,6 +16,7 @@ from app.core.redis import get_redis_client
 from app.db.session import get_db
 from app.schemas.availability import (
     AddOnAvailabilitySlot,
+    BlockDatesRequest,
     RoomAvailabilityNight,
 )
 from app.services.availability_service import AvailabilityService
@@ -108,3 +109,39 @@ async def get_addon_availability_range(
         end_date=end_date,
     )
     return [AddOnAvailabilitySlot(**row) for row in rows]
+
+
+@router.post("/block", status_code=204)
+async def block_dates(
+    data: BlockDatesRequest,
+    db: AsyncSession = Depends(get_db),
+    redis: Redis = Depends(get_redis_client),
+    org_id: uuid.UUID = Depends(get_org_id),
+    current: UserWithProperties = Depends(get_current_user_with_properties),
+) -> None:
+    global_role = current.user.role.name if current.user.role else None
+    if global_role not in _ORG_LEVEL_PROPERTY_ACCESS_ROLES:
+        if data.property_id not in current.property_ids:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this property",
+            )
+
+    if data.start_date > data.end_date:
+        raise HTTPException(
+            status_code=422,
+            detail="end_date must be after start_date",
+        )
+
+    svc = AvailabilityService(db, redis)
+    try:
+        await svc.block_dates(
+            property_id=data.property_id,
+            room_type_ids=data.room_type_ids,
+            start_date=data.start_date,
+            end_date=data.end_date,
+            reason=data.reason,
+            org_id=org_id,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))

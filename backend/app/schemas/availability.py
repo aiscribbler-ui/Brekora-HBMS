@@ -36,3 +36,11 @@ class AddOnAvailabilityDay(BaseModel):
 
 class AddOnAvailabilityResponse(BaseModel):
     items: list[AddOnAvailabilitySlot | AddOnAvailabilityDay]
+
+
+class BlockDatesRequest(BaseModel):
+    property_id: uuid.UUID
+    room_type_ids: list[uuid.UUID]
+    start_date: date
+    end_date: date
+    reason: str | None = None

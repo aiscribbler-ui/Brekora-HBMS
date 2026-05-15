@@ -1,12 +1,13 @@
 import json
 import uuid
-from datetime import date, time
+from datetime import date, timedelta, time
 
 from redis.asyncio import Redis
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.add_on import AddOn
+from app.models.inventory_buffer import InventoryBuffer
 from app.models.room_type import RoomType
 
 
@@ -215,6 +216,75 @@ class AvailabilityService:
             await self.redis.setex(cache_key, 30, json.dumps(rows, default=str))
 
         return rows
+
+    async def block_dates(
+        self,
+        property_id: uuid.UUID,
+        room_type_ids: list[uuid.UUID],
+        start_date: date,
+        end_date: date,
+        reason: str | None = None,
+        org_id: uuid.UUID | None = None,
+    ) -> None:
+        """Block dates by upserting inventory_buffer rows with buffer_count equal to room type count."""
+        if start_date > end_date:
+            raise ValueError("end_date must be after start_date")
+        if not room_type_ids:
+            raise ValueError("room_type_ids cannot be empty")
+
+        rt_stmt = select(RoomType).where(
+            RoomType.id.in_(room_type_ids),
+            RoomType.property_id == property_id,
+            RoomType.is_active.is_(True),
+            RoomType.is_archived.is_(False),
+        )
+        if org_id is not None:
+            rt_stmt = rt_stmt.where(RoomType.org_id == org_id)
+
+        result = await self.session.execute(rt_stmt)
+        room_types = result.scalars().all()
+        if len(room_types) != len(room_type_ids):
+            found = {rt.id for rt in room_types}
+            missing = [str(rid) for rid in room_type_ids if rid not in found]
+            raise ValueError(f"Room types not found: {missing}")
+
+        sql = text(
+            """
+            INSERT INTO inventory_buffer (org_id, property_id, room_type_id, date, buffer_count, reason)
+            SELECT CAST(:org_id AS uuid), CAST(:property_id AS uuid), CAST(:room_type_id AS uuid), d, :buffer_count, :reason
+            FROM generate_series(CAST(:start_date AS date), CAST(:end_date AS date), interval '1 day')::date AS d
+            ON CONFLICT ON CONSTRAINT uq_buffer_org_room_date DO UPDATE
+            SET buffer_count = EXCLUDED.buffer_count,
+                reason = EXCLUDED.reason,
+                updated_at = NOW()
+            """
+        )
+
+        for rt in room_types:
+            await self.session.execute(
+                sql,
+                {
+                    "org_id": str(org_id) if org_id else "00000000-0000-0000-0000-000000000000",
+                    "property_id": str(property_id),
+                    "room_type_id": str(rt.id),
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "buffer_count": rt.count,
+                    "reason": reason,
+                },
+            )
+
+        if self.redis is not None:
+            keys_to_delete = []
+            for rt in room_types:
+                keys_to_delete.append(
+                    self._cache_key(property_id, rt.id, start_date, end_date)
+                )
+            keys_to_delete.append(
+                self._cache_key(property_id, None, start_date, end_date)
+            )
+            for key in keys_to_delete:
+                await self.redis.delete(key)
 
     async def get_addon_availability(
         self,
