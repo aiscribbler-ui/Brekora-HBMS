@@ -85,47 +85,47 @@ export default function ConfirmModal({ isOpen, onClose, booking, onSuccess, onEr
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="w-full max-w-lg bg-white rounded-lg shadow-xl p-6">
+            <DialogPanel className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <CheckCircleIcon className="h-6 w-6 text-success" />
-                <DialogTitle className="text-lg font-semibold text-gray-900">Confirm Booking</DialogTitle>
+                <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">Confirm Booking</DialogTitle>
               </div>
 
-              <div className="bg-gray-50 rounded-md p-4 mb-4 space-y-2 text-sm">
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-md p-4 mb-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Guest</span>
-                  <span className="font-medium text-gray-900">{booking.guest_name || '—'}</span>
+                  <span className="text-gray-500 dark:text-gray-400">Guest</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{booking.guest_name || '—'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Dates</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-gray-500 dark:text-gray-400">Dates</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     {booking.check_in && booking.check_out
                       ? `${booking.check_in} → ${booking.check_out}`
                       : '—'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">OTA Source</span>
-                  <span className="font-medium text-gray-900 capitalize">{booking.source_type}</span>
+                  <span className="text-gray-500 dark:text-gray-400">OTA Source</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100 capitalize">{booking.source_type}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Reference</span>
-                  <span className="font-medium text-gray-900">{booking.ota_reference || '—'}</span>
+                  <span className="text-gray-500 dark:text-gray-400">Reference</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{booking.ota_reference || '—'}</span>
                 </div>
               </div>
 
               <div className="mb-4">
-                <label htmlFor="room-type-select" className="block text-sm font-medium text-gray-700 mb-1">
-                  Room Type <span className="text-gray-400 font-normal">(optional)</span>
+                <label htmlFor="room-type-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Room Type <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
                 </label>
                 {fetching ? (
-                  <div className="h-10 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded animate-pulse" />
                 ) : (
                   <select
                     id="room-type-select"
                     value={selectedRoomTypeId}
                     onChange={(e) => setSelectedRoomTypeId(e.target.value)}
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   >
                     <option value="">Auto-detect / Leave blank</option>
                     {roomTypes.map((rt) => (
@@ -136,14 +136,14 @@ export default function ConfirmModal({ isOpen, onClose, booking, onSuccess, onEr
                   </select>
                 )}
                 {roomTypes.length === 0 && !fetching && (
-                  <p className="mt-1 text-xs text-amber-600">No room types found for this property.</p>
+                  <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">No room types found for this property.</p>
                 )}
               </div>
 
               {booking.confidence_score < 0.8 && (
-                <div className="mb-4 p-3 bg-amber-50 rounded border border-amber-200 flex items-start gap-2">
+                <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded border border-amber-200 dark:border-amber-800 flex items-start gap-2">
                   <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 shrink-0" />
-                  <p className="text-sm text-amber-800">
+                  <p className="text-sm text-amber-800 dark:text-amber-400">
                     This booking has low confidence ({(booking.confidence_score * 100).toFixed(0)}%). Please verify all details before confirming.
                   </p>
                 </div>
@@ -153,7 +153,7 @@ export default function ConfirmModal({ isOpen, onClose, booking, onSuccess, onEr
                 <button
                   onClick={handleClose}
                   disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/50 disabled:opacity-50 transition-colors"
                 >
                   Cancel
                 </button>

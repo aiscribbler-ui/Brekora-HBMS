@@ -76,78 +76,78 @@ export default function EditParsedBooking({ booking, onSaved, onCancel, onError 
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 sm:p-6 space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Edit Parsed Booking</h3>
+    <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 sm:p-6 space-y-4">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Parsed Booking</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">
-          <label htmlFor="edit-guest-name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="edit-guest-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Guest Name
           </label>
           <input
             id="edit-guest-name"
             type="text"
             {...register('guest_name')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           {errors.guest_name && (
-            <p className="mt-1 text-sm text-red-600">{errors.guest_name.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guest_name.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="edit-email" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="edit-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Email
           </label>
           <input
             id="edit-email"
             type="email"
             {...register('guest_email')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           {errors.guest_email && (
-            <p className="mt-1 text-sm text-red-600">{errors.guest_email.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guest_email.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Phone
           </label>
           <input
             id="edit-phone"
             type="tel"
             {...register('guest_phone')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
         </div>
 
         <div>
-          <label htmlFor="edit-check-in" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="edit-check-in" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Check-in
           </label>
           <input
             id="edit-check-in"
             type="date"
             {...register('check_in')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
         </div>
 
         <div>
-          <label htmlFor="edit-check-out" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="edit-check-out" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Check-out
           </label>
           <input
             id="edit-check-out"
             type="date"
             {...register('check_out')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
         </div>
 
         <div>
-          <label htmlFor="edit-num-guests" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="edit-num-guests" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Number of Guests
           </label>
           <input
@@ -155,10 +155,10 @@ export default function EditParsedBooking({ booking, onSaved, onCancel, onError 
             type="number"
             min={1}
             {...register('num_guests')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           {errors.num_guests && (
-            <p className="mt-1 text-sm text-red-600">{errors.num_guests.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.num_guests.message}</p>
           )}
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function EditParsedBooking({ booking, onSaved, onCancel, onError 
           type="button"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/50 disabled:opacity-50 transition-colors"
         >
           Cancel
         </button>

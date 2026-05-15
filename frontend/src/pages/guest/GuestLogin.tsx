@@ -95,10 +95,10 @@ export default function GuestLogin() {
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600" id="guest-email-error">
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="guest-email-error">
                 {errors.email.message}
               </p>
             )}
@@ -113,10 +113,10 @@ export default function GuestLogin() {
               type="password"
               autoComplete="current-password"
               {...register('password')}
-              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600" id="guest-password-error">
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="guest-password-error">
                 {errors.password.message}
               </p>
             )}
@@ -155,7 +155,7 @@ export default function GuestLogin() {
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Don&apos;t have an account?{' '}
-            <Link to="/guest/signup" className="text-brand-600 hover:text-brand-700 hover:underline font-medium">
+            <Link to="/guest/signup" className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline font-medium">
               Sign up
             </Link>
           </p>

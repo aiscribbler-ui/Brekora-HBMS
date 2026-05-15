@@ -148,7 +148,7 @@ export default function Landing() {
                     {property.amenities.slice(0, 4).map((a) => (
                       <span
                         key={a}
-                        className="px-2.5 py-0.5 bg-brand-50 text-brand-700 text-xs rounded-full font-medium"
+                        className="px-2.5 py-0.5 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 text-xs rounded-full font-medium"
                       >
                         {a}
                       </span>

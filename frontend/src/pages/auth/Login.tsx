@@ -109,7 +109,7 @@ export default function Login() {
               className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600" id="email-error" role="alert">{errors.email.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="email-error" role="alert">{errors.email.message}</p>
             )}
           </div>
 
@@ -127,7 +127,7 @@ export default function Login() {
               className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600" id="password-error" role="alert">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="password-error" role="alert">{errors.password.message}</p>
             )}
           </div>
 

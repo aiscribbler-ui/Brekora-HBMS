@@ -64,19 +64,19 @@ export default function RejectModal({ isOpen, onClose, booking, onSuccess, onErr
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <DialogPanel className="w-full max-w-md bg-white rounded-lg shadow-xl p-6">
+            <DialogPanel className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <XCircleIcon className="h-6 w-6 text-red-600" />
-                <DialogTitle className="text-lg font-semibold text-gray-900">Reject Booking</DialogTitle>
+                <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">Reject Booking</DialogTitle>
               </div>
 
-              <div className="bg-gray-50 rounded-md p-3 mb-4 text-sm space-y-1">
-                <p className="text-gray-500">
-                  Guest: <span className="font-medium text-gray-900">{booking.guest_name || '—'}</span>
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3 mb-4 text-sm space-y-1">
+                <p className="text-gray-500 dark:text-gray-400">
+                  Guest: <span className="font-medium text-gray-900 dark:text-gray-100">{booking.guest_name || '—'}</span>
                 </p>
-                <p className="text-gray-500">
+                <p className="text-gray-500 dark:text-gray-400">
                   Dates:{' '}
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     {booking.check_in && booking.check_out
                       ? `${booking.check_in} → ${booking.check_out}`
                       : '—'}
@@ -85,8 +85,8 @@ export default function RejectModal({ isOpen, onClose, booking, onSuccess, onErr
               </div>
 
               <div className="mb-4">
-                <label htmlFor="reject-reason" className="block text-sm font-medium text-gray-700 mb-1">
-                  Rejection Reason <span className="text-red-500">*</span>
+                <label htmlFor="reject-reason" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Rejection Reason <span className="text-red-500 dark:text-red-400">*</span>
                 </label>
                 <textarea
                   id="reject-reason"
@@ -94,10 +94,10 @@ export default function RejectModal({ isOpen, onClose, booking, onSuccess, onErr
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="e.g. Duplicate booking, Invalid dates, No availability..."
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
                 {!reason.trim() && (
-                  <p className="mt-1 text-xs text-gray-500">A reason is required to reject this booking.</p>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">A reason is required to reject this booking.</p>
                 )}
               </div>
 
@@ -105,7 +105,7 @@ export default function RejectModal({ isOpen, onClose, booking, onSuccess, onErr
                 <button
                   onClick={handleClose}
                   disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700/50 disabled:opacity-50 transition-colors"
                 >
                   Cancel
                 </button>

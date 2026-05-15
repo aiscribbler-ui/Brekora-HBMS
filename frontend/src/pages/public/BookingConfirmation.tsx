@@ -68,7 +68,7 @@ export default function BookingConfirmation() {
         </a>
 
         <div className="mt-4">
-          <a href="/guest/login" className="text-sm text-brand-600 hover:text-brand-700 hover:underline">
+          <a href="/guest/login" className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline">
             Go to Guest Dashboard
           </a>
         </div>

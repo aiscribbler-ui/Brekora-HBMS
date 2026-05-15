@@ -196,7 +196,7 @@ export default function BookingFlow() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <a href="/book" className="text-xl font-bold text-brand-600">
+          <a href="/book" className="text-xl font-bold text-brand-600 dark:text-brand-400">
             Brekora
           </a>
           <span className="text-sm text-gray-500 dark:text-gray-400">Book your stay</span>
@@ -293,10 +293,10 @@ export default function BookingFlow() {
                   aria-invalid={errors.guestName ? 'true' : 'false'}
                   aria-describedby={errors.guestName ? 'guestName-error' : undefined}
                   {...register('guestName')}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 {errors.guestName && (
-                  <p className="mt-1 text-sm text-red-600" id="guestName-error" role="alert">{errors.guestName.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="guestName-error" role="alert">{errors.guestName.message}</p>
                 )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -311,10 +311,10 @@ export default function BookingFlow() {
                     aria-invalid={errors.guestEmail ? 'true' : 'false'}
                     aria-describedby={errors.guestEmail ? 'guestEmail-error' : undefined}
                     {...register('guestEmail')}
-                    className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   {errors.guestEmail && (
-                    <p className="mt-1 text-sm text-red-600" id="guestEmail-error" role="alert">{errors.guestEmail.message}</p>
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="guestEmail-error" role="alert">{errors.guestEmail.message}</p>
                   )}
                 </div>
                 <div>
@@ -328,10 +328,10 @@ export default function BookingFlow() {
                     aria-invalid={errors.guestPhone ? 'true' : 'false'}
                     aria-describedby={errors.guestPhone ? 'guestPhone-error' : undefined}
                     {...register('guestPhone')}
-                    className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   {errors.guestPhone && (
-                    <p className="mt-1 text-sm text-red-600" id="guestPhone-error" role="alert">{errors.guestPhone.message}</p>
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="guestPhone-error" role="alert">{errors.guestPhone.message}</p>
                   )}
                 </div>
               </div>
@@ -343,7 +343,7 @@ export default function BookingFlow() {
                   id="promoCode"
                   type="text"
                   {...register('promoCode')}
-                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>

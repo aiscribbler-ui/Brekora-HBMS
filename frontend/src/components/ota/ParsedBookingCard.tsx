@@ -35,10 +35,10 @@ function confidenceLabel(score: number): string {
 
 function sourceBadge(source: string) {
   const styles: Record<string, string> = {
-    airbnb: 'bg-rose-100 text-rose-800',
-    mmt: 'bg-blue-100 text-blue-800',
-    goibibo: 'bg-orange-100 text-orange-800',
-    other: 'bg-gray-100 text-gray-800',
+    airbnb: 'bg-rose-100 dark:bg-rose-900/20 text-rose-800 dark:text-rose-400',
+    mmt: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400',
+    goibibo: 'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-400',
+    other: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300',
   }
   const labels: Record<string, string> = {
     airbnb: 'Airbnb',
@@ -61,7 +61,7 @@ function statusBadge(status: string) {
     edited: 'bg-info-light text-info-dark',
   }
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'}`}>
       {status}
     </span>
   )
@@ -77,7 +77,7 @@ export default function ParsedBookingCard({
   const canAct = booking.status === 'pending' || booking.status === 'edited'
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="p-4 sm:p-6 space-y-4">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -100,42 +100,42 @@ export default function ParsedBookingCard({
         {/* Parsed fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex items-start gap-2">
-            <UserIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <UserIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Guest Name</p>
-              <p className="text-sm font-medium text-gray-900">{booking.guest_name || '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Guest Name</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{booking.guest_name || '—'}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-2">
-            <EnvelopeOpenIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <EnvelopeOpenIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Email</p>
-              <p className="text-sm font-medium text-gray-900">{booking.guest_email || '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{booking.guest_email || '—'}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-2">
-            <PhoneIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <PhoneIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Phone</p>
-              <p className="text-sm font-medium text-gray-900">{booking.guest_phone || '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Phone</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{booking.guest_phone || '—'}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-2">
-            <UsersIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <UsersIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Guests</p>
-              <p className="text-sm font-medium text-gray-900">{booking.num_guests ?? '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Guests</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{booking.num_guests ?? '—'}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-2">
-            <CalendarIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <CalendarIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Dates</p>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Dates</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {booking.check_in && booking.check_out
                   ? `${booking.check_in} → ${booking.check_out}`
                   : '—'}
@@ -144,30 +144,30 @@ export default function ParsedBookingCard({
           </div>
 
           <div className="flex items-start gap-2">
-            <HomeIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <HomeIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">Room Type</p>
-              <p className="text-sm font-medium text-gray-900">{booking.room_type || '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Room Type</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{booking.room_type || '—'}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-2">
-            <HashtagIcon className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
+            <HashtagIcon className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs text-gray-500">OTA Reference</p>
-              <p className="text-sm font-medium text-gray-900">{booking.ota_reference || '—'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">OTA Reference</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{booking.ota_reference || '—'}</p>
             </div>
           </div>
         </div>
 
         {/* Original email link */}
         {rawEmailUrl && (
-          <div className="pt-2 border-t border-gray-100">
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
             <a
               href={rawEmailUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-brand-600 hover:text-brand-700 hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline"
             >
               <EnvelopeOpenIcon className="h-4 w-4" />
               View original email
@@ -177,7 +177,7 @@ export default function ParsedBookingCard({
 
         {/* Actions */}
         {canAct && (
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
             <button
               onClick={onConfirm}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-success text-white hover:bg-success-dark transition-colors focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2"
@@ -188,7 +188,7 @@ export default function ParsedBookingCard({
             </button>
             <button
               onClick={onEdit}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               aria-label={`Edit booking for ${booking.guest_name || 'unknown guest'}`}
             >
               <PencilSquareIcon className="h-4 w-4" />

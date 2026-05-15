@@ -41,10 +41,10 @@ const statusOptions: { value: QueueStatus | ''; label: string }[] = [
 
 function sourceBadge(source: OtaSource | string) {
   const styles: Record<string, string> = {
-    airbnb: 'bg-rose-100 text-rose-800',
-    mmt: 'bg-blue-100 text-blue-800',
-    goibibo: 'bg-orange-100 text-orange-800',
-    other: 'bg-gray-100 text-gray-800',
+    airbnb: 'bg-rose-100 dark:bg-rose-900/20 text-rose-800 dark:text-rose-400',
+    mmt: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400',
+    goibibo: 'bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-400',
+    other: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300',
   }
   const labels: Record<string, string> = {
     airbnb: 'Airbnb',
@@ -63,8 +63,8 @@ function statusBadge(status: QueueStatus | string) {
   const styles: Record<string, string> = {
     pending: 'bg-warning-light text-warning-dark',
     confirmed: 'bg-success-light text-success-dark',
-    rejected: 'bg-red-100 text-red-800',
-    edited: 'bg-blue-100 text-blue-800',
+    rejected: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400',
+    edited: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400',
   }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
@@ -361,7 +361,7 @@ export default function OtaQueue() {
           {activeFilterCount > 0 && (
             <button
               onClick={clearFilters}
-              className="mt-2 text-sm text-brand-600 hover:underline"
+              className="mt-2 text-sm text-brand-600 dark:text-brand-400 hover:underline"
             >
               Clear filters
             </button>

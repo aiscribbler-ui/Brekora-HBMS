@@ -84,10 +84,10 @@ export default function TwoFactor() {
               autoComplete="one-time-code"
               placeholder="000000"
               {...register('code')}
-              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
             {errors.code && (
-              <p className="mt-1 text-sm text-red-600" id="code-error">{errors.code.message}</p>
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400" id="code-error">{errors.code.message}</p>
             )}
           </div>
 
@@ -104,7 +104,7 @@ export default function TwoFactor() {
           <button
             type="button"
             onClick={() => navigate('/login')}
-            className="text-sm text-brand-600 hover:text-brand-700 hover:underline"
+            className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 hover:underline"
           >
             Back to login
           </button>

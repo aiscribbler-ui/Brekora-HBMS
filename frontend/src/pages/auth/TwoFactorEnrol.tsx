@@ -154,7 +154,7 @@ export default function TwoFactorEnrol() {
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
               placeholder="000000"
-              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
           <button
@@ -187,7 +187,7 @@ export default function TwoFactorEnrol() {
               value={disableCode}
               onChange={(e) => setDisableCode(e.target.value.replace(/\D/g, ''))}
               placeholder="000000"
-              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 shadow-sm text-center tracking-widest font-mono focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
             />
           </div>
           <button
