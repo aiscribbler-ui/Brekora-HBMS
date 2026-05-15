@@ -156,7 +156,7 @@ export default function RoomTypeForm() {
     return (
       <div className="max-w-3xl mx-auto space-y-4">
         <div className="h-8 bg-gray-100 dark:bg-gray-700 rounded w-1/3 animate-pulse" />
-        <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
+        <div className="h-64 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />
       </div>
     )
   }

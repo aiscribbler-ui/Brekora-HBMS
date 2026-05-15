@@ -331,7 +331,7 @@ export default function ManualBookingForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
           {step === 1 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Booking Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Booking Details</h3>
 
               <div>
                 <label htmlFor="propertyId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
