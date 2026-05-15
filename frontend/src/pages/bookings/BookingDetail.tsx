@@ -8,17 +8,17 @@ import InvoiceViewer from '@/components/bookings/InvoiceViewer'
 function statusBadgeClass(status: string) {
   switch (status) {
     case 'confirmed':
-      return 'bg-success-light text-success-dark'
+      return 'bg-success-light text-success-dark dark:bg-success-dark/20 dark:text-success-light'
     case 'pending_payment':
-      return 'bg-warning-light text-warning-dark'
+      return 'bg-warning-light text-warning-dark dark:bg-warning-dark/20 dark:text-warning-light'
     case 'payment_failed':
-      return 'bg-red-100 text-red-800'
+      return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
     case 'cancelled':
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
     case 'completed':
-      return 'bg-blue-100 text-blue-800'
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
     default:
-      return 'bg-gray-100 text-gray-800'
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
   }
 }
 
@@ -112,8 +112,8 @@ export default function BookingDetail() {
     return (
       <div className="max-w-6xl mx-auto py-6 px-4">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-64 bg-gray-200 rounded" />
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded" />
         </div>
       </div>
     )
@@ -122,7 +122,7 @@ export default function BookingDetail() {
   if (error || !booking) {
     return (
       <div className="max-w-6xl mx-auto py-6 px-4">
-        <div className="p-4 bg-red-50 text-red-700 rounded border border-red-200" role="alert">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800" role="alert">
           {error || 'Booking not found.'}
         </div>
       </div>
@@ -138,8 +138,8 @@ export default function BookingDetail() {
         <div
           className={`mb-4 p-3 rounded border text-sm ${
             toast.type === 'success'
-              ? 'bg-success-light text-success-dark border-success'
-              : 'bg-red-50 text-red-800 border-red-200'
+              ? 'bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success-light border-success'
+              : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400 border-red-200 dark:border-red-800'
           }`}
           role="alert"
         >
@@ -152,8 +152,8 @@ export default function BookingDetail() {
         <div className="flex-1 space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Booking {booking.id.slice(0, 8)}</h1>
-              <p className="text-sm text-gray-500 mt-1">Created {new Date(booking.created_at).toLocaleString()}</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Booking {booking.id.slice(0, 8)}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Created {new Date(booking.created_at).toLocaleString()}</p>
             </div>
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${statusBadgeClass(booking.status)}`}
@@ -162,114 +162,114 @@ export default function BookingDetail() {
             </span>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Booking Details</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Booking Details</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-gray-500">Property</p>
-                <p className="font-medium text-gray-900">{booking.property_id}</p>
+                <p className="text-gray-500 dark:text-gray-400">Property</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{booking.property_id}</p>
               </div>
               <div>
-                <p className="text-gray-500">Booking Type</p>
-                <p className="font-medium text-gray-900 capitalize">{booking.booking_type}</p>
+                <p className="text-gray-500 dark:text-gray-400">Booking Type</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100 capitalize">{booking.booking_type}</p>
               </div>
               <div>
-                <p className="text-gray-500">Check-in</p>
-                <p className="font-medium text-gray-900">{booking.check_in}</p>
+                <p className="text-gray-500 dark:text-gray-400">Check-in</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{booking.check_in}</p>
               </div>
               <div>
-                <p className="text-gray-500">Check-out</p>
-                <p className="font-medium text-gray-900">{booking.check_out}</p>
+                <p className="text-gray-500 dark:text-gray-400">Check-out</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{booking.check_out}</p>
               </div>
               <div>
-                <p className="text-gray-500">Source</p>
-                <p className="font-medium text-gray-900 capitalize">{booking.source_type.replace('_', ' ')}</p>
+                <p className="text-gray-500 dark:text-gray-400">Source</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100 capitalize">{booking.source_type.replace('_', ' ')}</p>
               </div>
               <div>
-                <p className="text-gray-500">Payment State</p>
-                <p className="font-medium text-gray-900">{booking.payment_state || 'N/A'}</p>
+                <p className="text-gray-500 dark:text-gray-400">Payment State</p>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{booking.payment_state || 'N/A'}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Guest Details</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Guest Details</h2>
             {booking.guest ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-gray-500">Name</p>
-                  <p className="font-medium text-gray-900">{booking.guest.name || 'N/A'}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Name</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{booking.guest.name || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Email</p>
-                  <p className="font-medium text-gray-900">{booking.guest.email || 'N/A'}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Email</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{booking.guest.email || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Phone</p>
-                  <p className="font-medium text-gray-900">{booking.guest.phone || 'N/A'}</p>
+                  <p className="text-gray-500 dark:text-gray-400">Phone</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{booking.guest.phone || 'N/A'}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500">ID Number</p>
-                  <p className="font-medium text-gray-900">{booking.guest.id_number || 'N/A'}</p>
+                  <p className="text-gray-500 dark:text-gray-400">ID Number</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{booking.guest.id_number || 'N/A'}</p>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">Guest details are not available for this booking.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Guest details are not available for this booking.</p>
             )}
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Amount Breakdown</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Amount Breakdown</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium text-gray-900">₹{booking.gross_amount.toFixed(2)}</span>
+                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">₹{booking.gross_amount.toFixed(2)}</span>
               </div>
               {booking.discount_amount > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Discount</span>
+                  <span className="text-gray-600 dark:text-gray-400">Discount</span>
                   <span className="font-medium text-success">-₹{booking.discount_amount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
-                <span className="font-medium text-gray-900">₹{booking.tax_amount.toFixed(2)}</span>
+                <span className="text-gray-600 dark:text-gray-400">Tax</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">₹{booking.tax_amount.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-base font-semibold border-t pt-2">
-                <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">₹{booking.total_amount.toFixed(2)} {booking.currency}</span>
+              <div className="flex justify-between text-base font-semibold border-t dark:border-gray-700 pt-2">
+                <span className="text-gray-900 dark:text-gray-100">Total</span>
+                <span className="text-gray-900 dark:text-gray-100">₹{booking.total_amount.toFixed(2)} {booking.currency}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Line Items</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Line Items</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-3 py-2 text-left font-medium text-gray-700">Item</th>
-                    <th className="px-3 py-2 text-right font-medium text-gray-700">Qty</th>
-                    <th className="px-3 py-2 text-right font-medium text-gray-700">Nights</th>
-                    <th className="px-3 py-2 text-right font-medium text-gray-700">Unit Price</th>
-                    <th className="px-3 py-2 text-right font-medium text-gray-700">Total</th>
+                    <th className="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Item</th>
+                    <th className="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Qty</th>
+                    <th className="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Nights</th>
+                    <th className="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Unit Price</th>
+                    <th className="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {lineItems.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-4 text-center text-gray-500">No line items.</td>
+                      <td colSpan={5} className="px-3 py-4 text-center text-gray-500 dark:text-gray-400">No line items.</td>
                     </tr>
                   )}
                   {lineItems.map((item, idx) => (
-                    <tr key={idx}>
-                      <td className="px-3 py-2 text-gray-900">
+                    <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="px-3 py-2 text-gray-900 dark:text-gray-100">
                         {String(item.item_type || 'Item').toUpperCase()} — {String(item.item_id || '').slice(0, 8)}…
                       </td>
-                      <td className="px-3 py-2 text-right text-gray-700">{Number(item.quantity) || 1}</td>
-                      <td className="px-3 py-2 text-right text-gray-700">{Number(item.nights) || 1}</td>
-                      <td className="px-3 py-2 text-right text-gray-700">₹{Number(item.unit_price || 0).toFixed(2)}</td>
-                      <td className="px-3 py-2 text-right font-medium text-gray-900">
+                      <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{Number(item.quantity) || 1}</td>
+                      <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">{Number(item.nights) || 1}</td>
+                      <td className="px-3 py-2 text-right text-gray-700 dark:text-gray-300">₹{Number(item.unit_price || 0).toFixed(2)}</td>
+                      <td className="px-3 py-2 text-right font-medium text-gray-900 dark:text-gray-100">
                         ₹{Number(item.total_price || 0).toFixed(2)}
                       </td>
                     </tr>
@@ -280,20 +280,20 @@ export default function BookingDetail() {
           </div>
 
           {modificationLog.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Modification Log</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Modification Log</h2>
               <div className="space-y-3">
                 {modificationLog.map((entry, idx) => (
-                  <details key={idx} className="group border rounded-md">
-                    <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between text-sm hover:bg-gray-50">
+                  <details key={idx} className="group border dark:border-gray-700 rounded-md">
+                    <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <div className="flex items-center gap-3">
-                        <span className="text-gray-500">
+                        <span className="text-gray-500 dark:text-gray-400">
                           {new Date(entry.timestamp).toLocaleString()}
                         </span>
-                        <span className="font-medium text-gray-900">{entry.reason || 'Modification'}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{entry.reason || 'Modification'}</span>
                       </div>
                       <svg
-                        className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform"
+                        className="w-4 h-4 text-gray-400 dark:text-gray-500 group-open:rotate-180 transition-transform"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -304,20 +304,20 @@ export default function BookingDetail() {
                     </summary>
                     <div className="px-4 pb-4 text-sm">
                       {Object.entries(entry.changes).map(([key, change]) => (
-                        <div key={key} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 bg-gray-50 rounded p-2">
-                          <div className="font-medium text-gray-700 capitalize">{key.replace('_', ' ')}</div>
-                          <div className="text-gray-500">
+                        <div key={key} className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 bg-gray-50 dark:bg-gray-700/50 rounded p-2">
+                          <div className="font-medium text-gray-700 dark:text-gray-300 capitalize">{key.replace('_', ' ')}</div>
+                          <div className="text-gray-500 dark:text-gray-400">
                             <span className="text-xs uppercase tracking-wide">Old</span>
-                            <div className="text-gray-700">{JSON.stringify(change.old)}</div>
+                            <div className="text-gray-700 dark:text-gray-300">{JSON.stringify(change.old)}</div>
                           </div>
-                          <div className="text-gray-500">
+                          <div className="text-gray-500 dark:text-gray-400">
                             <span className="text-xs uppercase tracking-wide">New</span>
-                            <div className="text-gray-700">{JSON.stringify(change.new)}</div>
+                            <div className="text-gray-700 dark:text-gray-300">{JSON.stringify(change.new)}</div>
                           </div>
                         </div>
                       ))}
                       {entry.actor_user_id && (
-                        <p className="text-xs text-gray-400 mt-2">Actor: {entry.actor_user_id}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Actor: {entry.actor_user_id}</p>
                       )}
                     </div>
                   </details>
@@ -329,8 +329,8 @@ export default function BookingDetail() {
 
         {/* Right column: Actions */}
         <div className="w-full lg:w-72 space-y-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-5 space-y-3">
-            <h2 className="text-lg font-semibold text-gray-900">Actions</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 space-y-3">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Actions</h2>
 
             {canEdit && (
               <button
@@ -344,7 +344,7 @@ export default function BookingDetail() {
             {canCancel && (
               <button
                 onClick={() => setCancelOpen(true)}
-                className="w-full px-4 py-2 rounded-md border border-red-300 text-red-700 hover:bg-red-50 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                className="w-full px-4 py-2 rounded-md border border-red-300 dark:border-red-800 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
               >
                 Cancel Booking
               </button>
@@ -361,31 +361,31 @@ export default function BookingDetail() {
 
             <button
               onClick={() => setInvoiceOpen(true)}
-              className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             >
               Download Invoice
             </button>
           </div>
 
           {booking.notes && (
-            <div className="bg-white rounded-lg border border-gray-200 p-5">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Notes</h2>
-              <p className="text-sm text-gray-600 whitespace-pre-wrap">{booking.notes}</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Notes</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{booking.notes}</p>
             </div>
           )}
 
           {booking.cancelled_at && (
-            <div className="bg-gray-50 rounded-lg border border-gray-200 p-5">
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Cancellation</h2>
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Cancellation</h2>
               <div className="text-sm space-y-1">
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Cancelled at:{' '}
-                  <span className="font-medium text-gray-900">{new Date(booking.cancelled_at).toLocaleString()}</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{new Date(booking.cancelled_at).toLocaleString()}</span>
                 </p>
                 {booking.cancellation_reason && (
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     Reason:{' '}
-                    <span className="font-medium text-gray-900">{booking.cancellation_reason}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{booking.cancellation_reason}</span>
                   </p>
                 )}
               </div>

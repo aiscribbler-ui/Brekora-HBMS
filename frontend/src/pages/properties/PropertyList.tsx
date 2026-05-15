@@ -50,8 +50,8 @@ export default function PropertyList() {
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
-          <p className="text-sm text-gray-500 mt-1">{activeCount} active propert{activeCount === 1 ? 'y' : 'ies'}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Properties</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{activeCount} active propert{activeCount === 1 ? 'y' : 'ies'}</p>
         </div>
         <button
           onClick={() => navigate('/properties/new')}
@@ -71,12 +71,12 @@ export default function PropertyList() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or address..."
           aria-label="Search properties by name or address"
-          className="w-full sm:w-80 pl-9 pr-3 py-2 rounded-md border border-gray-300 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+          className="w-full sm:w-80 pl-9 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
         />
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm" role="alert">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm" role="alert">
           {error}
         </div>
       )}
@@ -84,13 +84,13 @@ export default function PropertyList() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
-          <BuildingOfficeIcon className="mx-auto h-10 w-10 text-gray-300" />
-          <p className="mt-3 text-sm text-gray-500">No properties found.</p>
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <BuildingOfficeIcon className="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600" />
+          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">No properties found.</p>
           {search && (
             <button
               onClick={() => setSearch('')}
@@ -103,28 +103,28 @@ export default function PropertyList() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="hidden md:block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Count</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Address</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                  <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Room Count</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filtered.map((property) => (
                   <tr
                     key={property.id}
                     onClick={() => navigate(`/properties/${property.id}`)}
-                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
                   >
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{property.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{property.address}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">{property.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate">{property.address}</td>
                     <td className="px-4 py-3">
                       {property.is_archived ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
                           Archived
                         </span>
                       ) : property.is_active ? (
@@ -137,7 +137,7 @@ export default function PropertyList() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">-</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">-</td>
                   </tr>
                 ))}
               </tbody>
@@ -150,12 +150,12 @@ export default function PropertyList() {
               <button
                 key={property.id}
                 onClick={() => navigate(`/properties/${property.id}`)}
-                className="w-full text-left bg-white rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+                className="w-full text-left bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-gray-900">{property.name}</h3>
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{property.name}</h3>
                   {property.is_archived ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
                       Archived
                     </span>
                   ) : property.is_active ? (
@@ -168,7 +168,7 @@ export default function PropertyList() {
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-gray-500 line-clamp-2">{property.address}</p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{property.address}</p>
               </button>
             ))}
           </div>

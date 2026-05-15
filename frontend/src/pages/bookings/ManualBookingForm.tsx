@@ -289,19 +289,19 @@ export default function ManualBookingForm() {
 
   return (
     <div className="max-w-4xl mx-auto py-6 px-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Manual Booking</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Create Manual Booking</h1>
 
       <BookingSteps currentStep={step} />
 
       {errorMsg && (
-        <div className="mt-6 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm" role="alert">
+        <div className="mt-6 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm" role="alert">
           {errorMsg}
         </div>
       )}
 
       {alternatives && alternatives.length > 0 && (
-        <div className="mt-4 p-4 bg-warning-light rounded border border-warning">
-          <p className="text-sm font-medium text-warning-dark mb-2">Alternative options:</p>
+        <div className="mt-4 p-4 bg-warning-light dark:bg-warning-dark/20 rounded border border-warning">
+          <p className="text-sm font-medium text-warning-dark dark:text-warning-light mb-2">Alternative options:</p>
           <div className="space-y-2">
             {alternatives.map((alt) => (
               <button
@@ -315,10 +315,10 @@ export default function ManualBookingForm() {
                   setErrorMsg(null)
                   setAlternatives(undefined)
                 }}
-                className="w-full text-left p-3 bg-white rounded border border-warning hover:bg-warning-light text-sm"
+                className="w-full text-left p-3 bg-white dark:bg-gray-800 rounded border border-warning hover:bg-warning-light dark:hover:bg-warning-dark/10 text-sm"
               >
-                <span className="font-medium">{alt.name}</span>
-                <span className="text-gray-500 ml-2">
+                <span className="font-medium dark:text-gray-100">{alt.name}</span>
+                <span className="text-gray-500 dark:text-gray-400 ml-2">
                   {alt.check_in} → {alt.check_out} @ ₹{alt.price_per_night}/night ({alt.available_count} available)
                 </span>
               </button>
@@ -334,13 +334,13 @@ export default function ManualBookingForm() {
               <h3 className="text-lg font-semibold text-gray-900">Booking Details</h3>
 
               <div>
-                <label htmlFor="propertyId" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="propertyId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Property
                 </label>
                 <select
                   id="propertyId"
                   {...methods.register('propertyId')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 >
                   <option value="">Select property</option>
                   {properties.map((p) => (
@@ -350,43 +350,43 @@ export default function ManualBookingForm() {
                   ))}
                 </select>
                 {errors.propertyId && (
-                  <p className="mt-1 text-sm text-red-600">{errors.propertyId.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.propertyId.message}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Item Type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Item Type</label>
                   <div className="mt-1 flex gap-3">
                     <label className="flex items-center gap-2">
                       <input
                         type="radio"
                         value="room"
                         {...methods.register('itemType')}
-                        className="h-4 w-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+                        className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 focus:ring-brand-500"
                       />
-                      <span className="text-sm text-gray-700">Room</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Room</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input
                         type="radio"
                         value="package"
                         {...methods.register('itemType')}
-                        className="h-4 w-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+                        className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 focus:ring-brand-500"
                       />
-                      <span className="text-sm text-gray-700">Package</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">Package</span>
                     </label>
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="itemId" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="itemId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {itemType === 'room' ? 'Room Type' : 'Package'}
                   </label>
                   <select
                     id="itemId"
                     {...methods.register('itemId')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   >
                     <option value="">Select {itemType}</option>
                     {itemType === 'room'
@@ -401,37 +401,37 @@ export default function ManualBookingForm() {
                           </option>
                         ))}
                   </select>
-                  {errors.itemId && <p className="mt-1 text-sm text-red-600">{errors.itemId.message}</p>}
+                  {errors.itemId && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.itemId.message}</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label htmlFor="checkIn" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="checkIn" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Check-in
                   </label>
                   <input
                     id="checkIn"
                     type="date"
                     {...methods.register('checkIn')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
-                  {errors.checkIn && <p className="mt-1 text-sm text-red-600">{errors.checkIn.message}</p>}
+                  {errors.checkIn && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.checkIn.message}</p>}
                 </div>
                 <div>
-                  <label htmlFor="checkOut" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="checkOut" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Check-out
                   </label>
                   <input
                     id="checkOut"
                     type="date"
                     {...methods.register('checkOut')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
-                  {errors.checkOut && <p className="mt-1 text-sm text-red-600">{errors.checkOut.message}</p>}
+                  {errors.checkOut && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.checkOut.message}</p>}
                 </div>
                 <div>
-                  <label htmlFor="guests" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="guests" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Guests
                   </label>
                   <input
@@ -439,24 +439,24 @@ export default function ManualBookingForm() {
                     type="number"
                     min={1}
                     {...methods.register('guests')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
-                  {errors.guests && <p className="mt-1 text-sm text-red-600">{errors.guests.message}</p>}
+                  {errors.guests && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guests.message}</p>}
                 </div>
               </div>
 
               {loadingAvailability && (
-                <div className="text-sm text-gray-500">Checking live availability...</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Checking live availability...</div>
               )}
 
               {availabilityWarning && (
-                <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning text-sm">
+                <div className="p-3 bg-warning-light dark:bg-warning-dark/20 text-warning-dark dark:text-warning-light rounded border border-warning text-sm">
                   {availabilityWarning}
                 </div>
               )}
 
               {availability.length > 0 && !availabilityWarning && (
-                <div className="p-3 bg-success-light text-success-dark rounded border border-success text-sm">
+                <div className="p-3 bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success-light rounded border border-success text-sm">
                   All selected nights are available.
                 </div>
               )}
@@ -468,7 +468,7 @@ export default function ManualBookingForm() {
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Source</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Source</label>
                 <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {(
                     [
@@ -482,17 +482,17 @@ export default function ManualBookingForm() {
                       key={src.value}
                       className={`flex items-center gap-2 rounded-lg border p-3 cursor-pointer ${
                         watch('source') === src.value
-                          ? 'border-brand-300 bg-brand-50 ring-1 ring-brand-200'
-                          : 'border-gray-200 bg-white'
+                          ? 'border-brand-300 dark:border-brand-700 bg-brand-50 dark:bg-brand-900/20 ring-1 ring-brand-200 dark:ring-brand-800'
+                          : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800'
                       }`}
                     >
                       <input
                         type="radio"
                         value={src.value}
                         {...methods.register('source')}
-                        className="h-4 w-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+                        className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 focus:ring-brand-500"
                       />
-                      <span className="text-sm text-gray-900">{src.label}</span>
+                      <span className="text-sm text-gray-900 dark:text-gray-100">{src.label}</span>
                     </label>
                   ))}
                 </div>
@@ -501,14 +501,14 @@ export default function ManualBookingForm() {
               <PaymentMethodSelector />
 
               <div>
-                <label htmlFor="promoCode" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="promoCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Promo Code (optional)
                 </label>
                 <input
                   id="promoCode"
                   type="text"
                   {...methods.register('promoCode')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
             </div>
@@ -516,64 +516,64 @@ export default function ManualBookingForm() {
 
           {step === 4 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Review & Confirm</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Review & Confirm</h3>
 
               {!bookingResult ? (
-                <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 text-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Property</span>
-                    <span className="font-medium">
+                    <span className="text-gray-600 dark:text-gray-400">Property</span>
+                    <span className="font-medium dark:text-gray-100">
                       {properties.find((p) => p.id === propertyId)?.name}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Item</span>
-                    <span className="font-medium">
+                    <span className="text-gray-600 dark:text-gray-400">Item</span>
+                    <span className="font-medium dark:text-gray-100">
                       {selectedItemName} ({itemType})
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Dates</span>
-                    <span className="font-medium">
+                    <span className="text-gray-600 dark:text-gray-400">Dates</span>
+                    <span className="font-medium dark:text-gray-100">
                       {checkIn} → {checkOut}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Guests</span>
-                    <span className="font-medium">{guests}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Guests</span>
+                    <span className="font-medium dark:text-gray-100">{guests}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Guest</span>
-                    <span className="font-medium">{watch('guestName')}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Guest</span>
+                    <span className="font-medium dark:text-gray-100">{watch('guestName')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Source</span>
-                    <span className="font-medium">{watch('source')}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Source</span>
+                    <span className="font-medium dark:text-gray-100">{watch('source')}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Payment</span>
-                    <span className="font-medium">{watch('paymentMethod')}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Payment</span>
+                    <span className="font-medium dark:text-gray-100">{watch('paymentMethod')}</span>
                   </div>
                   {watch('promoCode') && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Promo Code</span>
-                      <span className="font-medium">{watch('promoCode')}</span>
+                      <span className="text-gray-600 dark:text-gray-400">Promo Code</span>
+                      <span className="font-medium dark:text-gray-100">{watch('promoCode')}</span>
                     </div>
                   )}
-                  <div className="border-t pt-3 mt-2">
-                    <p className="text-gray-500 italic">Price will be calculated on confirmation.</p>
+                  <div className="border-t dark:border-gray-700 pt-3 mt-2">
+                    <p className="text-gray-500 dark:text-gray-400 italic">Price will be calculated on confirmation.</p>
                   </div>
                 </div>
               ) : (
-                <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 text-sm">
-                  <div className="flex justify-between text-base font-semibold">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3 text-sm">
+                  <div className="flex justify-between text-base font-semibold dark:text-gray-100">
                     <span>Total</span>
                     <span>
                       ₹{bookingResult.amountBreakdown.total_amount.toFixed(2)} {' '}
                       {bookingResult.amountBreakdown.currency}
                     </span>
                   </div>
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Subtotal</span>
                     <span>₹{bookingResult.amountBreakdown.subtotal.toFixed(2)}</span>
                   </div>
@@ -583,11 +583,11 @@ export default function ManualBookingForm() {
                       <span>-₹{bookingResult.amountBreakdown.discount_amount.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-gray-600">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-400">
                     <span>Tax</span>
                     <span>₹{bookingResult.amountBreakdown.tax_amount.toFixed(2)}</span>
                   </div>
-                  <div className="pt-2 text-xs text-gray-500">
+                  <div className="pt-2 text-xs text-gray-500 dark:text-gray-400">
                     Booking reference: {bookingResult.bookingId}
                   </div>
                 </div>
@@ -595,13 +595,13 @@ export default function ManualBookingForm() {
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center justify-between pt-4 border-t dark:border-gray-700">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={onBack}
                 disabled={isSubmitting}
-                className="py-2 px-4 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm"
+                className="py-2 px-4 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-sm"
               >
                 Back
               </button>

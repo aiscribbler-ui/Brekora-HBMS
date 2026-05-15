@@ -155,7 +155,7 @@ export default function RoomTypeForm() {
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto space-y-4">
-        <div className="h-8 bg-gray-100 rounded w-1/3 animate-pulse" />
+        <div className="h-8 bg-gray-100 dark:bg-gray-700 rounded w-1/3 animate-pulse" />
         <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
       </div>
     )
@@ -165,139 +165,139 @@ export default function RoomTypeForm() {
     <div className="max-w-3xl mx-auto">
       <button
         onClick={() => navigate(`/properties/${propertyId}/room-types`)}
-        className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"
+        className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-4"
       >
         <ArrowLeftIcon className="h-4 w-4" />
         Back to Room Types
       </button>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {isNew ? 'New Room Type' : roomType?.name}
       </h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm" role="alert">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm" role="alert">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Room Type Details</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Room Type Details</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
               <input
                 id="name"
                 type="text"
                 {...register('name')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
               )}
             </div>
 
             <div className="sm:col-span-2">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
               <textarea
                 id="description"
                 rows={3}
                 {...register('description')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <label htmlFor="count" className="block text-sm font-medium text-gray-700">Room Count</label>
+              <label htmlFor="count" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Room Count</label>
               <input
                 id="count"
                 type="number"
                 min={1}
                 {...register('count')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.count && (
-                <p className="mt-1 text-sm text-red-600">{errors.count.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.count.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="default_rate" className="block text-sm font-medium text-gray-700">Default Rate</label>
+              <label htmlFor="default_rate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Default Rate</label>
               <input
                 id="default_rate"
                 type="text"
                 placeholder="0.00"
                 {...register('default_rate')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.default_rate && (
-                <p className="mt-1 text-sm text-red-600">{errors.default_rate.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.default_rate.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="base_capacity" className="block text-sm font-medium text-gray-700">Base Capacity</label>
+              <label htmlFor="base_capacity" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Base Capacity</label>
               <input
                 id="base_capacity"
                 type="number"
                 min={1}
                 {...register('base_capacity')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.base_capacity && (
-                <p className="mt-1 text-sm text-red-600">{errors.base_capacity.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.base_capacity.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="max_capacity" className="block text-sm font-medium text-gray-700">Max Capacity</label>
+              <label htmlFor="max_capacity" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Max Capacity</label>
               <input
                 id="max_capacity"
                 type="number"
                 min={1}
                 {...register('max_capacity')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.max_capacity && (
-                <p className="mt-1 text-sm text-red-600">{errors.max_capacity.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.max_capacity.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="min_stay" className="block text-sm font-medium text-gray-700">Min Stay (nights)</label>
+              <label htmlFor="min_stay" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Min Stay (nights)</label>
               <input
                 id="min_stay"
                 type="number"
                 min={1}
                 {...register('min_stay')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.min_stay && (
-                <p className="mt-1 text-sm text-red-600">{errors.min_stay.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.min_stay.message}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="max_stay" className="block text-sm font-medium text-gray-700">Max Stay (nights)</label>
+              <label htmlFor="max_stay" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Max Stay (nights)</label>
               <input
                 id="max_stay"
                 type="number"
                 min={1}
                 {...register('max_stay')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               />
               {errors.max_stay && (
-                <p className="mt-1 text-sm text-red-600">{errors.max_stay.message}</p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.max_stay.message}</p>
               )}
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Inventory Buffer</h2>
-          <p className="text-sm text-gray-500">Set how many rooms to hold back from public availability.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Inventory Buffer</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Set how many rooms to hold back from public availability.</p>
           <div className="flex items-center gap-4">
             <input
               type="range"
@@ -307,17 +307,17 @@ export default function RoomTypeForm() {
               className="flex-1 accent-brand-600"
               aria-label="Inventory buffer"
             />
-            <span className="text-sm font-medium text-gray-700 w-12 text-right">0</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 w-12 text-right">0</span>
           </div>
-          <p className="text-xs text-gray-400">Placeholder: buffer slider (0 to {countValue})</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">Placeholder: buffer slider (0 to {countValue})</p>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">Photos</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Photos</h2>
           {roomType?.photos && roomType.photos.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {roomType.photos.map((photo, idx) => (
-                <div key={idx} className="rounded-lg overflow-hidden border border-gray-200">
+                <div key={idx} className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                   <img
                     src={photo.url}
                     alt={photo.caption || `Room type photo ${idx + 1}`}
@@ -341,7 +341,7 @@ export default function RoomTypeForm() {
           <button
             type="button"
             onClick={() => navigate(`/properties/${propertyId}/room-types`)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>

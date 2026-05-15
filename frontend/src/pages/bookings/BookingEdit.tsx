@@ -300,8 +300,8 @@ export default function BookingEdit() {
     return (
       <div className="max-w-4xl mx-auto py-6 px-4">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-64 bg-gray-200 rounded" />
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded" />
         </div>
       </div>
     )
@@ -310,7 +310,7 @@ export default function BookingEdit() {
   if (!booking) {
     return (
       <div className="max-w-4xl mx-auto py-6 px-4">
-        <div className="p-4 bg-red-50 text-red-700 rounded border border-red-200" role="alert">
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800" role="alert">
           {errorMsg || 'Booking not found.'}
         </div>
       </div>
@@ -319,27 +319,27 @@ export default function BookingEdit() {
 
   return (
     <div className="max-w-4xl mx-auto py-6 px-4">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Booking</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Edit Booking</h1>
 
       <BookingSteps currentStep={step} steps={['Edit Details', 'Review Changes', 'Payment']} />
 
       {errorMsg && (
-        <div className="mt-6 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm" role="alert">
+        <div className="mt-6 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm" role="alert">
           {errorMsg}
         </div>
       )}
 
       {needsOverride && (
-        <div className="mt-4 p-4 bg-warning-light rounded border border-warning">
-          <p className="text-sm text-warning-dark mb-2">
+        <div className="mt-4 p-4 bg-warning-light dark:bg-warning-dark/20 rounded border border-warning">
+          <p className="text-sm text-warning-dark dark:text-warning-light mb-2">
             This booking is within 24 hours of check-in. Manager override is required to proceed.
           </p>
-          <label className="flex items-center gap-2 text-sm text-warning-dark">
+          <label className="flex items-center gap-2 text-sm text-warning-dark dark:text-warning-light">
             <input
               type="checkbox"
               checked={overrideChecked}
               onChange={(e) => setOverrideChecked(e.target.checked)}
-              className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+              className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 rounded focus:ring-brand-500"
             />
             I am an admin/manager overriding the 24h policy
           </label>
@@ -347,8 +347,8 @@ export default function BookingEdit() {
       )}
 
       {alternatives && alternatives.length > 0 && (
-        <div className="mt-4 p-4 bg-warning-light rounded border border-warning">
-          <p className="text-sm font-medium text-warning-dark mb-2">Alternative options:</p>
+        <div className="mt-4 p-4 bg-warning-light dark:bg-warning-dark/20 rounded border border-warning">
+          <p className="text-sm font-medium text-warning-dark dark:text-warning-light mb-2">Alternative options:</p>
           <div className="space-y-2">
             {alternatives.map((alt) => (
               <button
@@ -359,10 +359,10 @@ export default function BookingEdit() {
                   setErrorMsg(null)
                   setAlternatives(undefined)
                 }}
-                className="w-full text-left p-3 bg-white rounded border border-warning hover:bg-warning-light text-sm"
+                className="w-full text-left p-3 bg-white dark:bg-gray-800 rounded border border-warning hover:bg-warning-light dark:hover:bg-warning-dark/10 text-sm"
               >
-                <span className="font-medium">{alt.item_name}</span>
-                <span className="text-gray-500 ml-2">
+                <span className="font-medium dark:text-gray-100">{alt.item_name}</span>
+                <span className="text-gray-500 dark:text-gray-400 ml-2">
                   {alt.item_type} @ ₹{alt.suggested_price} ({alt.available_count} available)
                 </span>
               </button>
@@ -376,43 +376,43 @@ export default function BookingEdit() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="checkIn" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="checkIn" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Check-in
                 </label>
                 <input
                   id="checkIn"
                   type="date"
                   {...register('checkIn')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
                 {errors.checkIn && (
-                  <p className="mt-1 text-sm text-red-600">{errors.checkIn.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.checkIn.message}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="checkOut" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="checkOut" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Check-out
                 </label>
                 <input
                   id="checkOut"
                   type="date"
                   {...register('checkOut')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
                 {errors.checkOut && (
-                  <p className="mt-1 text-sm text-red-600">{errors.checkOut.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.checkOut.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="roomTypeId" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="roomTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Room Type
               </label>
               <select
                 id="roomTypeId"
                 {...register('roomTypeId')}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
               >
                 <option value="">Keep current</option>
                 {roomTypes.map((r) => (
@@ -425,54 +425,54 @@ export default function BookingEdit() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="guestName" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Guest Name
                 </label>
                 <input
                   id="guestName"
                   type="text"
                   {...register('guestName')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label htmlFor="guestEmail" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="guestEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Guest Email
                 </label>
                 <input
                   id="guestEmail"
                   type="email"
                   {...register('guestEmail')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
                 {errors.guestEmail && (
-                  <p className="mt-1 text-sm text-red-600">{errors.guestEmail.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guestEmail.message}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="guestPhone" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="guestPhone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Guest Phone
                 </label>
                 <input
                   id="guestPhone"
                   type="tel"
                   {...register('guestPhone')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label htmlFor="guestIdNumber" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="guestIdNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   ID Number
                 </label>
                 <input
                   id="guestIdNumber"
                   type="text"
                   {...register('guestIdNumber')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label htmlFor="guests" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="guests" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Guests
                 </label>
                 <input
@@ -480,36 +480,36 @@ export default function BookingEdit() {
                   type="number"
                   min={1}
                   {...register('guests')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
                 {errors.guests && (
-                  <p className="mt-1 text-sm text-red-600">{errors.guests.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guests.message}</p>
                 )}
               </div>
               <div>
-                <label htmlFor="reason" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="reason" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Reason for Change *
                 </label>
                 <input
                   id="reason"
                   type="text"
                   {...register('reason')}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                 />
                 {errors.reason && (
-                  <p className="mt-1 text-sm text-red-600">{errors.reason.message}</p>
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.reason.message}</p>
                 )}
               </div>
             </div>
 
             <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Add-ons</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Add-ons</h3>
               {selectedAddOns.length === 0 && (
-                <p className="text-sm text-gray-500">No add-ons selected.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">No add-ons selected.</p>
               )}
               <div className="space-y-2">
                 {selectedAddOns.map((addon, idx) => (
-                  <div key={idx} className="flex items-center gap-2 bg-gray-50 rounded p-2">
+                  <div key={idx} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 rounded p-2">
                     <select
                       value={addon.add_on_id}
                       onChange={(e) => {
@@ -517,7 +517,7 @@ export default function BookingEdit() {
                         next[idx] = { ...next[idx], add_on_id: e.target.value }
                         setSelectedAddOns(next)
                       }}
-                      className="block w-48 rounded-md border border-gray-300 px-2 py-1 text-sm"
+                      className="block w-48 rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1 text-sm dark:bg-gray-800 dark:text-gray-100"
                     >
                       {addOnsList.map((a) => (
                         <option key={a.id} value={a.id}>
@@ -533,7 +533,7 @@ export default function BookingEdit() {
                         next[idx] = { ...next[idx], date: e.target.value }
                         setSelectedAddOns(next)
                       }}
-                      className="block rounded-md border border-gray-300 px-2 py-1 text-sm"
+                      className="block rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1 text-sm dark:bg-gray-800 dark:text-gray-100"
                     />
                     <input
                       type="number"
@@ -544,14 +544,14 @@ export default function BookingEdit() {
                         next[idx] = { ...next[idx], quantity: parseInt(e.target.value) || 1 }
                         setSelectedAddOns(next)
                       }}
-                      className="block w-20 rounded-md border border-gray-300 px-2 py-1 text-sm"
+                      className="block w-20 rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1 text-sm dark:bg-gray-800 dark:text-gray-100"
                     />
                     <button
                       type="button"
                       onClick={() =>
                         setSelectedAddOns(selectedAddOns.filter((_, i) => i !== idx))
                       }
-                      className="text-red-600 hover:text-red-800 text-sm"
+                      className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm"
                     >
                       Remove
                     </button>
@@ -581,18 +581,18 @@ export default function BookingEdit() {
 
         {step === 2 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Review Changes</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Review Changes</h3>
             {changes.length === 0 ? (
-              <p className="text-sm text-gray-500">No changes detected.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">No changes detected.</p>
             ) : (
               <div className="space-y-2">
                 {changes.map((c, idx) => (
                   <div
                     key={idx}
-                    className="grid grid-cols-3 gap-2 bg-gray-50 rounded p-3 text-sm"
+                    className="grid grid-cols-3 gap-2 bg-gray-50 dark:bg-gray-700/50 rounded p-3 text-sm"
                   >
-                    <div className="font-medium text-gray-700">{c.field}</div>
-                    <div className="text-red-600 line-through">{c.old}</div>
+                    <div className="font-medium text-gray-700 dark:text-gray-300">{c.field}</div>
+                    <div className="text-red-600 dark:text-red-400 line-through">{c.old}</div>
                     <div className="text-success font-medium">{c.new}</div>
                   </div>
                 ))}
@@ -603,17 +603,17 @@ export default function BookingEdit() {
 
         {step === 3 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Modification Result</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Modification Result</h3>
             {modResult ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 text-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">New Total</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="text-gray-600 dark:text-gray-400">New Total</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     ₹{modResult.new_total.toFixed(2)}
                   </span>
                 </div>
                 {modResult.payment_difference > 0 && (
-                  <div className="p-3 bg-warning-light text-warning-dark rounded border border-warning">
+                  <div className="p-3 bg-warning-light dark:bg-warning-dark/20 text-warning-dark dark:text-warning-light rounded border border-warning">
                     <p className="font-medium">
                       Additional payment required: ₹{modResult.payment_difference.toFixed(2)}
                     </p>
@@ -627,20 +627,20 @@ export default function BookingEdit() {
                   </div>
                 )}
                 {modResult.payment_difference < 0 && (
-                  <div className="p-3 bg-success-light text-success-dark rounded border border-success">
+                  <div className="p-3 bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success-light rounded border border-success">
                     <p className="font-medium">
                       Refund pending: ₹
                       {(
                         modResult.refund_amount ?? Math.abs(modResult.payment_difference)
                       ).toFixed(2)}
                     </p>
-                    <p className="text-xs mt-1">
+                    <p className="text-xs mt-1 dark:text-gray-300">
                       The refund will be processed to the original payment method.
                     </p>
                   </div>
                 )}
                 {modResult.payment_difference === 0 && (
-                  <div className="p-3 bg-success-light text-success-dark rounded border border-success">
+                  <div className="p-3 bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success-light rounded border border-success">
                     <p className="font-medium">
                       No payment difference. Booking updated successfully.
                     </p>
@@ -648,18 +648,18 @@ export default function BookingEdit() {
                 )}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">Submit to see the modification result.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Submit to see the modification result.</p>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-4 border-t">
+        <div className="flex items-center justify-between pt-4 border-t dark:border-gray-700">
           {step > 1 ? (
             <button
               type="button"
               onClick={onBack}
               disabled={isSubmitting}
-              className="py-2 px-4 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm"
+              className="py-2 px-4 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-sm"
             >
               Back
             </button>
@@ -667,7 +667,7 @@ export default function BookingEdit() {
             <button
               type="button"
               onClick={() => navigate(`/bookings/${id}`)}
-              className="py-2 px-4 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm"
+              className="py-2 px-4 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-sm"
             >
               Cancel
             </button>
