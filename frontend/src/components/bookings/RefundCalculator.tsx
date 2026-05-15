@@ -39,18 +39,18 @@ export default function RefundCalculator({ totalAmount, policy, daysUntilCheckIn
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-600">Total Amount</span>
-        <span className="text-sm font-medium text-gray-900">
+        <span className="text-sm text-gray-600 dark:text-gray-400">Total Amount</span>
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
           ₹{totalAmount.toFixed(2)}
         </span>
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-sm text-gray-600">Days Until Check-in</span>
-        <span className="text-sm font-medium text-gray-900">{daysUntilCheckIn}</span>
+        <span className="text-sm text-gray-600 dark:text-gray-400">Days Until Check-in</span>
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{daysUntilCheckIn}</span>
       </div>
 
-      <div className="h-px bg-gray-200" />
+      <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-success">Refundable</span>
@@ -58,18 +58,18 @@ export default function RefundCalculator({ totalAmount, policy, daysUntilCheckIn
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-red-700">Non-Refundable</span>
-        <span className="text-sm font-bold text-red-700">₹{nonRefundableAmount.toFixed(2)}</span>
+        <span className="text-sm font-medium text-red-700 dark:text-red-400">Non-Refundable</span>
+        <span className="text-sm font-bold text-red-700 dark:text-red-400">₹{nonRefundableAmount.toFixed(2)}</span>
       </div>
 
-      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+      <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <div
           className="h-full bg-success"
           style={{ width: `${totalAmount > 0 ? (refundableAmount / totalAmount) * 100 : 0}%` }}
         />
       </div>
 
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-gray-500 dark:text-gray-400">
         Refund calculation is based on the cancellation policy effective at the time of booking.
       </p>
     </div>

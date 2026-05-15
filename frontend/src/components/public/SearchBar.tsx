@@ -26,11 +26,11 @@ export default function SearchBar({ onSearch, initialValues, loading }: SearchBa
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full bg-white rounded-xl shadow-lg border border-gray-100 p-4 md:p-6"
+      className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-4 md:p-6"
     >
       <div className="flex flex-col md:flex-row gap-3 md:gap-4 items-end">
         <div className="w-full md:flex-1">
-          <label htmlFor="location" className="block text-xs font-medium text-gray-500 mb-1">
+          <label htmlFor="location" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Location
           </label>
           <input
@@ -39,12 +39,12 @@ export default function SearchBar({ onSearch, initialValues, loading }: SearchBa
             placeholder="City or property name"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             required
           />
         </div>
         <div className="w-full md:w-40">
-          <label htmlFor="checkIn" className="block text-xs font-medium text-gray-500 mb-1">
+          <label htmlFor="checkIn" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Check-in
           </label>
           <input
@@ -53,12 +53,12 @@ export default function SearchBar({ onSearch, initialValues, loading }: SearchBa
             value={checkIn}
             min={new Date().toISOString().split('T')[0]}
             onChange={(e) => setCheckIn(e.target.value)}
-            className="block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             required
           />
         </div>
         <div className="w-full md:w-40">
-          <label htmlFor="checkOut" className="block text-xs font-medium text-gray-500 mb-1">
+          <label htmlFor="checkOut" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Check-out
           </label>
           <input
@@ -67,12 +67,12 @@ export default function SearchBar({ onSearch, initialValues, loading }: SearchBa
             value={checkOut}
             min={checkIn || new Date().toISOString().split('T')[0]}
             onChange={(e) => setCheckOut(e.target.value)}
-            className="block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             required
           />
         </div>
         <div className="w-full md:w-28">
-          <label htmlFor="guests" className="block text-xs font-medium text-gray-500 mb-1">
+          <label htmlFor="guests" className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
             Guests
           </label>
           <input
@@ -82,7 +82,7 @@ export default function SearchBar({ onSearch, initialValues, loading }: SearchBa
             max={20}
             value={guests}
             onChange={(e) => setGuests(parseInt(e.target.value) || 1)}
-            className="block w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2.5 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             required
           />
         </div>

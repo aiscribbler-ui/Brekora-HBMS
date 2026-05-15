@@ -35,13 +35,13 @@ export default function PricingRules({ value, onChange }: PricingRulesProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">Occupancy Scaling</h3>
-        <p className="text-xs text-gray-500">Set percentage adjustment per occupancy level.</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Occupancy Scaling</h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Set percentage adjustment per occupancy level.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {['single', 'double', 'triple', 'quad'].map((level) => (
             <div key={level}>
-              <label className="block text-xs font-medium text-gray-500 mb-1 capitalize">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 capitalize">
                 {level} occupancy (%)
               </label>
               <input
@@ -51,18 +51,18 @@ export default function PricingRules({ value, onChange }: PricingRulesProps) {
                 value={value.occupancy_scaling?.[level] ?? ''}
                 onChange={(e) => updateOccupancyLevel(level, parseFloat(e.target.value))}
                 placeholder="0"
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
               />
             </div>
           ))}
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">Group Discount</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Group Discount</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Min Guests</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Min Guests</label>
             <input
               type="number"
               min={1}
@@ -74,11 +74,11 @@ export default function PricingRules({ value, onChange }: PricingRulesProps) {
                 })
               }
               placeholder="e.g. 4"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Discount (%)</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Discount (%)</label>
             <input
               type="number"
               min={0}
@@ -91,17 +91,17 @@ export default function PricingRules({ value, onChange }: PricingRulesProps) {
                 })
               }
               placeholder="e.g. 10"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">Early-Bird Discount</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Early-Bird Discount</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Days Before</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Days Before</label>
             <input
               type="number"
               min={1}
@@ -113,11 +113,11 @@ export default function PricingRules({ value, onChange }: PricingRulesProps) {
                 })
               }
               placeholder="e.g. 30"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Discount (%)</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Discount (%)</label>
             <input
               type="number"
               min={0}
@@ -130,7 +130,7 @@ export default function PricingRules({ value, onChange }: PricingRulesProps) {
                 })
               }
               placeholder="e.g. 15"
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             />
           </div>
         </div>

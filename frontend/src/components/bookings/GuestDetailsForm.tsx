@@ -9,10 +9,10 @@ export default function GuestDetailsForm() {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Guest Details</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Guest Details</h3>
 
       <div>
-        <label htmlFor="guestName" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Full Name
         </label>
         <input
@@ -20,16 +20,16 @@ export default function GuestDetailsForm() {
           type="text"
           autoComplete="name"
           {...register('guestName')}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
         />
         {errors.guestName && (
-          <p className="mt-1 text-sm text-red-600">{errors.guestName.message}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guestName.message}</p>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="guestEmail" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="guestEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Email
           </label>
           <input
@@ -37,15 +37,15 @@ export default function GuestDetailsForm() {
             type="email"
             autoComplete="email"
             {...register('guestEmail')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           {errors.guestEmail && (
-            <p className="mt-1 text-sm text-red-600">{errors.guestEmail.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guestEmail.message}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="guestPhone" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="guestPhone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Phone
           </label>
           <input
@@ -53,26 +53,26 @@ export default function GuestDetailsForm() {
             type="tel"
             autoComplete="tel"
             {...register('guestPhone')}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
           {errors.guestPhone && (
-            <p className="mt-1 text-sm text-red-600">{errors.guestPhone.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guestPhone.message}</p>
           )}
         </div>
       </div>
 
       <div>
-        <label htmlFor="guestIdNumber" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="guestIdNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           ID Number (Aadhaar / Passport / DL)
         </label>
         <input
           id="guestIdNumber"
           type="text"
           {...register('guestIdNumber')}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
         />
         {errors.guestIdNumber && (
-          <p className="mt-1 text-sm text-red-600">{errors.guestIdNumber.message}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.guestIdNumber.message}</p>
         )}
       </div>
     </div>

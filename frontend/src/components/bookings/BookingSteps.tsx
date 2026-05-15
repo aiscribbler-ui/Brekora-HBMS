@@ -18,7 +18,7 @@ export default function BookingSteps({ currentStep, steps = defaultSteps }: Book
               {idx > 0 && (
                 <div
                   className={`absolute left-0 top-4 -translate-x-1/2 w-full h-0.5 ${
-                    isCompleted || isActive ? 'bg-brand-600' : 'bg-gray-200'
+                    isCompleted || isActive ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-700'
                   }`}
                   style={{ width: 'calc(100% - 2rem)', left: '-50%' }}
                 />
@@ -28,8 +28,8 @@ export default function BookingSteps({ currentStep, steps = defaultSteps }: Book
                   isCompleted
                     ? 'bg-brand-600 border-brand-600 text-white'
                     : isActive
-                      ? 'bg-white border-brand-600 text-brand-600'
-                      : 'bg-white border-gray-300 text-gray-400'
+                      ? 'bg-white dark:bg-gray-800 border-brand-600 text-brand-600'
+                      : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400'
                 }`}
               >
                 {isCompleted ? (
@@ -42,7 +42,7 @@ export default function BookingSteps({ currentStep, steps = defaultSteps }: Book
               </div>
               <span
                 className={`mt-2 text-xs font-medium ${
-                  isActive ? 'text-brand-600' : isCompleted ? 'text-gray-700' : 'text-gray-400'
+                  isActive ? 'text-brand-600' : isCompleted ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400'
                 }`}
               >
                 {label}

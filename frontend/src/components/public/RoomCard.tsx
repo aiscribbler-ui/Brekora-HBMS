@@ -11,11 +11,11 @@ export default function RoomCard({ item, onSelect }: RoomCardProps) {
 
   return (
     <div
-      className={`relative bg-white rounded-xl border overflow-hidden transition-shadow ${
-        soldOut ? 'opacity-60 border-gray-200' : 'border-gray-200 hover:shadow-md'
+      className={`relative bg-white dark:bg-gray-800 rounded-xl border overflow-hidden transition-shadow ${
+        soldOut ? 'opacity-60 border-gray-200 dark:border-gray-700' : 'border-gray-200 dark:border-gray-700 hover:shadow-md'
       }`}
     >
-      <div className="aspect-[16/10] bg-gray-100 relative">
+      <div className="aspect-[16/10] bg-gray-100 dark:bg-gray-700 relative">
         {photo ? (
           <img
             src={photo}
@@ -24,7 +24,7 @@ export default function RoomCard({ item, onSelect }: RoomCardProps) {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-sm">
             No photo
           </div>
         )}
@@ -37,16 +37,16 @@ export default function RoomCard({ item, onSelect }: RoomCardProps) {
         )}
       </div>
       <div className="p-4">
-        <h3 className="text-base font-semibold text-gray-900">{item.name}</h3>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{item.name}</h3>
         {item.description && (
-          <p className="mt-1 text-sm text-gray-500 line-clamp-2">{item.description}</p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{item.description}</p>
         )}
         <div className="mt-3 flex items-end justify-between">
           <div>
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
               ₹{item.price_breakdown.total_amount.toFixed(2)}
             </span>
-            <span className="text-xs text-gray-500 ml-1">
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
               / {item.price_breakdown.breakdown_per_night.length} night
               {item.price_breakdown.breakdown_per_night.length > 1 ? 's' : ''}
             </span>

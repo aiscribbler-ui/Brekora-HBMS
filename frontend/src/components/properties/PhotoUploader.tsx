@@ -73,17 +73,17 @@ export default function PhotoUploader({ photos, onChange, onUpload, disabled }: 
         onClick={() => inputRef.current?.click()}
         className={[
           'border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors',
-          isDragging ? 'border-brand-500 bg-brand-50' : 'border-gray-300 hover:border-brand-400 bg-white',
+          isDragging ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-brand-400 bg-white dark:bg-gray-800',
           disabled ? 'opacity-50 cursor-not-allowed' : '',
         ].join(' ')}
         role="button"
         aria-label="Upload photos"
       >
-        <CloudArrowUpIcon className="mx-auto h-10 w-10 text-gray-400" />
-        <p className="mt-2 text-sm text-gray-600">
-          <span className="font-medium text-brand-600">Click to upload</span> or drag and drop
+        <CloudArrowUpIcon className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" />
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+          <span className="font-medium text-brand-600 dark:text-brand-400">Click to upload</span> or drag and drop
         </p>
-        <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
         <input
           ref={inputRef}
           type="file"
@@ -98,7 +98,7 @@ export default function PhotoUploader({ photos, onChange, onUpload, disabled }: 
       {photos.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {photos.map((photo, idx) => (
-            <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200">
+            <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
               <img
                 src={photo.preview}
                 alt={`Preview ${idx + 1}`}

@@ -20,7 +20,7 @@ export default function PaymentMethodSelector() {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900">Payment Method</h3>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Payment Method</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {paymentMethods.map((method) => (
@@ -28,23 +28,23 @@ export default function PaymentMethodSelector() {
             key={method.value}
             className={`flex items-center gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${
               selected === method.value
-                ? 'border-brand-300 bg-brand-50 ring-1 ring-brand-200'
-                : 'border-gray-200 bg-white hover:bg-gray-50'
+                ? 'border-brand-300 dark:border-brand-700 bg-brand-50 dark:bg-brand-900/20 ring-1 ring-brand-200 dark:ring-brand-800'
+                : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50'
             }`}
           >
             <input
               type="radio"
               value={method.value}
               {...register('paymentMethod')}
-              className="h-4 w-4 text-brand-600 border-gray-300 focus:ring-brand-500"
+              className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 focus:ring-brand-500"
             />
-            <span className="text-sm font-medium text-gray-900">{method.label}</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{method.label}</span>
           </label>
         ))}
       </div>
 
       {errors.paymentMethod && (
-        <p className="text-sm text-red-600">{errors.paymentMethod.message}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{errors.paymentMethod.message}</p>
       )}
 
       {selected === 'pay_later' && (

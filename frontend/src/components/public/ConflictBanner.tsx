@@ -8,10 +8,10 @@ interface ConflictBannerProps {
 
 export default function ConflictBanner({ message, alternatives, onSelectAlternative }: ConflictBannerProps) {
   return (
-    <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+    <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4">
       <div className="flex items-start gap-3">
         <svg
-          className="h-5 w-5 text-red-600 mt-0.5 shrink-0"
+          className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -24,23 +24,23 @@ export default function ConflictBanner({ message, alternatives, onSelectAlternat
           />
         </svg>
         <div className="flex-1">
-          <p className="text-sm font-medium text-red-800">{message}</p>
+          <p className="text-sm font-medium text-red-800 dark:text-red-400">{message}</p>
           {alternatives && alternatives.length > 0 && (
             <div className="mt-3 space-y-2">
-              <p className="text-xs font-medium text-red-700">Just booked — try these instead:</p>
+              <p className="text-xs font-medium text-red-700 dark:text-red-400">Just booked — try these instead:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {alternatives.map((alt) => (
                   <button
                     key={alt.id}
                     type="button"
                     onClick={() => onSelectAlternative(alt)}
-                    className="text-left p-3 bg-white rounded border border-red-200 hover:bg-red-100 text-sm"
+                    className="text-left p-3 bg-white dark:bg-gray-800 rounded border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 text-sm"
                   >
-                    <span className="font-medium text-gray-900">{alt.name}</span>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{alt.name}</span>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {alt.check_in} → {alt.check_out}
                     </div>
-                    <div className="text-xs text-gray-600 mt-0.5">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                       ₹{alt.price_per_night}/night · {alt.available_count} available
                     </div>
                   </button>

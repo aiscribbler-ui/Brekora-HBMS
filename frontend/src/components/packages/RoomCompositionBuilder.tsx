@@ -111,16 +111,16 @@ export default function RoomCompositionBuilder({
   return (
     <div className="space-y-4">
       <div>
-        <label htmlFor="property-select" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="property-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Property
         </label>
         <div className="mt-1 relative">
-          <HomeIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <HomeIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
           <select
             id="property-select"
             value={propertyId ?? ''}
             onChange={(e) => onPropertyChange(e.target.value)}
-            className="block w-full rounded-md border border-gray-300 pl-9 pr-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            className="block w-full rounded-md border border-gray-300 dark:border-gray-600 pl-9 pr-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           >
             <option value="">Select a property...</option>
             {properties.map((p) => (
@@ -131,7 +131,7 @@ export default function RoomCompositionBuilder({
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm" role="alert">
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm" role="alert">
           {error}
         </div>
       )}
@@ -139,14 +139,14 @@ export default function RoomCompositionBuilder({
       {loading && (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
       )}
 
       {!loading && propertyId && roomTypes.length === 0 && (
-        <div className="text-center py-8 bg-white rounded-lg border border-gray-200">
-          <p className="text-sm text-gray-500">No active room types found for this property.</p>
+        <div className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-gray-500 dark:text-gray-400">No active room types found for this property.</p>
         </div>
       )}
 
@@ -156,14 +156,14 @@ export default function RoomCompositionBuilder({
             return (
               <div
                 key={idx}
-                className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-center gap-4"
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col sm:flex-row sm:items-center gap-4"
               >
                 <div className="flex-1">
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Room Type</label>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Room Type</label>
                   <select
                     value={comp.room_type_id}
                     onChange={(e) => updateComposition(idx, 'room_type_id', e.target.value)}
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   >
                     <option value="">Select room type...</option>
                     {roomTypes.map((r) => (
@@ -174,32 +174,32 @@ export default function RoomCompositionBuilder({
                   </select>
                 </div>
                 <div className="w-full sm:w-28">
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Quantity</label>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Quantity</label>
                   <input
                     type="number"
                     min={1}
                     aria-label="Quantity"
                     value={comp.quantity}
                     onChange={(e) => updateComposition(idx, 'quantity', parseInt(e.target.value) || 1)}
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
                 <div className="w-full sm:w-28">
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Nights</label>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nights</label>
                   <input
                     type="number"
                     min={1}
                     aria-label="Nights"
                     value={comp.nights}
                     onChange={(e) => updateComposition(idx, 'nights', parseInt(e.target.value) || 1)}
-                    className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
                     type="button"
                     onClick={() => removeComposition(idx)}
-                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                    className="p-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
                     aria-label="Remove room type"
                   >
                     <TrashIcon className="h-5 w-5" />
@@ -213,7 +213,7 @@ export default function RoomCompositionBuilder({
             <button
               type="button"
               onClick={addComposition}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white text-brand-600 border border-brand-200 text-sm font-medium rounded-md hover:bg-brand-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800 text-sm font-medium rounded-md hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors"
             >
               <PlusIcon className="h-4 w-4" />
               Add Room Type
@@ -224,7 +224,7 @@ export default function RoomCompositionBuilder({
             <button
               type="button"
               onClick={addComposition}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white text-brand-600 border border-brand-200 text-sm font-medium rounded-md hover:bg-brand-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800 text-sm font-medium rounded-md hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors"
             >
               <PlusIcon className="h-4 w-4" />
               Add Room Type
@@ -233,13 +233,13 @@ export default function RoomCompositionBuilder({
         </div>
       )}
 
-      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+      <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div className="text-sm text-gray-600">
-            Total room nights: <span className="font-semibold text-gray-900">{totalRoomNights}</span>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Total room nights: <span className="font-semibold text-gray-900 dark:text-gray-100">{totalRoomNights}</span>
           </div>
-          <div className="text-sm text-gray-600">
-            Estimated room cost: <span className="font-semibold text-gray-900">₹{estimatedRoomCost.toFixed(2)}</span>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Estimated room cost: <span className="font-semibold text-gray-900 dark:text-gray-100">₹{estimatedRoomCost.toFixed(2)}</span>
           </div>
         </div>
       </div>

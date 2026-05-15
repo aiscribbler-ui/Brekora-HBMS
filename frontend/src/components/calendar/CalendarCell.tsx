@@ -17,13 +17,13 @@ export default function CalendarCell({ dateStr, roomType, availability }: Calend
 
   const ratio = total > 0 ? available / total : 0
 
-  let bgClass = 'bg-gray-100 text-gray-800'
+  let bgClass = 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
   let statusLabel = 'Unknown'
   if (total === 0) {
-    bgClass = 'bg-gray-200 text-gray-500'
+    bgClass = 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
     statusLabel = 'No inventory'
   } else if (ratio === 0) {
-    bgClass = 'bg-red-100 text-red-800'
+    bgClass = 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400'
     statusLabel = 'Fully booked'
   } else if (ratio <= 0.5) {
     bgClass = 'bg-warning-light text-warning-dark'
@@ -59,13 +59,13 @@ export default function CalendarCell({ dateStr, roomType, availability }: Calend
           data-testid={`booking-modal-${roomType.id}-${dateStr}`}
         >
           <div
-            className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-sm w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {roomType.name} — {dateStr}
             </h3>
-            <div className="space-y-1 text-sm text-gray-600">
+            <div className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
               <p>Available: {available}</p>
               <p>Booked: {booked}</p>
               <p>Held: {held}</p>
