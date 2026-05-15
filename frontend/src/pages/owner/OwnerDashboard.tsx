@@ -94,9 +94,9 @@ export default function OwnerDashboard() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Access Denied</h1>
-          <p className="mt-2 text-gray-600">You do not have permission to view this page.</p>
-          <p className="mt-1 text-sm text-gray-500">Redirecting to home...</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Access Denied</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">You do not have permission to view this page.</p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Redirecting to home...</p>
           <button
             onClick={() => navigate('/')}
             className="mt-4 inline-flex rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
@@ -157,7 +157,7 @@ export default function OwnerDashboard() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 rounded border border-red-200" role="alert">
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800" role="alert">
           {error}
         </div>
       )}

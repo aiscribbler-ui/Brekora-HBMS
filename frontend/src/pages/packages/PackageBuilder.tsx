@@ -345,8 +345,8 @@ export default function PackageBuilder() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto space-y-4">
-        <div className="h-8 bg-gray-100 rounded w-1/3 animate-pulse" />
-        <div className="h-10 bg-gray-100 rounded w-full animate-pulse" />
+        <div className="h-8 bg-gray-100 dark:bg-gray-700 rounded w-1/3 animate-pulse" />
+        <div className="h-10 bg-gray-100 dark:bg-gray-700 rounded w-full animate-pulse" />
         <div className="h-64 bg-gray-100 rounded-lg animate-pulse" />
       </div>
     )
@@ -356,28 +356,28 @@ export default function PackageBuilder() {
     <div className="max-w-5xl mx-auto">
       <button
         onClick={() => navigate('/packages')}
-        className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 mb-4"
+        className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 mb-4"
       >
         <ArrowLeftIcon className="h-4 w-4" />
         Back to Packages
       </button>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {isNew ? 'New Package' : pkg?.name}
         </h1>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           {isNew ? 'Create a new package' : `Status: ${pkg?.status}`}
         </div>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-700 rounded border border-red-200 text-sm" role="alert">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800 text-sm" role="alert">
           {error}
         </div>
       )}
 
-      <div className="mb-4 border-b border-gray-200">
+      <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
         <nav className="-mb-px flex space-x-4 overflow-x-auto" aria-label="Tabs">
           {tabs.map((tab) => {
             const Icon = tab.icon
@@ -390,8 +390,8 @@ export default function PackageBuilder() {
                   inline-flex items-center gap-2 px-3 py-2 border-b-2 text-sm font-medium whitespace-nowrap transition-colors
                   ${
                     isActive
-                      ? 'border-brand-500 text-brand-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-brand-500 text-brand-600 dark:text-brand-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
                   }
                 `}
               >
@@ -409,39 +409,39 @@ export default function PackageBuilder() {
       >
         {activeTab === 'basic' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Basic Information</h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">Package Name</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Package Name</label>
                   <input
                     id="name"
                     type="text"
                     {...register('name')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
                   )}
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
                   <textarea
                     id="description"
                     rows={3}
                     {...register('description')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                  <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                   <select
                     id="status"
                     {...register('status')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   >
                     <option value="draft">Draft</option>
                     <option value="active">Active</option>
@@ -450,7 +450,7 @@ export default function PackageBuilder() {
                 </div>
 
                 <div>
-                  <label htmlFor="base_price" className="block text-sm font-medium text-gray-700">Base Price</label>
+                  <label htmlFor="base_price" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Base Price</label>
                   <div className="mt-1 relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">₹</span>
                     <input
@@ -462,32 +462,32 @@ export default function PackageBuilder() {
                     />
                   </div>
                   {errors.base_price && (
-                    <p className="mt-1 text-sm text-red-600">{errors.base_price.message}</p>
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.base_price.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label htmlFor="max_occupancy" className="block text-sm font-medium text-gray-700">Max Occupancy</label>
+                  <label htmlFor="max_occupancy" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Max Occupancy</label>
                   <input
                     id="max_occupancy"
                     type="number"
                     min={1}
                     {...register('max_occupancy')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                   {errors.max_occupancy && (
-                    <p className="mt-1 text-sm text-red-600">{errors.max_occupancy.message}</p>
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.max_occupancy.message}</p>
                   )}
                 </div>
 
                 <div>
-                  <label htmlFor="cancellation_policy_id" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="cancellation_policy_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Cancellation Policy
                   </label>
                   <select
                     id="cancellation_policy_id"
                     {...register('cancellation_policy_id')}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   >
                     <option value="">Default policy</option>
                     <option value="flexible">Flexible</option>
@@ -502,30 +502,30 @@ export default function PackageBuilder() {
                     id="is_featured"
                     type="checkbox"
                     {...register('is_featured')}
-                    className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+                    className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 rounded focus:ring-brand-500 dark:bg-gray-800"
                   />
-                  <label htmlFor="is_featured" className="text-sm text-gray-700">Featured package</label>
+                  <label htmlFor="is_featured" className="text-sm text-gray-700 dark:text-gray-300">Featured package</label>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-3">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-3">
               <div className="flex items-center gap-2">
                 <TagIcon className="h-5 w-5 text-brand-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Price Preview</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Price Preview</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-gray-50 rounded-md p-3">
-                  <p className="text-xs text-gray-500">Base Price</p>
-                  <p className="text-lg font-semibold text-gray-900">₹{parseFloat(basePrice || '0').toFixed(2)}</p>
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Base Price</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">₹{parseFloat(basePrice || '0').toFixed(2)}</p>
                 </div>
-                <div className="bg-gray-50 rounded-md p-3">
-                  <p className="text-xs text-gray-500">Estimated Room Cost</p>
-                  <p className="text-lg font-semibold text-gray-900">₹{pricePreview.roomCost.toFixed(2)}</p>
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-md p-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Estimated Room Cost</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">₹{pricePreview.roomCost.toFixed(2)}</p>
                 </div>
-                <div className="bg-brand-50 rounded-md p-3">
-                  <p className="text-xs text-brand-700">Subtotal Preview</p>
-                  <p className="text-lg font-semibold text-brand-900">
+                <div className="bg-brand-50 dark:bg-brand-900/20 rounded-md p-3">
+                  <p className="text-xs text-brand-700 dark:text-brand-300">Subtotal Preview</p>
+                  <p className="text-lg font-semibold text-brand-900 dark:text-brand-300">
                     ₹{(parseFloat(basePrice || '0') + pricePreview.roomCost).toFixed(2)}
                   </p>
                 </div>
@@ -535,8 +535,8 @@ export default function PackageBuilder() {
         )}
 
         {activeTab === 'composition' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Room Composition</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Room Composition</h2>
             <RoomCompositionBuilder
               propertyId={propertyId || null}
               onPropertyChange={(pid) => {
@@ -547,14 +547,14 @@ export default function PackageBuilder() {
               onChange={(next) => setValue('compositions', next, { shouldValidate: true })}
             />
             {errors.compositions && (
-              <p className="mt-2 text-sm text-red-600">{(errors.compositions as { message?: string }).message}</p>
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">{(errors.compositions as { message?: string }).message}</p>
             )}
           </div>
         )}
 
         {activeTab === 'addons' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Add-ons</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Add-ons</h2>
             <AddOnSelector
               selectedAddOns={addOns}
               onChange={(next) => setValue('add_ons', next, { shouldValidate: true })}
@@ -563,8 +563,8 @@ export default function PackageBuilder() {
         )}
 
         {activeTab === 'pricing' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Pricing Rules</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Pricing Rules</h2>
             <PricingRules
               value={pricingRules as unknown as Record<string, unknown>}
               onChange={(next) => setValue('pricing_rules', next as unknown as Record<string, unknown>, { shouldValidate: true })}
@@ -573,8 +573,8 @@ export default function PackageBuilder() {
         )}
 
         {activeTab === 'dates' && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">Date Constraints</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Date Constraints</h2>
 
             <div className="flex items-center gap-3">
               <input
@@ -587,15 +587,15 @@ export default function PackageBuilder() {
                     no_restrictions: e.target.checked,
                   })
                 }
-                className="h-4 w-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500"
+                className="h-4 w-4 text-brand-600 border-gray-300 dark:border-gray-600 rounded focus:ring-brand-500 dark:bg-gray-800"
               />
-              <label htmlFor="no_restrictions" className="text-sm text-gray-700">No date restrictions</label>
+              <label htmlFor="no_restrictions" className="text-sm text-gray-700 dark:text-gray-300">No date restrictions</label>
             </div>
 
             {!dateConstraints?.no_restrictions && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="start_date" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Eligible From
                   </label>
                   <input
@@ -608,11 +608,11 @@ export default function PackageBuilder() {
                         start_date: e.target.value,
                       })
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
                 <div>
-                  <label htmlFor="end_date" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Eligible Until
                   </label>
                   <input
@@ -625,7 +625,7 @@ export default function PackageBuilder() {
                         end_date: e.target.value,
                       })
                     }
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
               </div>
@@ -653,7 +653,7 @@ export default function PackageBuilder() {
           <button
             type="button"
             onClick={() => navigate('/packages')}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>

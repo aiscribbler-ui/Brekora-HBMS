@@ -53,12 +53,12 @@ export default function OtaSettings() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-900">OTA Settings</h2>
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">OTA Settings</h2>
 
       {toast && (
         <div
           className={`rounded-md p-3 text-sm font-medium ${
-            toast.type === 'success' ? 'bg-success-light text-success-dark' : 'bg-red-50 text-red-800'
+            toast.type === 'success' ? 'bg-success-light text-success-dark' : 'bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-400'
           }`}
         >
           {toast.message}
@@ -68,18 +68,18 @@ export default function OtaSettings() {
       <div className="max-w-lg space-y-4">
         {toggles.map(({ key, label }) => (
           <div key={key} className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">{label}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
             <button
               type="button"
               aria-label={label}
               aria-pressed={!!settings[key]}
               onClick={() => toggle(key)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 ${
-                settings[key] ? 'bg-brand-600' : 'bg-gray-200'
+                settings[key] ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-600'
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-100 transition-transform ${
                   settings[key] ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
@@ -88,7 +88,7 @@ export default function OtaSettings() {
         ))}
 
         <div>
-          <label htmlFor="confidenceThreshold" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="confidenceThreshold" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Confidence Threshold: {settings.confidenceThreshold.toFixed(2)}
           </label>
           <input
@@ -106,7 +106,7 @@ export default function OtaSettings() {
             }
             className="mt-2 w-full accent-brand-600"
           />
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>0.80</span>
             <span>1.00</span>
           </div>

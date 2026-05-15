@@ -51,8 +51,8 @@ export default function TodayView({ arrivals, departures, inHouse, pendingCheckI
   const values = { arrivals, departures, inHouse, pendingCheckIns }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Today</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Today</h2>
       <div className="grid grid-cols-2 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon

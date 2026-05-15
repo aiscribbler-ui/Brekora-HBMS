@@ -57,16 +57,16 @@ export default function CalendarGrid() {
           <button
             type="button"
             onClick={goToPrevMonth}
-            className="p-2 rounded-md border border-gray-300 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            className="p-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             aria-label="Previous month"
             data-testid="prev-month-btn"
           >
-            <ChevronLeftIcon className="h-4 w-4 text-gray-700" />
+            <ChevronLeftIcon className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </button>
           <button
             type="button"
             onClick={goToToday}
-            className="px-3 py-2 rounded-md border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             data-testid="today-btn"
           >
             Today
@@ -74,26 +74,26 @@ export default function CalendarGrid() {
           <button
             type="button"
             onClick={goToNextMonth}
-            className="p-2 rounded-md border border-gray-300 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+            className="p-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
             aria-label="Next month"
             data-testid="next-month-btn"
           >
-            <ChevronRightIcon className="h-4 w-4 text-gray-700" />
+            <ChevronRightIcon className="h-4 w-4 text-gray-700 dark:text-gray-300" />
           </button>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-gray-500" />
-          <span className="text-lg font-semibold text-gray-900" data-testid="month-title">
+          <CalendarIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100" data-testid="month-title">
             {format(currentMonth, 'MMMM yyyy')}
           </span>
         </div>
         <select
           value={selectedPropertyId}
           onChange={(e) => setSelectedPropertyId(e.target.value)}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+          className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:bg-gray-800 dark:text-gray-100"
           data-testid="property-selector"
         >
           <option value="">Select property</option>
@@ -106,7 +106,7 @@ export default function CalendarGrid() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 rounded border border-red-200" role="alert">
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded border border-red-200 dark:border-red-800" role="alert">
           {error}
         </div>
       )}
@@ -126,17 +126,17 @@ export default function CalendarGrid() {
 
       {isLoading ? (
         <div className="space-y-2">
-          <div className="h-8 bg-gray-200 rounded animate-pulse" />
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-10 bg-gray-200 rounded animate-pulse" />
+            <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
           ))}
         </div>
       ) : (
-        <div className="overflow-x-auto border border-gray-200 rounded-lg">
+        <div className="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
           <table className="min-w-full border-collapse" role="grid" aria-label="Availability calendar">
             <thead>
-              <tr className="bg-gray-50">
-                <th scope="col" className="sticky left-0 z-10 bg-gray-50 px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-r border-gray-200 min-w-[8rem]">
+              <tr className="bg-gray-50 dark:bg-gray-700">
+                <th scope="col" className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-b border-r border-gray-200 dark:border-gray-700 min-w-[8rem]">
                   Room Type
                 </th>
                 {days.map((day) => {
@@ -148,12 +148,12 @@ export default function CalendarGrid() {
                     <th
                       scope="col"
                       key={day.toISOString()}
-                      className={`px-2 py-2 text-center text-xs font-medium border-b border-r border-gray-200 min-w-[3rem] ${
+                      className={`px-2 py-2 text-center text-xs font-medium border-b border-r border-gray-200 dark:border-gray-700 min-w-[3rem] ${
                         isTodayDate
-                          ? 'bg-brand-100 text-brand-700'
+                          ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
                           : isCurrentMonth
-                            ? 'text-gray-600'
-                            : 'text-gray-400'
+                            ? 'text-gray-600 dark:text-gray-400'
+                            : 'text-gray-400 dark:text-gray-500'
                       }`}
                       aria-label={`${dayAbbr} ${dayNum}`}
                     >
@@ -164,27 +164,27 @@ export default function CalendarGrid() {
                 })}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {roomTypes.length === 0 ? (
                 <tr>
                   <td
                     colSpan={days.length + 1}
-                    className="px-4 py-8 text-center text-sm text-gray-500"
+                    className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
                   >
                     No room types found for this property.
                   </td>
                 </tr>
               ) : (
                 roomTypes.map((rt) => (
-                  <tr key={rt.id} className="hover:bg-gray-50">
-                    <th scope="row" className="sticky left-0 z-10 bg-white px-3 py-2 text-sm font-medium text-gray-900 border-r border-gray-200">
+                  <tr key={rt.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <th scope="row" className="sticky left-0 z-10 bg-white dark:bg-gray-800 px-3 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-700">
                       {rt.name}
                     </th>
                     {days.map((day) => {
                       const dateStr = format(day, 'yyyy-MM-dd')
                       const avail = availabilityMap.get(`${rt.id}:${dateStr}`)
                       return (
-                        <td key={dateStr} className="px-1 py-1 border-r border-gray-200" role="presentation">
+                        <td key={dateStr} className="px-1 py-1 border-r border-gray-200 dark:border-gray-700" role="presentation">
                           <CalendarCell
                             dateStr={dateStr}
                             roomType={rt}
@@ -201,7 +201,7 @@ export default function CalendarGrid() {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
         <span className="font-medium">Legend:</span>
         <div className="flex items-center gap-1">
           <span className="inline-block w-3 h-3 rounded bg-success-light border border-success" />

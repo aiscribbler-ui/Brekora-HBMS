@@ -44,8 +44,8 @@ export default function QuickActions() {
   ]
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 hover:shadow-md transition-shadow">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 gap-3">
         {actions.map((action) => {
           const Icon = action.icon
@@ -53,12 +53,12 @@ export default function QuickActions() {
             <button
               key={action.testId}
               onClick={action.onClick}
-              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-gray-200 hover:bg-brand-50 hover:border-brand-300 hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 hover:border-brand-300 dark:hover:border-brand-700 hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
               data-testid={action.testId}
               aria-label={action.label}
             >
-              <Icon className="h-6 w-6 text-brand-600" aria-hidden="true" />
-              <span className="text-sm font-medium text-gray-700">{action.label}</span>
+              <Icon className="h-6 w-6 text-brand-600 dark:text-brand-400" aria-hidden="true" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{action.label}</span>
             </button>
           )
         })}
