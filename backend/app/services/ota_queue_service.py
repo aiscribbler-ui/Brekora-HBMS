@@ -1,12 +1,13 @@
 import logging
 import uuid
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.booking import Booking, BookingStatus
+from app.models.inventory_hold import InventoryHold
 from app.models.parsed_booking import ParsedBookingQueue, ParsedBookingStatus
 from app.repositories.booking import BookingRepository
 from app.repositories.ota_mapping import OTAMappingRepository
@@ -174,6 +175,23 @@ class OTAQueueService:
         booking = await self.booking_repo.create_with_line_items(
             booking_data, line_items=line_items
         )
+
+        # Create committed inventory hold so OTA bookings block availability
+        nights = (check_out - check_in).days
+        if nights <= 0:
+            nights = 1
+        occupied_dates = [check_in + timedelta(days=i) for i in range(nights)]
+        hold = InventoryHold(
+            org_id=self.org_id,
+            booking_id=booking.id,
+            property_id=property_id,
+            room_type_id=room_type_id,
+            dates=sorted(set(occupied_dates)),
+            status="committed",
+            expires_at=datetime.now(timezone.utc),
+        )
+        self.session.add(hold)
+        await self.session.flush()
 
         # Update queue item
         await self.queue_repo.update(

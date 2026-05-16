@@ -63,6 +63,25 @@ export async function forceLogoutUser(id: string): Promise<void> {
   await api.delete(`/admin/users/${id}/sessions`)
 }
 
+export interface GmailStatus {
+  connected: boolean
+  status: string
+  message?: string
+  email?: string
+  messages_total?: number
+  threads_total?: number
+}
+
+export async function fetchGmailStatus(): Promise<GmailStatus> {
+  const { data } = await api.get<GmailStatus>('/ota/gmail/status')
+  return data
+}
+
+export async function initiateGmailAuth(): Promise<{ auth_url: string; state: string }> {
+  const { data } = await api.get<{ auth_url: string; state: string }>('/ota/gmail/auth')
+  return data
+}
+
 export async function fetchOtaSettings(): Promise<OtaSettings> {
   try {
     const { data } = await api.get<OtaSettings>('/system-config/ota')

@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react'
-import { fetchOtaSettings, updateOtaSettings, type OtaSettings as OtaSettingsType } from '@/services/adminApi'
+import {
+  fetchGmailStatus,
+  initiateGmailAuth,
+  fetchOtaSettings,
+  updateOtaSettings,
+  type OtaSettings as OtaSettingsType,
+  type GmailStatus,
+} from '@/services/adminApi'
 
 type ToggleKey = 'autoConfirmAirbnb' | 'autoConfirmMmt' | 'autoConfirmGoibibo'
 
@@ -18,6 +25,8 @@ export default function OtaSettings() {
   })
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [gmail, setGmail] = useState<GmailStatus | null>(null)
+  const [gmailLoading, setGmailLoading] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -30,6 +39,24 @@ export default function OtaSettings() {
       })
     return () => {
       cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      try {
+        const data = await fetchGmailStatus()
+        if (!cancelled) setGmail(data)
+      } catch {
+        if (!cancelled) setGmail({ connected: false, status: 'error' })
+      }
+    }
+    load()
+    const id = setInterval(load, 10000)
+    return () => {
+      cancelled = true
+      clearInterval(id)
     }
   }, [])
 
@@ -48,6 +75,19 @@ export default function OtaSettings() {
     } finally {
       setSaving(false)
       setTimeout(() => setToast(null), 4000)
+    }
+  }
+
+  const connectGmail = async () => {
+    setGmailLoading(true)
+    try {
+      const { auth_url } = await initiateGmailAuth()
+      window.open(auth_url, '_blank')
+    } catch {
+      setToast({ message: 'Failed to start Gmail OAuth', type: 'error' })
+      setTimeout(() => setToast(null), 4000)
+    } finally {
+      setGmailLoading(false)
     }
   }
 
@@ -120,6 +160,37 @@ export default function OtaSettings() {
         >
           {saving ? 'Saving...' : 'Save'}
         </button>
+
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Gmail Connection
+          </h3>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              {gmail?.connected ? (
+                <span className="flex items-center gap-2">
+                  <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+                  Connected {gmail.email ? `(${gmail.email})` : ''}
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
+                  Not connected
+                </span>
+              )}
+            </div>
+            {!gmail?.connected && (
+              <button
+                type="button"
+                onClick={connectGmail}
+                disabled={gmailLoading}
+                className="inline-flex justify-center rounded-md border border-transparent bg-brand-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                {gmailLoading ? 'Opening...' : 'Connect Gmail'}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
