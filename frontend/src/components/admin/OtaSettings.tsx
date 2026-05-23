@@ -11,6 +11,8 @@ import {
   type GmailStatus,
   type GmailConfig,
 } from '@/services/adminApi'
+import { isAxiosError } from '@/lib/api'
+import { useAuthStore } from '@/store/authStore'
 
 type ToggleKey = 'autoConfirmAirbnb' | 'autoConfirmMmt' | 'autoConfirmGoibibo'
 
@@ -120,6 +122,12 @@ export default function OtaSettings() {
       setTimeout(() => setToast(null), 4000)
       return
     }
+    const { accessToken } = useAuthStore.getState()
+    if (!accessToken) {
+      setToast({ message: 'Your session has expired. Please log in again.', type: 'error' })
+      setTimeout(() => setToast(null), 4000)
+      return
+    }
     setConfigSaving(true)
     try {
       const payload: { client_id: string; client_secret: string; redirect_uri?: string } = {
@@ -133,8 +141,9 @@ export default function OtaSettings() {
       setGmailConfig(updated)
       setClientSecretInput('')
       setToast({ message: 'Gmail OAuth credentials saved', type: 'success' })
-    } catch {
-      setToast({ message: 'Failed to save Gmail OAuth credentials', type: 'error' })
+    } catch (err) {
+      const msg = isAxiosError(err) ? (err.response?.data?.detail || err.message) : 'Failed to save Gmail OAuth credentials'
+      setToast({ message: msg, type: 'error' })
     } finally {
       setConfigSaving(false)
       setTimeout(() => setToast(null), 4000)

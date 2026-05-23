@@ -67,7 +67,6 @@ api_router.include_router(google_auth.router)
 api_router.include_router(guests.router, tags=["guests"])
 api_router.include_router(
     ota_gmail.router, prefix="/ota/gmail", tags=["ota-gmail"],
-    dependencies=[Depends(get_current_user)]
 )
 api_router.include_router(
     ota_mappings.router, prefix="/ota/mappings", tags=["ota-mappings"],

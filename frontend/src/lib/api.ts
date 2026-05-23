@@ -24,12 +24,17 @@ function pickActiveToken(): { token: string; isGuest: boolean } | null {
 
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const { accessToken, user } = useAuthStore.getState()
+    const { accessToken, user, sessionId } = useAuthStore.getState()
+    // eslint-disable-next-line no-console
+    console.log('[api] request', config.method?.toUpperCase(), config.url, 'token?', !!accessToken)
     if (accessToken) {
       config.headers.set('Authorization', `Bearer ${accessToken}`)
     }
     if (user?.org_id) {
       config.headers.set('X-Org-ID', user.org_id)
+    }
+    if (sessionId) {
+      config.headers.set('X-Session-ID', sessionId)
     }
     return config
   },

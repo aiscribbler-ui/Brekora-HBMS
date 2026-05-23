@@ -1,3 +1,5 @@
+import base64
+import json
 import uuid
 from typing import Any
 
@@ -5,14 +7,34 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, 
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import get_current_user
 from app.core.config import get_settings
 from app.db.session import get_db
+from app.models.user import User
 from app.schemas.gmail import (
     GmailAuthUrlResponse,
     GmailStatusResponse,
 )
 from app.services.gmail_config_service import GmailConfigService
 from app.services.gmail_oauth_service import GmailOAuthService
+
+def _encode_state(org_id: uuid.UUID) -> str:
+    """Embed org_id in the OAuth state so the callback can read it back."""
+    payload = json.dumps({"o": str(org_id)})
+    return base64.urlsafe_b64encode(payload.encode()).decode().rstrip("=")
+
+
+def _decode_state(state: str | None) -> uuid.UUID | None:
+    """Extract org_id from the OAuth state parameter."""
+    if not state:
+        return None
+    try:
+        padded = state + "=" * (4 - len(state) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(padded).decode())
+        return uuid.UUID(payload["o"])
+    except Exception:
+        return None
+
 
 router = APIRouter()
 settings = get_settings()
@@ -45,6 +67,7 @@ async def get_gmail_service(
 
 @router.get("/status", response_model=GmailStatusResponse)
 async def gmail_status(
+    current_user: User = Depends(get_current_user),
     service: GmailOAuthService = Depends(get_gmail_service),
 ) -> dict[str, Any]:
     """Health check for Gmail API OAuth connection."""
@@ -53,6 +76,7 @@ async def gmail_status(
 
 @router.get("/auth", response_model=GmailAuthUrlResponse)
 async def gmail_auth(
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
     service: GmailOAuthService = Depends(get_gmail_service),
@@ -67,9 +91,10 @@ async def gmail_auth(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Gmail OAuth is not configured. Set client ID and secret in OTA settings first.",
         )
-    auth_url, generated_state = await service.create_auth_url()
-    await service.store_state(generated_state)
-    return {"auth_url": auth_url, "state": generated_state}
+    encoded_state = _encode_state(org_id)
+    auth_url, _ = await service.create_auth_url(state=encoded_state)
+    await service.store_state(encoded_state)
+    return {"auth_url": auth_url, "state": encoded_state}
 
 
 def _build_callback_html(success: bool, message: str) -> str:
@@ -98,9 +123,19 @@ async def gmail_callback(
     state: str | None = Query(default=None),
     error: str | None = Query(default=None),
     error_description: str | None = Query(default=None),
-    service: GmailOAuthService = Depends(get_gmail_service),
+    db: AsyncSession = Depends(get_db),
 ) -> Response:
     """OAuth callback handler — exchanges code for tokens and returns HTML."""
+
+    # Extract org_id from state so we can read the correct tenant's credentials
+    org_id = _decode_state(state)
+    if not org_id:
+        org_id = DEFAULT_ORG_ID or uuid.UUID("00000000-0000-0000-0000-000000000001")
+
+    config_svc = GmailConfigService(
+        db, org_id, settings.GOOGLE_CLIENT_ID or "", settings.GOOGLE_CLIENT_SECRET or "", settings.GOOGLE_REDIRECT_URI or ""
+    )
+    service = GmailOAuthService(settings, config_svc)
 
     # Handle explicit errors from Google (e.g. user clicked Cancel)
     if error:
@@ -146,6 +181,7 @@ async def gmail_callback(
 
 @router.post("/disconnect", status_code=204)
 async def gmail_disconnect(
+    current_user: User = Depends(get_current_user),
     service: GmailOAuthService = Depends(get_gmail_service),
 ) -> None:
     """Remove stored Gmail OAuth tokens."""
@@ -154,6 +190,7 @@ async def gmail_disconnect(
 
 @router.get("/config")
 async def get_gmail_config(
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
 ) -> dict[str, str | None]:
@@ -175,6 +212,7 @@ async def get_gmail_config(
 @router.patch("/config")
 async def update_gmail_config(
     data: GmailConfigUpdate,
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
     org_id: uuid.UUID = Depends(get_org_id),
 ) -> dict[str, Any]:

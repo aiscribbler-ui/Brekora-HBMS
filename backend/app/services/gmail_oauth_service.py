@@ -3,6 +3,7 @@ import json
 import logging
 from typing import Any
 
+import httpx
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -89,14 +90,34 @@ class GmailOAuthService:
 
     async def exchange_code(self, code: str, state: str | None = None) -> dict[str, Any]:
         """Exchange the OAuth authorization code for tokens and persist them."""
-        flow = Flow.from_client_config(
-            await self._get_client_config(),
+        client_config = await self._get_client_config()
+        redirect_uri = await self._get_redirect_uri()
+        client_id = client_config["web"]["client_id"]
+        client_secret = client_config["web"]["client_secret"]
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://oauth2.googleapis.com/token",
+                data={
+                    "grant_type": "authorization_code",
+                    "code": code,
+                    "redirect_uri": redirect_uri,
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+            resp.raise_for_status()
+            token_json = resp.json()
+
+        credentials = Credentials(
+            token=token_json["access_token"],
+            refresh_token=token_json.get("refresh_token"),
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=client_id,
+            client_secret=client_secret,
             scopes=[GMAIL_MODIFY_SCOPE],
-            state=state,
         )
-        flow.redirect_uri = await self._get_redirect_uri()
-        flow.fetch_token(code=code)
-        credentials = flow.credentials
 
         token_data = {
             "token": credentials.token,
