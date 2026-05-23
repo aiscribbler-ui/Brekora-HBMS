@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   fetchGmailStatus,
   initiateGmailAuth,
+  disconnectGmail,
   fetchOtaSettings,
   updateOtaSettings,
   type OtaSettings as OtaSettingsType,
@@ -82,7 +83,7 @@ export default function OtaSettings() {
     setGmailLoading(true)
     try {
       const { auth_url } = await initiateGmailAuth()
-      window.open(auth_url, '_blank')
+      window.open(auth_url, 'gmail_oauth', 'width=500,height=600')
     } catch {
       setToast({ message: 'Failed to start Gmail OAuth', type: 'error' })
       setTimeout(() => setToast(null), 4000)
@@ -90,6 +91,35 @@ export default function OtaSettings() {
       setGmailLoading(false)
     }
   }
+
+  const handleDisconnect = async () => {
+    setGmailLoading(true)
+    try {
+      await disconnectGmail()
+      setGmail({ connected: false, status: 'disconnected' })
+      setToast({ message: 'Gmail disconnected', type: 'success' })
+    } catch {
+      setToast({ message: 'Failed to disconnect Gmail', type: 'error' })
+    } finally {
+      setGmailLoading(false)
+      setTimeout(() => setToast(null), 4000)
+    }
+  }
+
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'GMAIL_AUTH_SUCCESS') {
+        setToast({ message: 'Gmail connected successfully', type: 'success' })
+        fetchGmailStatus().then(setGmail).catch(() => setGmail({ connected: false, status: 'error' }))
+        setTimeout(() => setToast(null), 4000)
+      } else if (event.data?.type === 'GMAIL_AUTH_ERROR') {
+        setToast({ message: event.data.message || 'Gmail connection failed', type: 'error' })
+        setTimeout(() => setToast(null), 4000)
+      }
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
 
   return (
     <div className="space-y-4">
@@ -179,7 +209,16 @@ export default function OtaSettings() {
                 </span>
               )}
             </div>
-            {!gmail?.connected && (
+            {gmail?.connected ? (
+              <button
+                type="button"
+                onClick={handleDisconnect}
+                disabled={gmailLoading}
+                className="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-50"
+              >
+                {gmailLoading ? 'Disconnecting...' : 'Disconnect'}
+              </button>
+            ) : (
               <button
                 type="button"
                 onClick={connectGmail}

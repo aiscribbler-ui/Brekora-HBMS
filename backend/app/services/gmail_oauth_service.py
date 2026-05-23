@@ -15,6 +15,7 @@ from app.core.redis import get_redis_client
 logger = logging.getLogger(__name__)
 
 REDIS_KEY_GMAIL_TOKEN = "gmail:oauth_token"
+REDIS_KEY_GMAIL_STATE = "gmail:oauth_state"
 GMAIL_MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify"
 
 
@@ -38,6 +39,8 @@ class GmailOAuthService:
     def create_auth_url(self, state: str | None = None) -> tuple[str, str]:
         """Generate the Google OAuth consent URL.
 
+        Stores CSRF state in Redis with a 10-minute TTL.
+
         Returns
         -------
         tuple[str, str]
@@ -55,6 +58,19 @@ class GmailOAuthService:
             prompt="consent",
         )
         return auth_url, generated_state
+
+    async def store_state(self, state: str) -> None:
+        """Store CSRF state in Redis with 10-minute TTL."""
+        redis = await get_redis_client()
+        await redis.setex(REDIS_KEY_GMAIL_STATE, 600, state)
+
+    async def verify_state(self, state: str | None) -> bool:
+        """Verify the OAuth callback state matches the stored value."""
+        if not state:
+            return False
+        redis = await get_redis_client()
+        stored = await redis.get(REDIS_KEY_GMAIL_STATE)
+        return stored == state
 
     async def exchange_code(self, code: str, state: str | None = None) -> dict[str, Any]:
         """Exchange the OAuth authorization code for tokens and persist them."""
@@ -131,6 +147,14 @@ class GmailOAuthService:
             logger.info("Gmail access token refreshed automatically")
 
         return credentials
+
+    async def disconnect(self) -> bool:
+        """Remove stored Gmail OAuth tokens from Redis."""
+        redis = await get_redis_client()
+        result = await redis.delete(REDIS_KEY_GMAIL_TOKEN)
+        await redis.delete(REDIS_KEY_GMAIL_STATE)
+        logger.info("Gmail OAuth tokens removed from Redis")
+        return result > 0
 
     async def health_check(self) -> dict[str, Any]:
         """Verify Gmail API connectivity and return status."""

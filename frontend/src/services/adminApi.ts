@@ -82,6 +82,10 @@ export async function initiateGmailAuth(): Promise<{ auth_url: string; state: st
   return data
 }
 
+export async function disconnectGmail(): Promise<void> {
+  await api.post('/ota/gmail/disconnect')
+}
+
 export async function fetchOtaSettings(): Promise<OtaSettings> {
   try {
     const { data } = await api.get<OtaSettings>('/system-config/ota')
