@@ -1,20 +1,46 @@
+import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
+from app.db.session import get_db
 from app.schemas.gmail import (
     GmailAuthUrlResponse,
     GmailStatusResponse,
 )
+from app.services.gmail_config_service import GmailConfigService
 from app.services.gmail_oauth_service import GmailOAuthService
 
 router = APIRouter()
 settings = get_settings()
+DEFAULT_ORG_ID = settings.DEFAULT_ORG_ID if hasattr(settings, "DEFAULT_ORG_ID") else None
 
 
-def get_gmail_service() -> GmailOAuthService:
-    return GmailOAuthService(settings)
+def get_org_id(x_org_id: str | None = Header(default=None, alias="X-Org-ID")) -> uuid.UUID:
+    if x_org_id:
+        return uuid.UUID(x_org_id)
+    if DEFAULT_ORG_ID:
+        return DEFAULT_ORG_ID
+    return uuid.UUID("00000000-0000-0000-0000-000000000001")
+
+
+class GmailConfigUpdate(BaseModel):
+    client_id: str
+    client_secret: str
+    redirect_uri: str | None = None
+
+
+async def get_gmail_service(
+    db: AsyncSession = Depends(get_db),
+    org_id: uuid.UUID = Depends(get_org_id),
+) -> GmailOAuthService:
+    config_svc = GmailConfigService(
+        db, org_id, settings.GOOGLE_CLIENT_ID or "", settings.GOOGLE_CLIENT_SECRET or "", settings.GOOGLE_REDIRECT_URI or ""
+    )
+    return GmailOAuthService(settings, config_svc)
 
 
 @router.get("/status", response_model=GmailStatusResponse)
@@ -27,17 +53,23 @@ async def gmail_status(
 
 @router.get("/auth", response_model=GmailAuthUrlResponse)
 async def gmail_auth(
+    db: AsyncSession = Depends(get_db),
+    org_id: uuid.UUID = Depends(get_org_id),
     service: GmailOAuthService = Depends(get_gmail_service),
 ) -> dict[str, str]:
     """Initiate Gmail OAuth 2.0 flow and return the authorization URL."""
-    if not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET:
+    config_svc = GmailConfigService(
+        db, org_id, settings.GOOGLE_CLIENT_ID or "", settings.GOOGLE_CLIENT_SECRET or "", settings.GOOGLE_REDIRECT_URI or ""
+    )
+    configured = await config_svc.is_configured()
+    if not configured:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Gmail OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.",
+            detail="Gmail OAuth is not configured. Set client ID and secret in OTA settings first.",
         )
-    auth_url, state = service.create_auth_url()
-    await service.store_state(state)
-    return {"auth_url": auth_url, "state": state}
+    auth_url, generated_state = await service.create_auth_url()
+    await service.store_state(generated_state)
+    return {"auth_url": auth_url, "state": generated_state}
 
 
 def _build_callback_html(success: bool, message: str) -> str:
@@ -118,3 +150,39 @@ async def gmail_disconnect(
 ) -> None:
     """Remove stored Gmail OAuth tokens."""
     await service.disconnect()
+
+
+@router.get("/config")
+async def get_gmail_config(
+    db: AsyncSession = Depends(get_db),
+    org_id: uuid.UUID = Depends(get_org_id),
+) -> dict[str, str | None]:
+    """Return configured Gmail OAuth client ID (secret is masked)."""
+    config_svc = GmailConfigService(
+        db, org_id, settings.GOOGLE_CLIENT_ID or "", settings.GOOGLE_CLIENT_SECRET or "", settings.GOOGLE_REDIRECT_URI or ""
+    )
+    creds = await config_svc.get_credentials()
+    client_secret = creds.get("client_secret")
+    redirect_uri = await config_svc.get_redirect_uri()
+    return {
+        "client_id": creds.get("client_id"),
+        "client_secret": ("*" * len(client_secret)) if client_secret else None,
+        "configured": bool(creds.get("client_id") and creds.get("client_secret")),
+        "redirect_uri": redirect_uri,
+    }
+
+
+@router.patch("/config")
+async def update_gmail_config(
+    data: GmailConfigUpdate,
+    db: AsyncSession = Depends(get_db),
+    org_id: uuid.UUID = Depends(get_org_id),
+) -> dict[str, Any]:
+    """Store Gmail OAuth client credentials in system_config."""
+    config_svc = GmailConfigService(
+        db, org_id, settings.GOOGLE_CLIENT_ID or "", settings.GOOGLE_CLIENT_SECRET or "", settings.GOOGLE_REDIRECT_URI or ""
+    )
+    await config_svc.set_credentials(data.client_id, data.client_secret)
+    if data.redirect_uri:
+        await config_svc.set_redirect_uri(data.redirect_uri)
+    return {"status": "saved", "configured": True}

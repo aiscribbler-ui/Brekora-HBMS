@@ -13,6 +13,7 @@ from app.core.config import DEFAULT_BREKORA_ORG_ID, get_settings
 from app.db.session import AsyncSessionLocal
 from app.repositories.parsed_booking_queue import ParsedBookingQueueRepository
 from app.repositories.raw_email import RawEmailRepository
+from app.services.gmail_config_service import GmailConfigService
 from app.services.gmail_oauth_service import GmailOAuthService
 from app.services.ota_queue_service import OTAQueueService
 from app.services.parse_metric_service import ParseMetricService
@@ -142,8 +143,16 @@ async def gmail_poller(ctx: dict) -> dict:
         "correlation_id": correlation_id,
     }
 
-    oauth_service = GmailOAuthService(settings)
-    credentials = await oauth_service.get_credentials()
+    async with session_factory() as config_session:
+        config_svc = GmailConfigService(
+            config_session,
+            DEFAULT_BREKORA_ORG_ID,
+            settings.GOOGLE_CLIENT_ID or "",
+            settings.GOOGLE_CLIENT_SECRET or "",
+        )
+        oauth_service = GmailOAuthService(settings, config_svc)
+        credentials = await oauth_service.get_credentials()
+
     if not credentials:
         logger.warning(
             "gmail_poller: no Gmail credentials available",

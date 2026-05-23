@@ -86,10 +86,58 @@ export async function disconnectGmail(): Promise<void> {
   await api.post('/ota/gmail/disconnect')
 }
 
+export interface GmailConfig {
+  client_id: string | null
+  client_secret: string | null
+  configured: boolean
+  redirect_uri: string | null
+}
+
+export async function fetchGmailConfig(): Promise<GmailConfig> {
+  const { data } = await api.get<GmailConfig>('/ota/gmail/config')
+  return data
+}
+
+export async function updateGmailConfig(config: { client_id: string; client_secret: string; redirect_uri?: string }): Promise<GmailConfig> {
+  const { data } = await api.patch<GmailConfig>('/ota/gmail/config', config)
+  return data
+}
+
+export interface OtaSourceSetting {
+  id: string
+  ota_source: 'airbnb' | 'mmt' | 'goibibo'
+  auto_confirm: boolean
+  min_confidence: number
+  is_active: boolean
+}
+
+const SOURCE_MAP: Record<string, keyof Omit<OtaSettings, 'confidenceThreshold'>> = {
+  airbnb: 'autoConfirmAirbnb',
+  mmt: 'autoConfirmMmt',
+  goibibo: 'autoConfirmGoibibo',
+}
+
 export async function fetchOtaSettings(): Promise<OtaSettings> {
   try {
-    const { data } = await api.get<OtaSettings>('/system-config/ota')
-    return data
+    const { data } = await api.get<OtaSourceSetting[]>('/ota/settings/')
+    const result: OtaSettings = {
+      autoConfirmAirbnb: false,
+      autoConfirmMmt: false,
+      autoConfirmGoibibo: false,
+      confidenceThreshold: 0.9,
+    }
+    let minConfidence = 0.9
+    for (const item of data) {
+      const key = SOURCE_MAP[item.ota_source]
+      if (key) {
+        result[key] = item.auto_confirm
+      }
+      if (item.min_confidence > 0) {
+        minConfidence = item.min_confidence
+      }
+    }
+    result.confidenceThreshold = minConfidence
+    return result
   } catch {
     return {
       autoConfirmAirbnb: false,
@@ -101,10 +149,20 @@ export async function fetchOtaSettings(): Promise<OtaSettings> {
 }
 
 export async function updateOtaSettings(settings: OtaSettings): Promise<OtaSettings> {
-  try {
-    const { data } = await api.patch<OtaSettings>('/system-config/ota', settings)
-    return data
-  } catch {
-    return settings
-  }
+  const sources: { ota_source: string; auto_confirm: boolean }[] = [
+    { ota_source: 'airbnb', auto_confirm: settings.autoConfirmAirbnb },
+    { ota_source: 'mmt', auto_confirm: settings.autoConfirmMmt },
+    { ota_source: 'goibibo', auto_confirm: settings.autoConfirmGoibibo },
+  ]
+  await Promise.all(
+    sources.map((s) =>
+      api.put('/ota/settings/', {
+        ota_source: s.ota_source,
+        auto_confirm: s.auto_confirm,
+        min_confidence: settings.confidenceThreshold,
+        is_active: true,
+      })
+    )
+  )
+  return settings
 }

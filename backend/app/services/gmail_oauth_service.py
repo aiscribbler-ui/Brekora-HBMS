@@ -11,6 +11,7 @@ from googleapiclient.errors import HttpError
 
 from app.core.config import Settings
 from app.core.redis import get_redis_client
+from app.services.gmail_config_service import GmailConfigService
 
 logger = logging.getLogger(__name__)
 
@@ -22,21 +23,35 @@ GMAIL_MODIFY_SCOPE = "https://www.googleapis.com/auth/gmail.modify"
 class GmailOAuthService:
     """Handles Gmail OAuth flow, token storage in Redis, and automatic refresh."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, config_svc: GmailConfigService | None = None) -> None:
         self.settings = settings
+        self._config_svc = config_svc
 
-    def _get_client_config(self) -> dict[str, Any]:
+    async def _get_redirect_uri(self) -> str:
+        if self._config_svc:
+            db_uri = await self._config_svc.get_redirect_uri()
+            if db_uri:
+                return db_uri
+        return self.settings.GOOGLE_REDIRECT_URI
+
+    async def _get_client_config(self) -> dict[str, Any]:
+        client_id = self.settings.GOOGLE_CLIENT_ID
+        client_secret = self.settings.GOOGLE_CLIENT_SECRET
+        if self._config_svc:
+            creds = await self._config_svc.get_credentials()
+            client_id = creds.get("client_id") or client_id
+            client_secret = creds.get("client_secret") or client_secret
         return {
             "web": {
-                "client_id": self.settings.GOOGLE_CLIENT_ID,
-                "client_secret": self.settings.GOOGLE_CLIENT_SECRET,
+                "client_id": client_id,
+                "client_secret": client_secret,
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
-                "redirect_uris": [self.settings.GOOGLE_REDIRECT_URI],
+                "redirect_uris": [await self._get_redirect_uri()],
             }
         }
 
-    def create_auth_url(self, state: str | None = None) -> tuple[str, str]:
+    async def create_auth_url(self, state: str | None = None) -> tuple[str, str]:
         """Generate the Google OAuth consent URL.
 
         Stores CSRF state in Redis with a 10-minute TTL.
@@ -47,11 +62,11 @@ class GmailOAuthService:
             (authorization_url, state)
         """
         flow = Flow.from_client_config(
-            self._get_client_config(),
+            await self._get_client_config(),
             scopes=[GMAIL_MODIFY_SCOPE],
             state=state,
         )
-        flow.redirect_uri = self.settings.GOOGLE_REDIRECT_URI
+        flow.redirect_uri = await self._get_redirect_uri()
         auth_url, generated_state = flow.authorization_url(
             access_type="offline",
             include_granted_scopes="true",
@@ -75,11 +90,11 @@ class GmailOAuthService:
     async def exchange_code(self, code: str, state: str | None = None) -> dict[str, Any]:
         """Exchange the OAuth authorization code for tokens and persist them."""
         flow = Flow.from_client_config(
-            self._get_client_config(),
+            await self._get_client_config(),
             scopes=[GMAIL_MODIFY_SCOPE],
             state=state,
         )
-        flow.redirect_uri = self.settings.GOOGLE_REDIRECT_URI
+        flow.redirect_uri = await self._get_redirect_uri()
         flow.fetch_token(code=code)
         credentials = flow.credentials
 
