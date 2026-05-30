@@ -10,6 +10,7 @@ import {
   UsersIcon,
   HomeIcon,
   HashtagIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import type { ParsedBooking } from '@/services/otaApi'
 
@@ -18,6 +19,8 @@ interface ParsedBookingCardProps {
   onConfirm: () => void
   onEdit: () => void
   onReject: () => void
+  onReprocess?: () => void
+  reprocessing?: boolean
   rawEmailUrl?: string | null
 }
 
@@ -58,7 +61,7 @@ function statusBadge(status: string) {
     pending: 'bg-warning-light text-warning-dark',
     confirmed: 'bg-success-light text-success-dark',
     rejected: 'bg-error-light text-error-dark',
-    edited: 'bg-info-light text-info-dark',
+    failed: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300',
   }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'}`}>
@@ -72,9 +75,11 @@ export default function ParsedBookingCard({
   onConfirm,
   onEdit,
   onReject,
+  onReprocess,
+  reprocessing,
   rawEmailUrl,
 }: ParsedBookingCardProps) {
-  const canAct = booking.status === 'pending' || booking.status === 'edited'
+  const canAct = booking.status === 'pending'
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -172,6 +177,21 @@ export default function ParsedBookingCard({
               <EnvelopeOpenIcon className="h-4 w-4" />
               View original email
             </a>
+          </div>
+        )}
+
+        {/* Reprocess */}
+        {onReprocess && booking.raw_email_id && (
+          <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
+            <button
+              onClick={onReprocess}
+              disabled={reprocessing}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-900/20 disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+              aria-label={`Reprocess email for ${booking.guest_name || 'unknown guest'}`}
+            >
+              <ArrowPathIcon className={`h-4 w-4 ${reprocessing ? 'animate-spin' : ''}`} />
+              {reprocessing ? 'Reprocessing…' : 'Reprocess'}
+            </button>
           </div>
         )}
 

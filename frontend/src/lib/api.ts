@@ -30,8 +30,17 @@ api.interceptors.request.use(
     if (accessToken) {
       config.headers.set('Authorization', `Bearer ${accessToken}`)
     }
-    if (user?.org_id) {
-      config.headers.set('X-Org-ID', user.org_id)
+    let orgId = user?.org_id
+    if (!orgId && accessToken) {
+      try {
+        const payload = JSON.parse(atob(accessToken.split('.')[1]))
+        orgId = payload?.org_id
+      } catch {
+        // ignore malformed token
+      }
+    }
+    if (orgId) {
+      config.headers.set('X-Org-ID', orgId)
     }
     if (sessionId) {
       config.headers.set('X-Session-ID', sessionId)

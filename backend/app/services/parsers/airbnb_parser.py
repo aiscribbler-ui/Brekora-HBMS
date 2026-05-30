@@ -25,8 +25,28 @@ CONFIRMATION_CODE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Primary: labels that clearly indicate the guest (NOT the host or property)
 GUEST_NAME_RE = re.compile(
-    r"(?:Guest|Hosted by|Booked by|Reservation for)[:\s]*\n?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+){0,3})",
+    r"(?:Guest|Booked by)[:\s]*\n?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+){0,3})",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+# Airbnb thread format: the guest name appears twice on its own line before "Booker"
+# e.g.  Vi\nVi\nBooker
+GUEST_THREAD_RE = re.compile(
+    r"(?:^|\n)\s*([A-Z][a-z]+)\s*(?:\n\s*\1\s*)?\n\s*Booker",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+# Guest self-introduction: "I'm Vi from Vietnam"
+GUEST_INTRO_RE = re.compile(
+    r"\bI['']?m\s+([A-Z][a-z]+)\s+from\b",
+    re.IGNORECASE,
+)
+
+# Guard: reject host names that sometimes slip through
+HOST_LABEL_RE = re.compile(
+    r"(?:Hosted by|Host)[:\s]*\n?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+){0,3})",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -56,10 +76,10 @@ _DATE_PATTERNS = [
 ]
 
 _CHECK_IN_LABELS = re.compile(
-    r"(?:Check[\s\-]?in|Arrival|Arrive)[:\s]*", re.IGNORECASE
+    r"\b(?:Check[\s\-]?in|Arrival|Arrive)\b[:\s]*", re.IGNORECASE
 )
 _CHECK_OUT_LABELS = re.compile(
-    r"(?:Check[\s\-]?out|Departure|Depart|Until)[:\s]*", re.IGNORECASE
+    r"\b(?:Check[\s\-]?out|Departure|Depart|Until)\b[:\s]*", re.IGNORECASE
 )
 
 _NUMBER_OF_GUESTS_RE = re.compile(
@@ -360,6 +380,9 @@ class AirbnbParser:
 
         result = ParsedBookingResult(ota_source="airbnb")
 
+        # Detect email subtype so we can adjust critical fields / weights
+        email_subtype = self._detect_email_subtype(text)
+
         # --- Individual field extraction ------------------------------------
 
         result.ota_reference_id, result.field_confidences["ota_reference_id"] = (
@@ -404,13 +427,14 @@ class AirbnbParser:
 
         # --- Confidence aggregation ------------------------------------------
 
-        result.overall_confidence = self._compute_overall_confidence(result)
+        result.overall_confidence = self._compute_overall_confidence(result, email_subtype)
         result.needs_review = result.overall_confidence < 0.8
 
         if result.needs_review:
+            critical = self._critical_fields_for_subtype(email_subtype)
             missing = [
                 f
-                for f in self.CRITICAL_FIELDS
+                for f in critical
                 if result.field_confidences.get(f, 0.0) == 0.0
             ]
             if missing:
@@ -445,6 +469,28 @@ class AirbnbParser:
     # ------------------------------------------------------------------
 
     @staticmethod
+    def _detect_email_subtype(text: str) -> str:
+        """Detect whether this is a full confirmation or an initial notification."""
+        has_code = bool(CONFIRMATION_CODE_RE.search(text))
+        has_amount = bool(_AMOUNT_RE.search(text))
+        has_payout = bool(_PAYOUT_RE.search(text))
+        looks_like_notification = bool(
+            re.search(r"Reservation\s+for", text, re.IGNORECASE)
+        )
+        if has_code and has_amount and has_payout:
+            return "confirmation"
+        if looks_like_notification and not has_code:
+            return "notification"
+        return "unknown"
+
+    @staticmethod
+    def _critical_fields_for_subtype(subtype: str) -> tuple[str, ...]:
+        if subtype == "notification":
+            # Initial reservation emails often lack code + pricing
+            return ("check_in", "check_out", "guest_name", "number_of_guests")
+        return ("ota_reference_id", "check_in", "check_out", "gross_amount", "net_payout")
+
+    @staticmethod
     def _get_primary_text(raw_email: RawEmail) -> str:
         """Return plain text for parsing, stripping HTML if necessary."""
         if raw_email.body_text:
@@ -463,11 +509,34 @@ class AirbnbParser:
 
     @staticmethod
     def _extract_guest_name(text: str) -> tuple[str | None, float]:
+        # 1. Airbnb thread format: Name\nName\nBooker  (highest confidence)
+        m = GUEST_THREAD_RE.search(text)
+        if m:
+            name = m.group(1).strip()
+            if len(name) > 1:
+                return name, 1.0
+
+        # 2. Guest self-intro: "I'm Vi from Vietnam"
+        m = GUEST_INTRO_RE.search(text)
+        if m:
+            name = m.group(1).strip()
+            if len(name) > 1:
+                return name, 0.95
+
+        # 3. Explicit guest labels
         m = GUEST_NAME_RE.search(text)
         if m:
             name = m.group(1).strip()
             if len(name) > 2 and not name.isdigit():
-                return name, 0.95
+                return name, 0.9
+
+        # Guard: make sure we didn't accidentally extract the host name
+        host_match = HOST_LABEL_RE.search(text)
+        if host_match:
+            host_name = host_match.group(1).strip().lower()
+        else:
+            host_name = None
+
         # Fallback: look for a line that starts with a capitalised name near the word "guest"
         fallback = re.search(
             r"(?:^|\n)\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2})\s*\n?\s*(?:guest|traveller)",
@@ -475,7 +544,10 @@ class AirbnbParser:
             re.IGNORECASE | re.MULTILINE,
         )
         if fallback:
-            return fallback.group(1).strip(), 0.75
+            name = fallback.group(1).strip()
+            if host_name and name.lower() == host_name:
+                return None, 0.0
+            return name, 0.75
         return None, 0.0
 
     @staticmethod
@@ -610,27 +682,49 @@ class AirbnbParser:
                 return dt, 0.95
         return None, 0.0
 
-    def _compute_overall_confidence(self, result: ParsedBookingResult) -> float:
+    def _compute_overall_confidence(
+        self, result: ParsedBookingResult, subtype: str = "unknown"
+    ) -> float:
         """Compute weighted overall confidence score.
 
         Critical fields are weighted 2x; nice-to-have fields are weighted 1x.
         Missing commission is less severe than missing confirmation code.
+        For ``notification`` subtypes (initial reservation emails without code
+        or pricing) we lower the weight of code/price so the score reflects
+        the fields that are actually present.
         """
-        weights: dict[str, float] = {
-            "ota_reference_id": 3.0,
-            "check_in": 2.5,
-            "check_out": 2.5,
-            "gross_amount": 2.0,
-            "net_payout": 2.0,
-            "guest_name": 1.5,
-            "number_of_guests": 1.5,
-            "listing_id": 1.0,
-            "room_type": 1.0,
-            "booking_date": 1.0,
-            "ota_commission": 1.0,
-            "guest_email": 0.5,
-            "special_requests": 0.5,
-        }
+        if subtype == "notification":
+            weights: dict[str, float] = {
+                "ota_reference_id": 1.0,
+                "check_in": 2.5,
+                "check_out": 2.5,
+                "gross_amount": 0.5,
+                "net_payout": 0.5,
+                "guest_name": 2.0,
+                "number_of_guests": 2.0,
+                "listing_id": 1.0,
+                "room_type": 1.0,
+                "booking_date": 1.0,
+                "ota_commission": 0.5,
+                "guest_email": 0.5,
+                "special_requests": 0.5,
+            }
+        else:
+            weights = {
+                "ota_reference_id": 3.0,
+                "check_in": 2.5,
+                "check_out": 2.5,
+                "gross_amount": 2.0,
+                "net_payout": 2.0,
+                "guest_name": 1.5,
+                "number_of_guests": 1.5,
+                "listing_id": 1.0,
+                "room_type": 1.0,
+                "booking_date": 1.0,
+                "ota_commission": 1.0,
+                "guest_email": 0.5,
+                "special_requests": 0.5,
+            }
         total_weight = 0.0
         weighted_sum = 0.0
         for field_name, weight in weights.items():

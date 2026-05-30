@@ -1,7 +1,7 @@
 import { api } from '@/lib/api'
 
 export type OtaSource = 'airbnb' | 'mmt' | 'goibibo' | 'other'
-export type QueueStatus = 'pending' | 'confirmed' | 'rejected' | 'edited'
+export type QueueStatus = 'pending' | 'confirmed' | 'rejected' | 'failed'
 
 export interface ParsedBooking {
   id: string
@@ -18,6 +18,7 @@ export interface ParsedBooking {
   ota_reference: string | null
   confidence_score: number
   raw_email_id: string | null
+  raw_email_subject: string | null
   parsed_data: Record<string, unknown>
   created_at: string
   updated_at: string
@@ -35,8 +36,17 @@ export interface QueueFilters {
   status?: QueueStatus
   date_from?: string
   date_to?: string
+  max_confidence?: number
   page?: number
   page_size?: number
+}
+
+export interface QueueStats {
+  total: number
+  pending: number
+  confirmed: number
+  rejected: number
+  failed: number
 }
 
 export interface ConfirmPayload {
@@ -70,33 +80,29 @@ export interface OtaMapping {
 }
 
 export async function getOtaQueue(filters?: QueueFilters): Promise<QueueListResponse> {
-  // The backend currently returns a flat list; normalise to the paginated shape
-  // the UI expects so a missing `items` doesn't crash useMemo lookups.
   const params: Record<string, string | number | undefined> = {}
   if (filters?.source_type) params.source_type = filters.source_type
   if (filters?.status) params.status = filters.status
   if (filters?.date_from) params.date_from = filters.date_from
   if (filters?.date_to) params.date_to = filters.date_to
-  const pageSize = filters?.page_size ?? 50
+  if (filters?.max_confidence !== undefined) params.max_confidence = filters.max_confidence
+  const pageSize = filters?.page_size ?? 10
   const page = filters?.page ?? 1
   params.skip = (page - 1) * pageSize
   params.limit = pageSize
 
-  const { data } = await api.get<ParsedBooking[] | QueueListResponse>('/ota/queue/', { params })
-  if (Array.isArray(data)) {
-    return {
-      items: data,
-      total: data.length,
-      page,
-      page_size: pageSize,
-    }
-  }
+  const { data } = await api.get<QueueListResponse>('/ota/queue/', { params })
   return {
     items: data.items ?? [],
     total: data.total ?? 0,
     page: data.page ?? page,
     page_size: data.page_size ?? pageSize,
   }
+}
+
+export async function getOtaQueueStats(): Promise<QueueStats> {
+  const { data } = await api.get<QueueStats>('/ota/queue/stats')
+  return data
 }
 
 export interface QueueItemDetail {
@@ -122,6 +128,20 @@ export async function editOtaQueueItem(id: string, payload: EditPayload): Promis
 
 export async function rejectOtaQueueItem(id: string, payload: RejectPayload): Promise<ParsedBooking> {
   const { data } = await api.post<ParsedBooking>(`/ota/queue/${id}/reject`, payload)
+  return data
+}
+
+export interface ReprocessResponse {
+  queue_item_id: string
+  raw_email_id: string
+  confidence: number
+  needs_review: boolean
+  review_reason: string | null
+  parsed_data: Record<string, unknown>
+}
+
+export async function reprocessRawEmail(rawEmailId: string): Promise<ReprocessResponse> {
+  const { data } = await api.post<ReprocessResponse>(`/ota/queue/reprocess/${rawEmailId}`)
   return data
 }
 

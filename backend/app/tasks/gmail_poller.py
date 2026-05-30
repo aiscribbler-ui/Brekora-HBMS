@@ -11,6 +11,7 @@ from googleapiclient.errors import HttpError
 
 from app.core.config import DEFAULT_BREKORA_ORG_ID, get_settings
 from app.db.session import AsyncSessionLocal
+from app.models.organization import Organization
 from app.repositories.parsed_booking_queue import ParsedBookingQueueRepository
 from app.repositories.raw_email import RawEmailRepository
 from app.services.gmail_config_service import GmailConfigService
@@ -18,6 +19,7 @@ from app.services.gmail_oauth_service import GmailOAuthService
 from app.services.ota_queue_service import OTAQueueService
 from app.services.parse_metric_service import ParseMetricService
 from app.services.parsers import PARSER_MAP
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +29,28 @@ OTA_DOMAINS = {
     "goibibo.com": "goibibo",
 }
 
-GMAIL_QUERY = "is:unread from:(*@airbnb.com OR *@makemytrip.com OR *@goibibo.com)"
+GMAIL_QUERY = (
+    'is:unread from:(*@airbnb.com OR *@makemytrip.com OR *@goibibo.com) '
+    'subject:(Reservation confirmed OR "Booking confirmed" OR "Booking Confirmed" OR "Your reservation" OR "You have a new reservation")'
+)
 MAX_EMAILS_PER_POLL = 50
 BMS_PROCESSED_LABEL = "BMS_PROCESSED"
+
+# Markers used to quickly reject non-confirmation emails that slip through
+_CONFIRMATION_MARKERS = [
+    "confirmation code",
+    "itinerary",
+    "reservation confirmed",
+    "booking confirmed",
+    "you have a new reservation",
+    "your reservation is confirmed",
+]
+
+
+def _looks_like_confirmation(text: str, html: str) -> bool:
+    """Quick heuristic: does the email body contain confirmation-specific keywords?"""
+    combined = (text + " " + html).lower()
+    return any(marker in combined for marker in _CONFIRMATION_MARKERS)
 
 
 def _get_ota_source(sender: str) -> str:
@@ -104,6 +125,15 @@ def _parse_received_at(date_header: str) -> datetime | None:
         return None
 
 
+async def _get_active_org_id(session) -> uuid.UUID:
+    """Return the first organization's ID, or fall back to default."""
+    result = await session.execute(select(Organization).limit(1))
+    org = result.scalar_one_or_none()
+    if org:
+        return org.id
+    return DEFAULT_BREKORA_ORG_ID
+
+
 async def _get_or_create_label(service, label_name: str) -> str | None:
     """Get existing label ID or create a new label."""
     try:
@@ -144,11 +174,13 @@ async def gmail_poller(ctx: dict) -> dict:
     }
 
     async with session_factory() as config_session:
+        org_id = await _get_active_org_id(config_session)
         config_svc = GmailConfigService(
             config_session,
-            DEFAULT_BREKORA_ORG_ID,
+            org_id,
             settings.GOOGLE_CLIENT_ID or "",
             settings.GOOGLE_CLIENT_SECRET or "",
+            settings.GOOGLE_REDIRECT_URI or "",
         )
         oauth_service = GmailOAuthService(settings, config_svc)
         credentials = await oauth_service.get_credentials()
@@ -182,7 +214,8 @@ async def gmail_poller(ctx: dict) -> dict:
         processed_label_id = await _get_or_create_label(service, BMS_PROCESSED_LABEL)
 
         async with session_factory() as session:
-            repo = RawEmailRepository(session, DEFAULT_BREKORA_ORG_ID)
+            org_id = await _get_active_org_id(session)
+            repo = RawEmailRepository(session, org_id)
 
             for msg_meta in messages:
                 message_id = msg_meta.get("id", "")
@@ -204,6 +237,23 @@ async def gmail_poller(ctx: dict) -> dict:
 
                     body_text, body_html = _extract_body_parts(payload)
                     ota_source = _get_ota_source(sender)
+
+                    # Skip obvious non-confirmation emails (thread replies, alerts, etc.)
+                    if not _looks_like_confirmation(body_text, body_html):
+                        logger.info(
+                            "gmail_poller: skipping non-confirmation email message_id=%s subject=%s",
+                            message_id,
+                            subject,
+                            extra={"correlation_id": correlation_id},
+                        )
+                        modify_body = {"removeLabelIds": ["UNREAD"]}
+                        if processed_label_id:
+                            modify_body["addLabelIds"] = [processed_label_id]
+                        service.users().messages().modify(
+                            userId="me", id=message_id, body=modify_body
+                        ).execute()
+                        result["skipped"] += 1
+                        continue
 
                     raw_email = await repo.create(
                         {
@@ -285,7 +335,7 @@ async def gmail_poller(ctx: dict) -> dict:
                                 overall_confidence = getattr(parsed_result, "overall_confidence", 0.0)
                                 parse_confidence = overall_confidence
 
-                                queue_repo = ParsedBookingQueueRepository(session, DEFAULT_BREKORA_ORG_ID)
+                                queue_repo = ParsedBookingQueueRepository(session, org_id)
                                 queue_item = await queue_repo.create(
                                     {
                                         "source_type": ota_source,
@@ -304,14 +354,14 @@ async def gmail_poller(ctx: dict) -> dict:
                                     extra={"correlation_id": correlation_id},
                                 )
 
-                                queue_svc = OTAQueueService(session, DEFAULT_BREKORA_ORG_ID)
+                                queue_svc = OTAQueueService(session, org_id)
                                 await queue_svc.process_auto_confirm(queue_item.id)
                                 parse_success = True
                         except Exception as exc:
                             failure_reason = f"parser_error: {str(exc)}"
 
                     if failure_reason:
-                        queue_repo = ParsedBookingQueueRepository(session, DEFAULT_BREKORA_ORG_ID)
+                        queue_repo = ParsedBookingQueueRepository(session, org_id)
                         await queue_repo.create(
                             {
                                 "source_type": ota_source,

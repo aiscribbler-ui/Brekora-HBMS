@@ -9,11 +9,14 @@ import {
 import {
   getOtaQueue,
   getOtaQueueItem,
+  getOtaQueueStats,
+  reprocessRawEmail,
   type ParsedBooking,
   type QueueFilters,
   type OtaSource,
   type QueueStatus,
   type QueueItemDetail,
+  type QueueStats,
 } from '@/services/otaApi'
 import { isAxiosError } from '@/lib/api'
 import ParsedBookingCard from '@/components/ota/ParsedBookingCard'
@@ -31,12 +34,21 @@ const sourceOptions: { value: OtaSource | ''; label: string }[] = [
   { value: 'other', label: 'Other' },
 ]
 
-const statusOptions: { value: QueueStatus | ''; label: string }[] = [
-  { value: '', label: 'All Status' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'confirmed', label: 'Confirmed' },
-  { value: 'rejected', label: 'Rejected' },
-  { value: 'edited', label: 'Edited' },
+type TabKey = 'all' | 'pending' | 'confirmed' | 'needs_review' | 'failed'
+
+interface TabDef {
+  key: TabKey
+  label: string
+  status: QueueStatus | null
+  maxConfidence?: number
+}
+
+const TABS: TabDef[] = [
+  { key: 'all', label: 'All', status: null },
+  { key: 'pending', label: 'Pending', status: 'pending' },
+  { key: 'confirmed', label: 'Confirmed', status: 'confirmed' },
+  { key: 'needs_review', label: 'Needs Review', status: 'pending', maxConfidence: 0.79 },
+  { key: 'failed', label: 'Failed', status: 'failed' },
 ]
 
 function sourceBadge(source: OtaSource | string) {
@@ -64,7 +76,7 @@ function statusBadge(status: QueueStatus | string) {
     pending: 'bg-warning-light text-warning-dark',
     confirmed: 'bg-success-light text-success-dark',
     rejected: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400',
-    edited: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400',
+    failed: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300',
   }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
@@ -101,9 +113,11 @@ export default function OtaQueue() {
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [rejectId, setRejectId] = useState<string | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
+  const [reprocessingId, setReprocessingId] = useState<string | null>(null)
 
+  const [activeTab, setActiveTab] = useState<TabKey>('all')
+  const [stats, setStats] = useState<QueueStats | null>(null)
   const [sourceFilter, setSourceFilter] = useState<OtaSource | ''>('')
-  const [statusFilter, setStatusFilter] = useState<QueueStatus | ''>('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [showFilters, setShowFilters] = useState(false)
@@ -113,12 +127,14 @@ export default function OtaQueue() {
     setLoading(true)
     setError(null)
 
+    const tabDef = TABS.find((t) => t.key === activeTab) ?? TABS[0]
     const filters: QueueFilters = {
       page,
       page_size: PAGE_SIZE,
     }
     if (sourceFilter) filters.source_type = sourceFilter
-    if (statusFilter) filters.status = statusFilter
+    if (tabDef.status) filters.status = tabDef.status
+    if (tabDef.maxConfidence !== undefined) filters.max_confidence = tabDef.maxConfidence
     if (dateFrom) filters.date_from = dateFrom
     if (dateTo) filters.date_to = dateTo
 
@@ -148,7 +164,15 @@ export default function OtaQueue() {
   useEffect(() => {
     const cleanup = fetchQueue()
     return cleanup
-  }, [page, sourceFilter, statusFilter, dateFrom, dateTo])
+  }, [page, activeTab, sourceFilter, dateFrom, dateTo])
+
+  useEffect(() => {
+    getOtaQueueStats()
+      .then((data) => setStats(data))
+      .catch(() => {
+        // silently ignore stats errors
+      })
+  }, [])
 
   useEffect(() => {
     if (!toast) return
@@ -206,9 +230,34 @@ export default function OtaQueue() {
     setToast({ type: 'error', message })
   }
 
+  const handleReprocess = async (rawEmailId: string) => {
+    if (!rawEmailId) return
+    setReprocessingId(rawEmailId)
+    try {
+      const result = await reprocessRawEmail(rawEmailId)
+      setToast({
+        type: 'success',
+        message: `Reprocessed successfully. Confidence: ${(result.confidence * 100).toFixed(0)}%${result.needs_review ? ' — needs review' : ''}`,
+      })
+      // Refresh detail panel if the selected booking's raw_email matches
+      if (selectedDetail?.parsed_booking?.raw_email_id === rawEmailId) {
+        handleSelect(selectedDetail.parsed_booking.id)
+      }
+      // Also refresh the list so any status/confidence changes appear
+      fetchQueue()
+    } catch (err) {
+      if (isAxiosError(err) && err.response?.data?.detail) {
+        setToast({ type: 'error', message: err.response.data.detail })
+      } else {
+        setToast({ type: 'error', message: 'Reprocess failed. Please try again.' })
+      }
+    } finally {
+      setReprocessingId(null)
+    }
+  }
+
   const clearFilters = () => {
     setSourceFilter('')
-    setStatusFilter('')
     setDateFrom('')
     setDateTo('')
     setPage(1)
@@ -217,10 +266,24 @@ export default function OtaQueue() {
   const activeFilterCount = useMemo(() => {
     let count = 0
     if (sourceFilter) count++
-    if (statusFilter) count++
     if (dateFrom || dateTo) count++
     return count
-  }, [sourceFilter, statusFilter, dateFrom, dateTo])
+  }, [sourceFilter, dateFrom, dateTo])
+
+  const tabCount = (tab: TabDef) => {
+    if (!stats) return null
+    switch (tab.key) {
+      case 'all': return stats.total
+      case 'pending': return stats.pending
+      case 'confirmed': return stats.confirmed
+      case 'needs_review':
+        // needs_review is a subset of pending; backend doesn't give this exact count,
+        // so we show the pending count as an approximation or just omit it.
+        return null
+      case 'failed': return stats.failed
+      default: return null
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -254,6 +317,38 @@ export default function OtaQueue() {
             )}
           </button>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.key
+            const count = tabCount(tab)
+            return (
+              <button
+                key={tab.key}
+                onClick={() => { setActiveTab(tab.key); setPage(1); setSelectedId(null); setSelectedDetail(null) }}
+                className={`whitespace-nowrap py-2 px-1 border-b-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'border-brand-500 text-brand-600 dark:text-brand-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                {tab.label}
+                {count !== null && count > 0 && (
+                  <span className={`ml-1.5 inline-flex items-center justify-center px-1.5 py-0 rounded-full text-xs font-medium ${
+                    isActive
+                      ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                  }`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </nav>
       </div>
 
       {/* Toast */}
@@ -291,21 +386,6 @@ export default function OtaQueue() {
               className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             >
               {sourceOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="filter-status" className="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">
-              Status
-            </label>
-            <select
-              id="filter-status"
-              value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value as QueueStatus | ''); setPage(1) }}
-              className="block w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-            >
-              {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
@@ -376,6 +456,7 @@ export default function OtaQueue() {
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Source</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Guest</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email Subject</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dates</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Confidence</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
@@ -390,6 +471,9 @@ export default function OtaQueue() {
                   >
                     <td className="px-4 py-3">{sourceBadge(booking.source_type)}</td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">{booking.guest_name || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate" title={booking.raw_email_subject || undefined}>
+                      {booking.raw_email_subject || '—'}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                       {booking.check_in && booking.check_out
                         ? `${booking.check_in} → ${booking.check_out}`
@@ -426,6 +510,9 @@ export default function OtaQueue() {
                   </div>
                   {statusBadge(booking.status)}
                 </div>
+                {booking.raw_email_subject && (
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">{booking.raw_email_subject}</p>
+                )}
                 <div className="mt-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                   <span>
                     {booking.check_in && booking.check_out
@@ -501,6 +588,8 @@ export default function OtaQueue() {
                     onConfirm={() => setConfirmId(selectedBooking.id)}
                     onEdit={() => setEditId(selectedBooking.id)}
                     onReject={() => setRejectId(selectedBooking.id)}
+                    onReprocess={selectedBooking.raw_email_id ? () => handleReprocess(selectedBooking.raw_email_id!) : undefined}
+                    reprocessing={reprocessingId === selectedBooking.raw_email_id}
                     rawEmailUrl={selectedDetail?.email_link || null}
                   />
                 )

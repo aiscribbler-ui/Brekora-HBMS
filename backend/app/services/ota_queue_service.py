@@ -44,31 +44,69 @@ class OTAQueueService:
         status: str | None = None,
         date_from: date | None = None,
         date_to: date | None = None,
+        max_confidence: Decimal | None = None,
         skip: int = 0,
         limit: int = 100,
-    ) -> list[ParsedBookingQueue]:
-        """List parsed bookings with optional filters."""
-        from sqlalchemy import select
+    ) -> dict[str, Any]:
+        """List parsed bookings with optional filters. Returns paginated dict."""
+        from sqlalchemy import func, select
+        from sqlalchemy.orm import joinedload
 
-        stmt = select(ParsedBookingQueue)
+        base_stmt = select(ParsedBookingQueue).options(joinedload(ParsedBookingQueue.raw_email))
+        count_stmt = select(func.count(ParsedBookingQueue.id))
+
         if source_type:
-            stmt = stmt.where(ParsedBookingQueue.source_type == source_type)
+            base_stmt = base_stmt.where(ParsedBookingQueue.source_type == source_type)
+            count_stmt = count_stmt.where(ParsedBookingQueue.source_type == source_type)
         if status:
-            stmt = stmt.where(ParsedBookingQueue.status == status)
+            base_stmt = base_stmt.where(ParsedBookingQueue.status == status)
+            count_stmt = count_stmt.where(ParsedBookingQueue.status == status)
+        if max_confidence is not None:
+            base_stmt = base_stmt.where(ParsedBookingQueue.confidence_score <= max_confidence)
+            count_stmt = count_stmt.where(ParsedBookingQueue.confidence_score <= max_confidence)
         if date_from or date_to:
-            # Filter by check_in date inside parsed_data JSONB
             if date_from:
-                stmt = stmt.where(
+                base_stmt = base_stmt.where(
+                    ParsedBookingQueue.parsed_data["check_in"].astext >= date_from.isoformat()
+                )
+                count_stmt = count_stmt.where(
                     ParsedBookingQueue.parsed_data["check_in"].astext >= date_from.isoformat()
                 )
             if date_to:
-                stmt = stmt.where(
+                base_stmt = base_stmt.where(
                     ParsedBookingQueue.parsed_data["check_in"].astext <= date_to.isoformat()
                 )
-        stmt = stmt.offset(skip).limit(limit)
+                count_stmt = count_stmt.where(
+                    ParsedBookingQueue.parsed_data["check_in"].astext <= date_to.isoformat()
+                )
+
+        base_stmt = base_stmt.offset(skip).limit(limit)
+        base_stmt = self.queue_repo._apply_org_scope(base_stmt)
+        count_stmt = self.queue_repo._apply_org_scope(count_stmt)
+
+        result = await self.session.execute(base_stmt)
+        items = result.scalars().all()
+
+        count_result = await self.session.execute(count_stmt)
+        total = count_result.scalar_one()
+
+        return {"items": items, "total": total}
+
+    async def get_stats(self) -> dict[str, int]:
+        """Return counts by status for the current org."""
+        from sqlalchemy import func, select
+
+        stmt = (
+            select(ParsedBookingQueue.status, func.count(ParsedBookingQueue.id))
+            .group_by(ParsedBookingQueue.status)
+        )
         stmt = self.queue_repo._apply_org_scope(stmt)
         result = await self.session.execute(stmt)
-        return result.scalars().all()
+        counts: dict[str, int] = {"total": 0, "pending": 0, "confirmed": 0, "rejected": 0, "failed": 0}
+        for row in result.all():
+            counts[row[0]] = row[1]
+            counts["total"] += row[1]
+        return counts
 
     async def get_details(self, queue_id: uuid.UUID) -> dict[str, Any] | None:
         """Return parsed booking details along with the linked raw email."""

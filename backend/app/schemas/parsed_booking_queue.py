@@ -54,12 +54,14 @@ class ParsedBookingQueueRead(ParsedBookingQueueBase):
     num_guests: Optional[int] = None
     room_type: Optional[str] = None
     ota_reference: Optional[str] = None
+    raw_email_subject: Optional[str] = None
 
     @model_validator(mode='before')
     @classmethod
     def _extract_parsed_data(cls, data: Any) -> Any:
         if hasattr(data, '__table__'):
             parsed = getattr(data, 'parsed_data', None) or {}
+            raw_email = getattr(data, 'raw_email', None)
             d = {col.name: getattr(data, col.name) for col in data.__table__.columns}
             d['property_id'] = parsed.get('property_id')
             d['guest_name'] = parsed.get('guest_name')
@@ -70,9 +72,11 @@ class ParsedBookingQueueRead(ParsedBookingQueueBase):
             d['num_guests'] = parsed.get('number_of_guests')
             d['room_type'] = parsed.get('room_type')
             d['ota_reference'] = d.get('ota_reference_id')
+            d['raw_email_subject'] = getattr(raw_email, 'subject', None) if raw_email else None
             return d
         if isinstance(data, dict):
             parsed = data.get('parsed_data') or {}
+            raw_email = data.get('raw_email')
             data.setdefault('property_id', parsed.get('property_id'))
             data.setdefault('guest_name', parsed.get('guest_name'))
             data.setdefault('guest_email', parsed.get('guest_email'))
@@ -82,6 +86,8 @@ class ParsedBookingQueueRead(ParsedBookingQueueBase):
             data.setdefault('num_guests', parsed.get('number_of_guests'))
             data.setdefault('room_type', parsed.get('room_type'))
             data.setdefault('ota_reference', data.get('ota_reference_id'))
+            if isinstance(raw_email, dict):
+                data.setdefault('raw_email_subject', raw_email.get('subject'))
             return data
         return data
 
